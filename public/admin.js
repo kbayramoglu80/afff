@@ -1,20 +1,15 @@
 const loginView = document.getElementById("login-view");
 const dashboardView = document.getElementById("dashboard-view");
 const loginForm = document.getElementById("login-form");
-const postForm = document.getElementById("post-form");
-const imageInput = document.getElementById("post-image");
-const imagePreview = document.getElementById("image-preview");
-const imagePreviewImage = document.getElementById("image-preview-image");
+const faqForm = document.getElementById("faq-form");
 const loginMessage = document.getElementById("login-message");
 const dashboardMessage = document.getElementById("dashboard-message");
-const postList = document.getElementById("post-list");
+const faqList = document.getElementById("faq-list");
 const contactList = document.getElementById("contact-list");
-const formTitle = document.getElementById("form-title");
+const faqFormTitle = document.getElementById("faq-form-title");
 let csrfToken = "";
-let posts = [];
+let faqs = [];
 let contactSubmissions = [];
-let selectedImageData = "";
-let imageReadVersion = 0;
 
 async function getCsrfToken() {
   const response = await fetch("/api/csrf", { credentials: "same-origin", cache: "no-store" });
@@ -44,45 +39,27 @@ function showMessage(element, message, success = false) {
   element.classList.toggle("success", success);
 }
 
-function resetForm() {
-  postForm.reset();
-  postForm.elements.id.value = "";
-  imageReadVersion += 1;
-  selectedImageData = "";
-  renderImagePreview();
-  formTitle.textContent = "Yeni yazı";
+function resetFaqForm() {
+  faqForm.reset();
+  faqForm.elements.id.value = "";
+  faqFormTitle.textContent = "Yeni soru";
 }
 
-function renderImagePreview() {
-  imagePreview.hidden = !selectedImageData;
-  if (selectedImageData) imagePreviewImage.src = selectedImageData;
-  else imagePreviewImage.removeAttribute("src");
-}
-
-function renderPosts() {
-  postList.replaceChildren();
-  if (!posts.length) {
+function renderFaqs() {
+  faqList.replaceChildren();
+  if (!faqs.length) {
     const empty = document.createElement("p");
-    empty.textContent = "Henüz yazı eklenmemiş.";
-    postList.append(empty);
+    empty.textContent = "Henüz soru eklenmemiş.";
+    faqList.append(empty);
     return;
   }
-  for (const post of posts) {
+  for (const faq of faqs) {
     const row = document.createElement("article");
-    row.className = "post-row";
-    if (post.imageData) {
-      const image = document.createElement("img");
-      image.src = post.imageData;
-      image.alt = post.title;
-      row.append(image);
-    }
+    row.className = "faq-row";
     const title = document.createElement("h3");
-    title.textContent = post.title;
-    const excerpt = document.createElement("p");
-    excerpt.textContent = post.excerpt;
-    const status = document.createElement("span");
-    status.className = "post-status";
-    status.textContent = post.status === "published" ? "Yayımlandı" : "Taslak";
+    title.textContent = faq.question;
+    const answer = document.createElement("p");
+    answer.textContent = faq.answer;
     const actions = document.createElement("div");
     actions.className = "actions";
     const edit = document.createElement("button");
@@ -90,41 +67,35 @@ function renderPosts() {
     edit.className = "secondary";
     edit.textContent = "Düzenle";
     edit.addEventListener("click", () => {
-      postForm.elements.id.value = post._id;
-      postForm.elements.title.value = post.title;
-      postForm.elements.excerpt.value = post.excerpt;
-      postForm.elements.content.value = post.content;
-      postForm.elements.status.value = post.status;
-      imageReadVersion += 1;
-      selectedImageData = post.imageData || "";
-      imageInput.value = "";
-      renderImagePreview();
-      formTitle.textContent = "Yazıyı düzenle";
-      postForm.scrollIntoView({ behavior: "smooth", block: "start" });
+      faqForm.elements.id.value = faq._id;
+      faqForm.elements.question.value = faq.question;
+      faqForm.elements.answer.value = faq.answer;
+      faqFormTitle.textContent = "Soruyu düzenle";
+      faqForm.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "danger";
     remove.textContent = "Sil";
     remove.addEventListener("click", async () => {
-      if (!window.confirm(`"${post.title}" yazısı silinsin mi?`)) return;
+      if (!window.confirm(`"${faq.question}" sorusu silinsin mi?`)) return;
       try {
-        await apiRequest(`/api/admin/posts/${encodeURIComponent(post._id)}`, { method: "DELETE" });
-        await loadPosts();
-        showMessage(dashboardMessage, "Yazı silindi.", true);
+        await apiRequest(`/api/admin/faqs/${encodeURIComponent(faq._id)}`, { method: "DELETE" });
+        await loadFaqs();
+        showMessage(dashboardMessage, "Soru silindi.", true);
       } catch (error) {
         showMessage(dashboardMessage, error.message);
       }
     });
     actions.append(edit, remove);
-    row.append(title, excerpt, status, actions);
-    postList.append(row);
+    row.append(title, answer, actions);
+    faqList.append(row);
   }
 }
 
-async function loadPosts() {
-  posts = await apiRequest("/api/admin/posts");
-  renderPosts();
+async function loadFaqs() {
+  faqs = await apiRequest("/api/admin/faqs");
+  renderFaqs();
 }
 
 function renderContactSubmissions() {
@@ -231,7 +202,7 @@ async function initialize() {
     const sessionState = await apiRequest("/api/admin/session");
     if (sessionState.authenticated) {
       showDashboard();
-      await Promise.all([loadPosts(), loadContactSubmissions()]);
+      await Promise.all([loadFaqs(), loadContactSubmissions()]);
     } else {
       loginView.hidden = false;
     }
@@ -256,7 +227,7 @@ loginForm.addEventListener("submit", async event => {
     csrfToken = result.csrfToken;
     loginForm.reset();
     showDashboard();
-    await Promise.all([loadPosts(), loadContactSubmissions()]);
+    await Promise.all([loadFaqs(), loadContactSubmissions()]);
   } catch (error) {
     showMessage(loginMessage, error.message);
   } finally {
@@ -264,65 +235,28 @@ loginForm.addEventListener("submit", async event => {
   }
 });
 
-postForm.addEventListener("submit", async event => {
+faqForm.addEventListener("submit", async event => {
   event.preventDefault();
   showMessage(dashboardMessage, "");
-  const id = postForm.elements.id.value;
+  const id = faqForm.elements.id.value;
   const payload = {
-    title: postForm.elements.title.value,
-    excerpt: postForm.elements.excerpt.value,
-    content: postForm.elements.content.value,
-    status: postForm.elements.status.value,
-    imageData: selectedImageData,
+    question: faqForm.elements.question.value,
+    answer: faqForm.elements.answer.value,
   };
   try {
-    await apiRequest(id ? `/api/admin/posts/${encodeURIComponent(id)}` : "/api/admin/posts", {
+    await apiRequest(id ? `/api/admin/faqs/${encodeURIComponent(id)}` : "/api/admin/faqs", {
       method: id ? "PUT" : "POST",
       body: JSON.stringify(payload),
     });
-    resetForm();
-    await loadPosts();
-    showMessage(dashboardMessage, "Yazı kaydedildi.", true);
+    resetFaqForm();
+    await loadFaqs();
+    showMessage(dashboardMessage, "Soru kaydedildi.", true);
   } catch (error) {
     showMessage(dashboardMessage, error.message);
   }
 });
+document.getElementById("new-faq-button").addEventListener("click", resetFaqForm);
 
-imageInput.addEventListener("change", () => {
-  const file = imageInput.files[0];
-  if (!file) return;
-  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 2 * 1024 * 1024) {
-    imageInput.value = "";
-    showMessage(dashboardMessage, "JPEG, PNG veya WebP biçiminde en fazla 2 MB bir görsel seçin.");
-    return;
-  }
-
-  const version = ++imageReadVersion;
-  const reader = new FileReader();
-  reader.addEventListener("load", () => {
-    if (version !== imageReadVersion) return;
-    if (typeof reader.result !== "string") {
-      showMessage(dashboardMessage, "Görsel okunamadı.");
-      return;
-    }
-    selectedImageData = reader.result;
-    renderImagePreview();
-    showMessage(dashboardMessage, "");
-  });
-  reader.addEventListener("error", () => {
-    if (version === imageReadVersion) showMessage(dashboardMessage, "Görsel okunamadı.");
-  });
-  reader.readAsDataURL(file);
-});
-
-document.getElementById("remove-image-button").addEventListener("click", () => {
-  imageReadVersion += 1;
-  imageInput.value = "";
-  selectedImageData = "";
-  renderImagePreview();
-});
-
-document.getElementById("new-post-button").addEventListener("click", resetForm);
 document.getElementById("refresh-contact-button").addEventListener("click", async event => {
   const button = event.currentTarget;
   button.disabled = true;

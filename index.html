@@ -134,15 +134,6 @@
     }
     .hero h1 span { display: block; color: var(--sage); }
     .hero-subtitle { max-width: 570px; color: var(--dim); font-size: clamp(19px, 2vw, 24px); font-weight: 600; }
-    .hero-meta { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 34px; }
-    .hero-meta span {
-      padding-left: 13px;
-      border-left: 1px solid var(--gold);
-      color: var(--dim);
-      font: 700 10px/1.7 var(--sans);
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
     .hero-visual {
       position: relative;
       min-height: 460px;
@@ -291,16 +282,16 @@
     .treatment-accordion .treatment-cards { padding: 0 18px 20px; }
     .treatment-card {
       position: relative;
-      min-height: 124px;
+      min-height: 180px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start;
       padding: 20px 20px 18px;
       border: 1px solid rgba(46, 42, 36, .12);
       background: #fbf9f4;
       transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     }
-    .treatment-card.has-image { justify-content: flex-start; gap: 0; overflow: hidden; padding: 0 0 18px; }
+    .treatment-card.has-image { gap: 0; overflow: hidden; padding: 0 0 18px; }
     .treatment-card.has-image::before { display: none; }
     .treatment-card-image { display: block; width: 100%; height: 145px; object-fit: cover; }
     .treatment-card-image.shoulder-image, .treatment-card-image.prosthesis-image, .treatment-card-image.specialty-image { object-fit: contain; background: #e9e5da; }
@@ -308,9 +299,10 @@
     .treatment-card:hover { transform: translateY(-3px); border-color: rgba(102, 113, 93, .4); box-shadow: 0 12px 24px rgba(46, 42, 36, .07); }
     .treatment-card span { color: var(--sage); font: 700 9px/1.5 var(--sans); letter-spacing: .14em; }
     .treatment-card h4 { margin: 24px 0 0; font: 700 21px/1.25 var(--serif); }
-    .treatment-card.has-image span, .treatment-card.has-image h4 { margin-right: 16px; margin-left: 16px; }
+    .treatment-card.has-image span, .treatment-card.has-image h4, .treatment-card.has-image p { margin-right: 16px; margin-left: 16px; }
     .treatment-card.has-image span { margin-top: 14px; }
     .treatment-card.has-image h4 { margin-top: 8px; }
+    .treatment-card p { margin: 10px 0 0; color: var(--dim); font-size: 14px; line-height: 1.55; font-weight: 600; }
     .treatment-note { margin: 24px 0 0; color: var(--dim); font-size: 14px; font-weight: 600; }
 
     .before-after { padding-top: 15px; padding-bottom: 105px; }
@@ -367,18 +359,19 @@
     .publication a { align-self: center; color: var(--sage); font: 700 10px/1.7 var(--sans); letter-spacing: .06em; white-space: nowrap; }
     .publication a:hover { text-decoration: underline; }
 
-    .blog { padding-top: 100px; padding-bottom: 110px; background: #e9e5da; }
-    .blog-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; }
-    .blog-admin-link { color: var(--sage); font: 700 10px/1.7 var(--sans); letter-spacing: .08em; }
-    .blog-admin-link:hover { text-decoration: underline; }
-    .blog-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 35px; }
-    .blog-card { padding: 24px; background: var(--paper); border: 1px solid var(--line); }
-    .blog-card img { display: block; width: 100%; aspect-ratio: 16 / 9; margin: -24px -24px 20px; width: calc(100% + 48px); object-fit: cover; }
-    .blog-card time { color: var(--dim); font: 700 10px/1.7 var(--sans); letter-spacing: .08em; }
-    .blog-card h3 { margin: 12px 0 8px; font: 700 24px/1.25 var(--serif); }
-    .blog-card p { margin: 0; color: var(--dim); font-size: 16px; font-weight: 600; }
-    .blog-card .blog-content { margin-top: 16px; white-space: pre-line; }
-    .blog-empty { grid-column: 1 / -1; color: var(--dim); font-weight: 600; }
+    .faq { padding-top: 100px; padding-bottom: 110px; background: #e9e5da; }
+    .faq-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; }
+    .faq-admin-link { color: var(--sage); font: 700 10px/1.7 var(--sans); letter-spacing: .08em; }
+    .faq-admin-link:hover { text-decoration: underline; }
+    .faq-list { display: grid; gap: 12px; margin-top: 35px; }
+    .faq-item { background: var(--paper); border: 1px solid var(--line); }
+    .faq-item summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 22px 24px; cursor: pointer; list-style: none; font: 700 22px/1.3 var(--serif); }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::after { content: "+"; flex: 0 0 auto; color: var(--sage); font: 500 26px/1 var(--sans); }
+    .faq-item[open] summary::after { content: "−"; }
+    .faq-item summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -3px; }
+    .faq-answer { margin: 0; padding: 0 24px 22px; color: var(--dim); font-size: 16px; font-weight: 600; white-space: pre-line; }
+    .faq-empty { color: var(--dim); font-weight: 600; }
 
     .contact { padding: 100px 0 88px; background: #e9e5da; }
     .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: end; }
@@ -427,6 +420,24 @@
     }
     .contact-cta:hover { transform: translateY(-2px); }
     .contact-cta-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .whatsapp-cta {
+      position: fixed;
+      z-index: 10;
+      left: clamp(16px, 3vw, 32px);
+      bottom: clamp(16px, 3vh, 28px);
+      display: grid;
+      width: 58px;
+      height: 58px;
+      place-items: center;
+      border-radius: 50%;
+      background: #25d366;
+      color: white;
+      box-shadow: 0 8px 26px rgba(46, 42, 36, .2);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .whatsapp-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(46, 42, 36, .25); }
+    .whatsapp-cta:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+    .whatsapp-cta svg { width: 31px; height: 31px; fill: currentColor; }
     .disclaimer { margin: 56px 0 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--dim); font-size: 14px; font-weight: 600; }
     footer { padding: 22px var(--gap); background: var(--deep); color: rgba(242, 238, 228, .92); text-align: center; font: 700 9px/1.7 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
 
@@ -441,7 +452,6 @@
       .hero { grid-template-columns: 1fr; min-height: 0; padding-top: 145px; }
       .hero-copy { text-align: center; }
       .hero h1, .hero-subtitle { margin-left: auto; margin-right: auto; }
-      .hero-meta { justify-content: center; }
       .hero-visual { width: min(100%, 440px); min-height: 390px; margin: 0 auto; }
       .treatment-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .before-after-grid { gap: 16px; }
@@ -449,8 +459,7 @@
       .expertise-head { display: block; }
       .expertise-head .section-intro { margin-top: 20px; }
       .expertise-grid { grid-template-columns: repeat(2, 1fr); }
-      .blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .blog-head { align-items: flex-start; flex-direction: column; }
+      .faq-head { align-items: flex-start; flex-direction: column; }
       .career-grid, .contact-grid { grid-template-columns: 1fr; }
       .career-grid { gap: 38px; }
       .hospital { padding-left: 20px; }
@@ -468,7 +477,8 @@
       .before-after { padding-bottom: 80px; }
       .before-after-grid { grid-template-columns: 1fr; }
       .expertise-grid { grid-template-columns: 1fr; }
-      .blog-grid { grid-template-columns: 1fr; }
+      .faq-item summary { padding: 18px; font-size: 20px; }
+      .faq-answer { padding: 0 18px 18px; }
       .expertise-card { min-height: 0; }
       .career-item { grid-template-columns: 78px 1fr; gap: 15px; }
       .publication { grid-template-columns: 48px 1fr; gap: 12px; }
@@ -491,7 +501,7 @@
       <a href="#tedavi-alanlari">Tedavi alanları</a>
       <a href="#alanlar">Çalışma alanları</a>
       <a href="#akademik">Akademik</a>
-      <a href="#blog">Blog</a>
+      <a href="#sss">Sıkça sorulan sorular</a>
       <a href="#iletisim">İletişim</a>
       <a class="admin-link" href="/admin">Yönetici girişi</a>
     </div>
@@ -503,10 +513,6 @@
         <span class="eyebrow">Ortopedi ve Travmatoloji</span>
         <h1>Doç. Dr. <span>Mesut Karıksız</span></h1>
         <p class="hero-subtitle">Klinik deneyim ve akademik çalışmalarıyla ortopedi ve travmatoloji alanında.</p>
-        <div class="hero-meta">
-          <span>Başakşehir Çam ve Sakura Şehir Hastanesi</span>
-          <span>İstanbul</span>
-        </div>
         <a class="text-link" href="#iletisim">İletişim bilgileri <span aria-hidden="true">→</span></a>
       </div>
       <div class="hero-visual">
@@ -529,16 +535,18 @@
           <h2 class="section-title" id="treatments-title">Tedavi alanları</h2>
         </div>
         <div class="treatment-tabs" role="tablist" aria-label="Tedavi alanları">
-          <button class="treatment-tab" id="tab-spor" type="button" role="tab" aria-selected="true" aria-controls="panel-spor" tabindex="0">Spor Cerrahisi</button>
+          <button class="treatment-tab" id="tab-spor" type="button" role="tab" aria-selected="true" aria-controls="panel-spor" tabindex="0">Spor Cerrahisi ve Artroskopik Cerrahi</button>
+          <button class="treatment-tab" id="tab-ayak" type="button" role="tab" aria-selected="false" aria-controls="panel-ayak" tabindex="-1">Ayak ve Ayak Bileği Cerrahisi</button>
+          <button class="treatment-tab" id="tab-el" type="button" role="tab" aria-selected="false" aria-controls="panel-el" tabindex="-1">El Cerrahisi ve Mikrocerrahi</button>
           <button class="treatment-tab" id="tab-protez" type="button" role="tab" aria-selected="false" aria-controls="panel-protez" tabindex="-1">Protez Cerrahisi</button>
-          <button class="treatment-tab" id="tab-kok-hucre" type="button" role="tab" aria-selected="false" aria-controls="panel-kok-hucre" tabindex="-1">Kök Hücre Tedavileri</button>
+          <button class="treatment-tab" id="tab-kok-hucre" type="button" role="tab" aria-selected="false" aria-controls="panel-kok-hucre" tabindex="-1">Ortobiyolojik Tedaviler</button>
           <button class="treatment-tab" id="tab-cocuk" type="button" role="tab" aria-selected="false" aria-controls="panel-cocuk" tabindex="-1">Çocuk Ortopedisi</button>
           <button class="treatment-tab" id="tab-endoskopik-omurga" type="button" role="tab" aria-selected="false" aria-controls="panel-endoskopik-omurga" tabindex="-1">Endoskopik Omurga</button>
           <button class="treatment-tab" id="tab-boy-uzatma" type="button" role="tab" aria-selected="false" aria-controls="panel-boy-uzatma" tabindex="-1">Boy Uzatma ve Deformite</button>
           <button class="treatment-tab" id="tab-ultrason-enjeksiyon" type="button" role="tab" aria-selected="false" aria-controls="panel-ultrason-enjeksiyon" tabindex="-1">Ultrason Eşliğinde Enjeksiyonlar</button>
         </div>
         <section class="treatment-panel" id="panel-spor" role="tabpanel" aria-labelledby="tab-spor">
-          <h3>Spor cerrahisi</h3>
+          <h3>Spor Cerrahisi ve Artroskopik Cerrahi</h3>
           <div class="treatment-accordion">
             <details>
               <summary>Diz</summary>
@@ -546,18 +554,22 @@
                 <article class="treatment-card has-image">
                   <img class="treatment-card-image" src="o-n-c-apraz-bag-yaralanmasi-nedenleri-belirtileri-ve-tedavisi.webp" alt="Ön çapraz bağ yaralanması görseli" loading="lazy">
                   <span>DİZ</span><h4>Ön çapraz bağ yaralanmaları</h4>
+                  <p>Ön çapraz bağ, dizin dönme hareketleri sırasında stabilitesine katkı sağlar. Yaralanmanın tedavisi muayene, aktivite düzeyi ve görüntüleme bulgularına göre planlanır.</p>
                 </article>
                 <article class="treatment-card has-image">
                   <img class="treatment-card-image" src="meniscal-tear-mri.webp" alt="Menisküs yırtığı MR görüntüsü" loading="lazy">
                   <span>DİZ</span><h4>Menisküs yırtıkları</h4>
+                  <p>Menisküsler diz ekleminde yük dağılımına yardımcı kıkırdak yapılardır. Yırtıkların tedavisi yırtığın yeri, şikâyetler ve muayene bulgularına göre değerlendirilir.</p>
                 </article>
                 <article class="treatment-card has-image">
                   <img class="treatment-card-image" src="images.jpg" alt="Kıkırdak yaralanması görseli" loading="lazy">
                   <span>DİZ</span><h4>Kıkırdak yaralanmaları</h4>
+                  <p>Eklem kıkırdağındaki hasar ağrıya veya hareket kısıtlılığına neden olabilir. Hasarın yeri ve boyutu, tedavi seçeneklerinin değerlendirilmesinde önem taşır.</p>
                 </article>
                 <article class="treatment-card has-image">
                   <img class="treatment-card-image" src="egemen-turhan-diz-kapaği-cikmasi-img-4.jpg" alt="Diz kapağı çıkığı görseli" loading="lazy">
                   <span>DİZ</span><h4>Diz kapağı çıkığı</h4>
+                  <p>Diz kapağının eklem oluğundan çıkması ağrı ve şişliğe yol açabilir. İlk veya tekrarlayan çıkıklarda yaklaşım, muayene ve eşlik eden hasarlara göre belirlenir.</p>
                 </article>
               </div>
             </details>
@@ -567,22 +579,50 @@
                 <article class="treatment-card has-image">
                   <img class="treatment-card-image shoulder-image" src="Omuz-kas-yırtığı-1.jpg" alt="Omuz kas yırtığı görseli" loading="lazy">
                   <span>OMUZ</span><h4>Kas-tendon yırtıkları</h4>
+                  <p>Omuz çevresindeki kas ve tendon yırtıkları ağrıya ve kol hareketlerinde güçlüğe neden olabilir. Yırtığın kapsamı muayene ve gerekli görüntülemelerle değerlendirilir.</p>
                 </article>
                 <article class="treatment-card has-image">
                   <img class="treatment-card-image shoulder-image" src="omuz-cikigi-1024x576.webp" alt="Omuz çıkığı görseli" loading="lazy">
                   <span>OMUZ</span><h4>Omuz çıkıkları</h4>
+                  <p>Omuz çıkığında eklem yüzleri normal konumundan ayrılır; çevre dokular da etkilenebilir. Tedavi planında çıkığın tekrarlayıp tekrarlamadığı ve eşlik eden hasarlar dikkate alınır.</p>
                 </article>
               </div>
             </details>
             <details>
               <summary>Kalça</summary>
               <div class="treatment-cards">
-                <article class="treatment-card"><span>KALÇA</span><h4>Kalça sıkışma sendromu (FAI)</h4></article>
-                <article class="treatment-card"><span>KALÇA</span><h4>Kalça artroskopisi</h4></article>
+                <article class="treatment-card"><span>KALÇA</span><h4>Kalça sıkışma sendromu (FAI)</h4><p>Kalça eklemindeki kemik yapıların bazı hareketlerde teması ağrı ve hareket kısıtlılığına neden olabilir. Tanı, klinik değerlendirme ve uygun görüntülemelerle konur.</p></article>
+                <article class="treatment-card"><span>KALÇA</span><h4>Kalça artroskopisi</h4><p>Kalça artroskopisi, küçük kesilerden kamera ve ince cerrahi aletlerle eklemin değerlendirilip uygun durumlarda tedavi edildiği bir yöntemdir.</p></article>
+              </div>
+            </details>
+            <details>
+              <summary>Ayak bileği</summary>
+              <div class="treatment-cards">
+                <article class="treatment-card"><span>AYAK BİLEĞİ</span><h4>Ayak bileği artroskopisi</h4><p>Ayak bileği artroskopisi, eklem içindeki sorunların kamera yardımıyla değerlendirilmesine ve uygun durumlarda tedavisine olanak sağlar.</p></article>
               </div>
             </details>
           </div>
           <p class="treatment-note">Bu sorunların değerlendirilmesi; muayene ve gerekli tetkiklerle kişiye özel yapılır. Uygun tedavi seçenekleri hekim görüşmesinde ele alınır.</p>
+        </section>
+        <section class="treatment-panel" id="panel-ayak" role="tabpanel" aria-labelledby="tab-ayak" hidden>
+          <h3>Ayak ve Ayak Bileği Cerrahisi</h3>
+          <div class="treatment-cards">
+            <article class="treatment-card"><span>AYAK</span><h4>Halluks Valgus (Ayak Başparmağı Çıkıntısı)</h4><p>Ayak başparmağının diğer parmaklara yönelmesi ve eklem çevresinde çıkıntı oluşmasıdır. Ağrı ve günlük yaşama etkisine göre tedavi seçenekleri değerlendirilir.</p></article>
+            <article class="treatment-card"><span>AYAK</span><h4>Çekiç Parmak Deformitesi</h4><p>Parmağın eklemlerinden bükülü pozisyonda kalmasıyla ortaya çıkan şekil değişikliğidir. Deformitenin esnekliği, bası noktaları ve şikâyetler değerlendirilir.</p></article>
+            <article class="treatment-card"><span>AYAK</span><h4>Pes Planus (Düz Tabanlık)</h4><p>Ayak iç kavisinin azalması veya yere yaklaşmasıdır. Her düz tabanlık belirti vermez; değerlendirme ağrı, işlev ve muayene bulgularına göre yapılır.</p></article>
+            <article class="treatment-card"><span>AYAK</span><h4>Pes Cavus (Çukur Tabanlık)</h4><p>Ayak kavsinin normalden yüksek olduğu yapısal durumdur. Basınç dağılımı, denge ve eşlik edebilecek diğer bulgular muayenede ele alınır.</p></article>
+            <article class="treatment-card"><span>AYAK</span><h4>Plantar Fasiit (Topuk Dikeni ve Topuk Ağrısı)</h4><p>Plantar fasya dokusunun zorlanması topuk tabanında ağrıya neden olabilir. Topuk ağrısının nedeni ve uygun yaklaşım klinik değerlendirmeyle belirlenir.</p></article>
+          </div>
+        </section>
+        <section class="treatment-panel" id="panel-el" role="tabpanel" aria-labelledby="tab-el" hidden>
+          <h3>El Cerrahisi ve Mikrocerrahi</h3>
+          <div class="treatment-cards">
+            <article class="treatment-card"><span>EL CERRAHİSİ</span><h4>Karpal Tünel Sendromu (Median Sinir Sıkışması) ve Cerrahi Gevşetme</h4><p>Median sinirin el bileği düzeyinde sıkışması elde uyuşma, karıncalanma veya güç kaybına yol açabilir. Cerrahi gevşetme dahil seçenekler, sinir etkilenmesi ve muayene bulgularına göre değerlendirilir.</p></article>
+            <article class="treatment-card"><span>EL CERRAHİSİ</span><h4>Tetik Parmak Hastalığı ve Cerrahi Tedavisi</h4><p>Parmağın bükülüp açılırken takılması veya kilitlenmesiyle kendini gösterebilir. Tedavi, yakınmaların şiddeti ve tendon kılıfındaki etkilenmeye göre planlanır.</p></article>
+            <article class="treatment-card"><span>EL CERRAHİSİ</span><h4>Ganglion Kisti ve Cerrahi Tedavisi</h4><p>Ganglion, eklem veya tendon çevresinde görülebilen, içi sıvı dolu bir kitle oluşumudur. İzlem veya tedavi kararı; ağrı, hareket kısıtlılığı ve muayeneye göre verilir.</p></article>
+            <article class="treatment-card"><span>MİKROCERRAHİ</span><h4>Parmak Replantasyonu (Kopan Parmakların Mikrocerrahi ile Yerine Dikilmesi)</h4><p>Uygun koşullardaki kopma yaralanmalarında parmağın damar, sinir ve diğer dokularının mikroskop altında onarılması hedeflenir. Bu yaralanmalar acil tıbbi değerlendirme gerektirir.</p></article>
+            <article class="treatment-card"><span>MİKROCERRAHİ</span><h4>Mikrocerrahi ile Damar ve Sinir Onarımları</h4><p>İnce damar ve sinirlerin büyütme altında onarılması, seçilmiş yaralanmalarda doku dolaşımı ve sinir devamlılığının yeniden sağlanmasına yardımcı olabilir.</p></article>
+          </div>
         </section>
         <section class="treatment-panel" id="panel-protez" role="tabpanel" aria-labelledby="tab-protez" hidden>
           <h3>Protez cerrahisi</h3>
@@ -590,64 +630,77 @@
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="prosthesis-revision.png" alt="Revizyon öncesi gevşemiş kalça protezi röntgeni" loading="lazy">
               <span>01</span><h4>Revizyon cerrahisi</h4>
+              <p>Mevcut eklem protezinde gevşeme, aşınma veya başka bir sorun olduğunda nedenin belirlenmesi önemlidir. Revizyon cerrahisinin gerekliliği ve kapsamı kişiye özel değerlendirilir.</p>
             </article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="knee-osteoarthritis.jpg" alt="Diz kireçlenmesini gösteren röntgen" loading="lazy">
               <span>02</span><h4>Diz kireçlenmesi</h4>
+              <p>Diz eklemindeki kıkırdak aşınması ağrıya ve hareket kısıtlılığına neden olabilir. Tedavi seçenekleri bulguların düzeyine ve kişinin günlük yaşamına etkisine göre ele alınır.</p>
             </article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="knee-replacement.jpg" alt="Diz protezi ameliyatı öncesi ve sonrası röntgen görüntüleri" loading="lazy">
               <span>03</span><h4>Diz protezi</h4>
+              <p>Diz protezi, ileri eklem hasarında ağrı ve işlev kaybı için değerlendirilebilen cerrahi seçeneklerden biridir. Uygunluk, muayene ve görüntüleme bulgularıyla belirlenir.</p>
             </article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="hip-replacement.jpg" alt="Kalça protezini gösteren pelvis röntgeni" loading="lazy">
               <span>04</span><h4>Kalça protezi</h4>
+              <p>Kalça protezi, eklem hasarının belirgin ağrı ve hareket kısıtlılığına yol açtığı durumlarda gündeme gelebilir. Cerrahi kararı kişinin sağlık durumu ve değerlendirme sonuçlarına göre verilir.</p>
             </article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="hip-osteoarthritis.jpg" alt="Kalça kireçlenmesine ait röntgen, BT ve MR görüntüleri" loading="lazy">
               <span>05</span><h4>Kalça kireçlenmesi</h4>
+              <p>Kalça eklemindeki kıkırdak yapının zamanla bozulması ağrıya ve hareketlerde zorlanmaya neden olabilir. Tanı ve tedavi planı klinik değerlendirmeyle oluşturulur.</p>
             </article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="ganz-pao.jpg" alt="Ganz ameliyatı sonrası pelvis röntgeni" loading="lazy">
               <span>06</span><h4>Ganz ameliyatı</h4>
+              <p>Ganz (periasetabular) osteotomi, uygun hastalarda kalça yuvasının konumunu düzeltmeyi amaçlayan eklem koruyucu bir cerrahidir. Uygunluk, kalça yapısı ve eklem durumu incelenerek değerlendirilir.</p>
             </article>
           </div>
         </section>
         <section class="treatment-panel" id="panel-kok-hucre" role="tabpanel" aria-labelledby="tab-kok-hucre" hidden>
-          <h3>Kök hücre tedavileri</h3>
+          <h3>Ortobiyolojik Tedaviler</h3>
           <p class="treatment-panel-intro">Kök hücre uygulamalarının uygunluğu, hastanın klinik durumu ve bilimsel kanıtlar doğrultusunda hekim tarafından değerlendirilir.</p>
-          <article class="treatment-card has-image">
-            <img class="treatment-card-image specialty-image" src="stem-cells.jpg" alt="İnsan mezenkimal kök hücrelerinin mikroskop görüntüsü" loading="lazy">
-            <span>TEDAVİ SEÇENEKLERİ</span><h4>Kişiye özel tıbbi değerlendirme</h4>
-          </article>
+          <div class="treatment-cards">
+            <article class="treatment-card has-image">
+              <img class="treatment-card-image specialty-image" src="stem-cells.jpg" alt="İnsan mezenkimal kök hücrelerinin mikroskop görüntüsü" loading="lazy">
+              <span>ORTOBİYOLOJİK TEDAVİ</span><h4>Kök Hücre Tedavisi</h4>
+              <p>Kök hücre uygulamalarının içeriği ve kullanım alanları yönteme göre değişebilir. Bilimsel kanıtlar, olası yarar ve riskler ile kişiye uygunluk hekim tarafından değerlendirilmelidir.</p>
+            </article>
+            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4>PRP (Trombositten Zengin Plazma)</h4><p>PRP, kişiden alınan kan örneğinin hazırlanmasıyla trombosit yönünden zengin bir ürün elde edilmesini amaçlar. Kullanım alanı ve beklenen sonuçlar tanı ve mevcut kanıtlar çerçevesinde değerlendirilir.</p></article>
+            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4>PLF</h4><p>PLF adıyla belirtilen uygulamanın içeriği ve yöntemi kullanılan protokole göre açıklanmalıdır. Uygunluk, uygulama ayrıntıları ve mevcut kanıtlar hekim görüşmesinde ele alınır.</p></article>
+            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4>Eksozom Tedavisi</h4><p>Eksozom adıyla sunulan uygulamaların içeriği ve klinik kanıt düzeyi farklılık gösterebilir. Kullanım kararı verilmeden önce yöntemin niteliği, belirsizlikleri ve kişiye uygunluğu değerlendirilmelidir.</p></article>
+            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4>Sanakin Tedavisi</h4><p>Sanakin, kişiden alınan kanın belirli koşullarda işlenmesiyle hazırlanan serumun kullanıldığı bir uygulamadır. Uygunluğu tanı, klinik durum ve mevcut bilimsel kanıtlar doğrultusunda değerlendirilir.</p></article>
+          </div>
           <p class="treatment-note">Her yöntem her hasta için uygun olmayabilir. Tanı ve tedavi planı muayene sonrasında belirlenir.</p>
         </section>
         <section class="treatment-panel" id="panel-endoskopik-omurga" role="tabpanel" aria-labelledby="tab-endoskopik-omurga" hidden>
           <h3>Endoskopik (kapalı) omurga cerrahisi</h3>
           <div class="treatment-cards">
-            <article class="treatment-card"><span>ENDOSKOPİK OMURGA CERRAHİSİ</span><h4>Endoskopik (kapalı) bel fıtığı ameliyatı</h4></article>
-            <article class="treatment-card"><span>ENDOSKOPİK OMURGA CERRAHİSİ</span><h4>Endoskopik (kapalı) dar kanal ameliyatı</h4></article>
-            <article class="treatment-card"><span>ENDOSKOPİK OMURGA CERRAHİSİ</span><h4>Endoskopik (kapalı) bel kayması ameliyatı</h4></article>
-            <article class="treatment-card"><span>ENJEKSİYON UYGULAMALARI</span><h4>Transforaminal enjeksiyonlar (nokta atışı)</h4></article>
-            <article class="treatment-card"><span>ENJEKSİYON UYGULAMALARI</span><h4>Kaudal enjeksiyonlar</h4></article>
-            <article class="treatment-card"><span>GİRİŞİMSEL TEDAVİLER</span><h4>Radyofrekans faset ablasyonu</h4></article>
+            <article class="treatment-card"><span>ENDOSKOPİK OMURGA CERRAHİSİ</span><h4>Endoskopik (kapalı) bel fıtığı ameliyatı</h4><p>Bel fıtığının sinir dokusuna baskı yaptığı seçilmiş durumlarda, endoskopik yöntemle fıtık dokusuna müdahale değerlendirilebilir. Yöntemin uygunluğu muayene ve görüntüleme ile belirlenir.</p></article>
+            <article class="treatment-card"><span>ENDOSKOPİK OMURGA CERRAHİSİ</span><h4>Endoskopik (kapalı) dar kanal ameliyatı</h4><p>Omurga kanalındaki daralma sinirler üzerinde baskıya ve yürüme güçlüğü gibi yakınmalara yol açabilir. Cerrahi yaklaşım, darlığın yeri ve kapsamına göre planlanır.</p></article>
+            <article class="treatment-card"><span>ENDOSKOPİK OMURGA CERRAHİSİ</span><h4>Endoskopik (kapalı) bel kayması ameliyatı</h4><p>Omur kemiklerinden birinin diğerine göre yer değiştirmesi bel veya bacak yakınmalarına neden olabilir. Endoskopik yöntemin uygunluğu omurganın stabilitesi ve görüntüleme bulgularına göre değerlendirilir.</p></article>
+            <article class="treatment-card"><span>ENJEKSİYON UYGULAMALARI</span><h4>Transforaminal enjeksiyonlar (nokta atışı)</h4><p>İlaç, görüntüleme eşliğinde sinir kökünün omurgadan çıktığı bölgeye uygulanır. Hangi durumlarda kullanılacağı ve olası riskleri hekim tarafından değerlendirilir.</p></article>
+            <article class="treatment-card"><span>ENJEKSİYON UYGULAMALARI</span><h4>Kaudal enjeksiyonlar</h4><p>İlaç, kuyruk sokumu bölgesindeki doğal açıklıktan epidural alana ulaştırılır. İşlem kararı, yakınmalar ve muayene bulguları birlikte değerlendirilerek verilir.</p></article>
+            <article class="treatment-card"><span>GİRİŞİMSEL TEDAVİLER</span><h4>Radyofrekans faset ablasyonu</h4><p>Faset eklemlerden kaynaklandığı düşünülen ağrılarda, ilgili sinir dallarına radyofrekans enerjisi uygulanabilir. İşlem öncesi ağrının kaynağı ve yöntemin uygunluğu değerlendirilir.</p></article>
           </div>
         </section>
         <section class="treatment-panel" id="panel-boy-uzatma" role="tabpanel" aria-labelledby="tab-boy-uzatma" hidden>
           <h3>Boy uzatma ve deformite cerrahisi</h3>
           <div class="treatment-cards">
-            <article class="treatment-card"><span>BOY UZATMA</span><h4>Boy uzatma</h4></article>
-            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4>Konjenital tibia psödoartrozu</h4></article>
-            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4>Hemimeli</h4></article>
-            <article class="treatment-card"><span>KEMİK ENFEKSİYONLARI</span><h4>Osteomiyelit (kemik enfeksiyonu)</h4></article>
-            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4>Akondroplazi (cücelik)</h4></article>
-            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4>Bacak eğrilikleri</h4></article>
+            <article class="treatment-card"><span>BOY UZATMA</span><h4>Boy uzatma</h4><p>Kemiklerin kontrollü biçimde uzatılmasını amaçlayan tedaviler, dikkatli planlama ve düzenli takip gerektirir. Yöntem ve hedefler kişinin sağlık durumu ile beklentilerine göre değerlendirilir.</p></article>
+            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4>Konjenital tibia psödoartrozu</h4><p>Doğuştan gelen bu nadir durumda kaval kemiğinde kırık ve kaynamama gelişebilir. Kemik yapısı ve mevcut deformiteye göre uzman değerlendirmesiyle tedavi planı oluşturulur.</p></article>
+            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4>Hemimeli</h4><p>Hemimeli, doğuştan bir uzuv kemiğinin kısmen veya tamamen gelişmemesiyle görülebilen bir durumdur. Değerlendirme ve tedavi planı etkilenen kemiklere, büyümeye ve işlevsel ihtiyaçlara göre yapılır.</p></article>
+            <article class="treatment-card"><span>KEMİK ENFEKSİYONLARI</span><h4>Osteomiyelit (kemik enfeksiyonu)</h4><p>Osteomiyelit kemik dokusunun enfeksiyonudur ve zamanında tıbbi değerlendirme gerektirir. Tedavi; enfeksiyonun etkeni, yaygınlığı ve kişinin genel durumuna göre planlanır.</p></article>
+            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4>Akondroplazi (cücelik)</h4><p>Akondroplazi, kemik büyümesini etkileyen genetik bir iskelet gelişim durumudur. Ortopedik takipte uzuv dizilimi, eklem sağlığı ve kişinin işlevsel gereksinimleri ele alınır.</p></article>
+            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4>Bacak eğrilikleri</h4><p>Bacak eksenindeki içe veya dışa yönelim büyüme döneminde görülebilir ya da farklı nedenlerle gelişebilir. Yaş, eğriliğin derecesi ve ilerleyişi değerlendirilerek izlem veya tedavi seçenekleri belirlenir.</p></article>
           </div>
         </section>
         <section class="treatment-panel" id="panel-ultrason-enjeksiyon" role="tabpanel" aria-labelledby="tab-ultrason-enjeksiyon" hidden>
           <h3>Ultrason eşliğinde enjeksiyonlar</h3>
           <div class="treatment-cards">
-            <article class="treatment-card"><span>GİRİŞİMSEL TEDAVİLER</span><h4>Ultrason altında enjeksiyon uygulamaları</h4></article>
+            <article class="treatment-card"><span>GİRİŞİMSEL TEDAVİLER</span><h4>Ultrason altında enjeksiyon uygulamaları</h4><p>Ultrason, iğnenin ve hedef dokunun işlem sırasında görüntülenmesine yardımcı olur. Uygulanacak ilaç, bölge ve işlem gerekliliği tanı ve muayene bulgularına göre belirlenir.</p></article>
           </div>
         </section>
         <section class="treatment-panel" id="panel-cocuk" role="tabpanel" aria-labelledby="tab-cocuk" hidden>
@@ -656,15 +709,18 @@
             <article class="treatment-card has-image">
               <img class="treatment-card-image specialty-image" src="pediatric-hip-dysplasia.jpg" alt="Kalça displazisini gösteren röntgen görüntüsü" loading="lazy">
               <span>ÇOCUK ORTOPEDİSİ</span><h4>Kalça çıkığı</h4>
+              <p>Gelişimsel kalça displazisinde kalça ekleminin yuvası ve uyluk kemiği başının ilişkisi etkilenebilir. Erken tanı ve tedavi yaklaşımı, çocuğun yaşına ve muayene bulgularına göre belirlenir.</p>
             </article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image specialty-image" src="clubfoot-openstax.jpg" alt="Çarpık ayak (PEV) klinik görünümü" loading="lazy">
               <span>ÇOCUK ORTOPEDİSİ</span><h4>Çarpık ayak (PEV)</h4>
+              <p>PEV, ayağın doğuştan içe ve aşağıya dönük olduğu bir şekil bozukluğudur. Tedavi yöntemi ve takip sıklığı deformitenin özelliklerine ve tedaviye yanıta göre planlanır.</p>
             </article>
-            <article class="treatment-card"><span>ÇOCUK ORTOPEDİSİ</span><h4>Serebral palsi</h4></article>
+            <article class="treatment-card"><span>ÇOCUK ORTOPEDİSİ</span><h4>Serebral palsi</h4><p>Serebral palside kas tonusu ve hareket kontrolündeki farklılıklar kemik-eklem gelişimini etkileyebilir. Ortopedik değerlendirme çocuğun hareket kapasitesi ve ihtiyaçlarına göre yapılır.</p></article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image specialty-image" src="hip-arthroscopy.png" alt="Kalça artroskopisinde kullanılan aletleri gösteren ameliyat sırası röntgen görüntüsü" loading="lazy">
               <span>ORTOPEDİ</span><h4>Kalça artroskopisi</h4>
+              <p>Kalça artroskopisi, küçük kesilerden kamera yardımıyla eklemin değerlendirilmesini sağlar. Çocuk ve ergenlerde kullanım kararı, tanı ve eklem gelişimi dikkate alınarak verilir.</p>
             </article>
           </div>
         </section>
@@ -845,17 +901,17 @@
       </div>
     </section>
 
-    <section class="blog" id="blog">
+    <section class="faq" id="sss">
       <div class="wrap">
-        <div class="blog-head reveal">
+        <div class="faq-head reveal">
           <div>
-            <span class="eyebrow">Bilgilendirme yazıları</span>
-            <h2 class="section-title">Blog</h2>
+            <span class="eyebrow">Merak edilenler</span>
+            <h2 class="section-title">Sıkça sorulan sorular</h2>
           </div>
-          <a class="blog-admin-link" href="/admin">Blog yönetimi →</a>
+          <a class="faq-admin-link" href="/admin">SSS yönetimi →</a>
         </div>
-        <div class="blog-grid" id="blog-posts" aria-live="polite">
-          <p class="blog-empty">Yazılar yükleniyor…</p>
+        <div class="faq-list" id="faq-list" aria-live="polite">
+          <p class="faq-empty">Sorular yükleniyor…</p>
         </div>
       </div>
     </section>
@@ -912,6 +968,11 @@
   <footer>Doç. Dr. Mesut Karıksız · Ortopedi ve Travmatoloji</footer>
   <a class="contact-cta" id="contact-cta" href="#contact-form" aria-label="İletişim formunu doldur">
     Formu doldur <span aria-hidden="true">·</span> Bize ulaş
+  </a>
+  <a class="whatsapp-cta" href="https://wa.me/905062918049" target="_blank" rel="noopener noreferrer" aria-label="+90 506 291 80 49 numaralı WhatsApp hattına mesaj gönder" title="WhatsApp: +90 506 291 80 49">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M20.52 3.48A11.87 11.87 0 0 0 12.07 0C5.5 0 .16 5.34.16 11.91c0 2.1.55 4.15 1.6 5.96L.05 24l6.27-1.64a11.9 11.9 0 0 0 5.74 1.46h.01c6.57 0 11.91-5.34 11.92-11.91a11.84 11.84 0 0 0-3.47-8.43ZM12.07 21.8h-.01a9.9 9.9 0 0 1-5.04-1.38l-.36-.21-3.72.98.99-3.63-.23-.37a9.87 9.87 0 0 1-1.52-5.28c0-5.46 4.44-9.9 9.9-9.9a9.83 9.83 0 0 1 7 2.9 9.83 9.83 0 0 1 2.9 7c-.01 5.46-4.45 9.89-9.91 9.89Zm5.43-7.41c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.26-.47-2.4-1.48-.89-.79-1.49-1.76-1.66-2.06-.18-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.07-.15-.67-1.61-.92-2.21-.24-.58-.48-.5-.67-.51l-.57-.01c-.2 0-.52.08-.79.38-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.87 1.22 3.07.15.2 2.1 3.2 5.09 4.49.71.31 1.27.49 1.7.63.72.23 1.37.2 1.88.12.57-.08 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35Z"/>
+    </svg>
   </a>
 
   <script>
@@ -972,52 +1033,40 @@
     }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach(element => revealObserver.observe(element));
 
-    const blogPosts = document.getElementById('blog-posts');
-    const renderBlogPost = post => {
-      const article = document.createElement('article');
-      article.className = 'blog-card';
-      if (post.imageData) {
-        const image = document.createElement('img');
-        image.src = post.imageData;
-        image.alt = post.title;
-        article.append(image);
-      }
-      const date = document.createElement('time');
-      date.dateTime = post.publishedAt;
-      date.textContent = new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(post.publishedAt));
-      const title = document.createElement('h3');
-      title.textContent = post.title;
-      const excerpt = document.createElement('p');
-      excerpt.textContent = post.excerpt;
-      const content = document.createElement('p');
-      content.className = 'blog-content';
-      content.textContent = post.content;
-      article.append(date, title, excerpt, content);
-      return article;
+    const faqList = document.getElementById('faq-list');
+    const renderFaq = faq => {
+      const item = document.createElement('details');
+      item.className = 'faq-item';
+      const question = document.createElement('summary');
+      question.textContent = faq.question;
+      const answer = document.createElement('p');
+      answer.className = 'faq-answer';
+      answer.textContent = faq.answer;
+      item.append(question, answer);
+      return item;
     };
-    fetch('/api/posts')
+    fetch('/api/faqs')
       .then(response => {
-        if (!response.ok) throw new Error('Blog yazıları yüklenemedi.');
+        if (!response.ok) throw new Error('SSS kayıtları yüklenemedi.');
         return response.json();
-      })
-      .then(posts => {
-        blogPosts.replaceChildren();
-        if (!posts.length) {
+      }).then(faqs => {
+        faqList.replaceChildren();
+        if (!faqs.length) {
           const empty = document.createElement('p');
-          empty.className = 'blog-empty';
-          empty.textContent = 'Henüz yayımlanmış bir yazı bulunmuyor.';
-          blogPosts.append(empty);
+          empty.className = 'faq-empty';
+          empty.textContent = 'Henüz sıkça sorulan soru eklenmemiş.';
+          faqList.append(empty);
           return;
         }
-        posts.forEach(post => blogPosts.append(renderBlogPost(post)));
+        faqs.forEach(faq => faqList.append(renderFaq(faq)));
       })
       .catch(error => {
         console.error(error);
-        blogPosts.replaceChildren();
+        faqList.replaceChildren();
         const message = document.createElement('p');
-        message.className = 'blog-empty';
-        message.textContent = 'Blog yazıları şu anda yüklenemiyor.';
-        blogPosts.append(message);
+        message.className = 'faq-empty';
+        message.textContent = 'Sorular şu anda yüklenemiyor.';
+        faqList.append(message);
       });
 
     const contactForm = document.getElementById('contact-form');

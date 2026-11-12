@@ -12,8 +12,10 @@ import mongoose from "mongoose";
 import { Admin } from "./models/admin.js";
 import { BlogPost } from "./models/blog-post.js";
 import { ContactSubmission } from "./models/contact-submission.js";
+import { Faq } from "./models/faq.js";
 import { validatePost } from "./lib/blog.js";
 import { validateContactSubmission } from "./lib/contact.js";
+import { validateFaq } from "./lib/faq.js";
 
 dotenv.config();
 
@@ -85,6 +87,11 @@ export function createApp() {
       .select("title slug excerpt content imageData publishedAt")
       .lean();
     res.set("Cache-Control", "no-store").json(posts);
+  }));
+
+  app.get("/api/faqs", asyncRoute(async (req, res) => {
+    const faqs = await Faq.find().sort({ createdAt: 1 }).select("question answer").lean();
+    res.set("Cache-Control", "no-store").json(faqs);
   }));
 
   const contactLimiter = rateLimit({
@@ -209,6 +216,37 @@ export function createApp() {
     if (!mongoose.isValidObjectId(req.params.id)) return res.status(400).json({ error: "Yazı kimliği geçersiz." });
     const post = await BlogPost.findByIdAndDelete(req.params.id);
     if (!post) return res.status(404).json({ error: "Yazı bulunamadı." });
+    res.status(204).end();
+  }));
+
+  app.get("/api/admin/faqs", requireAdmin, asyncRoute(async (req, res) => {
+    const faqs = await Faq.find().sort({ createdAt: 1 }).lean();
+    res.set("Cache-Control", "no-store").json(faqs);
+  }));
+
+  app.post("/api/admin/faqs", verifyCsrf, requireAdmin, asyncRoute(async (req, res) => {
+    const parsed = validateFaq(req.body);
+    if (parsed.error) return res.status(400).json({ error: parsed.error });
+    const faq = await Faq.create(parsed.value);
+    res.status(201).json(faq);
+  }));
+
+  app.put("/api/admin/faqs/:id", verifyCsrf, requireAdmin, asyncRoute(async (req, res) => {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(400).json({ error: "SSS kimliği geçersiz." });
+    const parsed = validateFaq(req.body);
+    if (parsed.error) return res.status(400).json({ error: parsed.error });
+    const faq = await Faq.findByIdAndUpdate(req.params.id, parsed.value, {
+      new: true,
+      runValidators: true,
+    });
+    if (!faq) return res.status(404).json({ error: "SSS kaydı bulunamadı." });
+    res.json(faq);
+  }));
+
+  app.delete("/api/admin/faqs/:id", verifyCsrf, requireAdmin, asyncRoute(async (req, res) => {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(400).json({ error: "SSS kimliği geçersiz." });
+    const faq = await Faq.findByIdAndDelete(req.params.id);
+    if (!faq) return res.status(404).json({ error: "SSS kaydı bulunamadı." });
     res.status(204).end();
   }));
 
