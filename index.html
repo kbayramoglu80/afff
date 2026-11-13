@@ -17,7 +17,7 @@
       --deep: #353d32;
       --gold: #a6885a;
       --cream: #f2eee4;
-      --serif: "Cormorant", Georgia, serif;
+      --serif: "Montserrat", Arial, sans-serif;
       --sans: "Montserrat", Arial, sans-serif;
       --gap: clamp(22px, 6vw, 92px);
     }
@@ -103,19 +103,23 @@
       transition: opacity .2s, transform .2s, visibility .2s;
     }
     .navbar.menu-open .nav-links { opacity: 1; visibility: visible; transform: none; }
-    .nav-links a {
+    .nav-links a, .nav-links .language-toggle {
       padding: 13px 0;
       border-bottom: 1px solid var(--line);
+      background: transparent;
       color: var(--dim);
+      cursor: pointer;
       font: 700 10px/1.5 var(--sans);
       letter-spacing: .1em;
+      text-align: left;
       text-transform: uppercase;
       transition: color .2s;
     }
-    .nav-links a:last-child { border-bottom: 0; }
-    .nav-links a:hover { color: var(--ink); }
+    .nav-links a:last-child, .nav-links .language-toggle:last-child { border-bottom: 0; }
+    .nav-links a:hover, .nav-links .language-toggle:hover { color: var(--ink); }
     .nav-links .admin-link { color: var(--sage); }
-
+    .nav-links .language-toggle { width: 100%; border: 0; border-bottom: 0; }
+    .language-status:not(:empty) { padding: 8px 0; color: #8b332c; font: 600 12px/1.5 var(--sans); }
     .hero {
       display: grid;
       grid-template-columns: 1.15fr .85fr;
@@ -197,15 +201,42 @@
     .treatments-inner { width: min(1180px, calc(100% - 2 * var(--gap))); margin: 0 auto; }
     .treatments-head { margin-bottom: 36px; text-align: center; }
     .treatments-head .eyebrow { color: var(--sage); }
-    .treatment-tabs {
+    .treatment-tabs-wrap {
       display: flex;
-      justify-content: center;
-      gap: clamp(4px, 1vw, 12px);
-      overflow-x: auto;
-      scrollbar-width: none;
+      align-items: center;
+      gap: 10px;
       border-bottom: 1px solid rgba(46, 42, 36, .16);
     }
+    .treatment-tabs {
+      min-width: 0;
+      flex: 1 1 auto;
+      display: flex;
+      justify-content: flex-start;
+      gap: clamp(4px, 1vw, 12px);
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+    }
     .treatment-tabs::-webkit-scrollbar { display: none; }
+    .treatment-scroll-button {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
+      place-items: center;
+      border: 1px solid rgba(46, 42, 36, .18);
+      border-radius: 50%;
+      background: rgba(247, 244, 237, .7);
+      color: var(--deep);
+      cursor: pointer;
+      font: 400 26px/1 var(--serif);
+      transition: background .2s, color .2s, opacity .2s;
+    }
+    .treatment-scroll-button:hover:not(:disabled) { background: var(--deep); color: #fff; }
+    .treatment-scroll-button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+    .treatment-scroll-button:disabled { cursor: default; opacity: .38; }
+    .treatment-scroll-button[hidden] { display: none; }
     .treatment-tab {
       flex: 0 0 auto;
       position: relative;
@@ -374,14 +405,11 @@
     .faq-empty { color: var(--dim); font-weight: 600; }
 
     .contact { padding: 100px 0 88px; background: #e9e5da; }
-    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: end; }
+    .contact-grid { display: grid; grid-template-columns: 1fr; gap: 50px; align-items: end; }
     .contact-details { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 34px; }
     .contact-details .eyebrow { display: block; margin-bottom: 6px; }
     .contact-details a, .contact-details p { margin: 0; font-size: 17px; font-weight: 600; }
     .contact-details a:hover { color: var(--sage); }
-    .hospital { padding: 26px 30px; border-left: 1px solid var(--gold); }
-    .hospital strong { display: block; font: 700 26px/1.2 var(--serif); }
-    .hospital p { margin: 9px 0 0; color: var(--dim); font-weight: 600; }
     .contact-form { margin-top: 42px; padding: clamp(22px, 4vw, 38px); border: 1px solid var(--line); background: var(--paper); }
     .contact-form h3 { margin: 0 0 20px; font: 700 30px/1.2 var(--serif); }
     .contact-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
@@ -399,6 +427,10 @@
     .contact-form-message { min-height: 24px; margin: 0; color: var(--dim); font-weight: 600; }
     .contact-form-message.error { color: #8b332c; }
     .contact-form-message.success { color: #315e39; }
+    .map-frame { width: 100%; height: clamp(320px, 45vw, 520px); }
+    .map-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
+    .map-link { padding: 12px var(--gap); background: var(--deep); color: var(--cream); text-align: right; font: 700 10px/1.5 var(--sans); letter-spacing: .08em; }
+    .map-link:hover { color: #e4c997; }
     .contact-cta {
       position: fixed;
       z-index: 9;
@@ -450,7 +482,12 @@
     }
     @media (max-width: 800px) {
       .hero { grid-template-columns: 1fr; min-height: 0; padding-top: 145px; }
-      .hero-copy { text-align: center; }
+      .hero-copy { display: contents; text-align: center; }
+      .hero-copy > .eyebrow { order: 1; }
+      .hero-copy > h1 { order: 2; }
+      .hero-copy > .hero-subtitle { order: 3; }
+      .hero-visual { order: 4; }
+      .hero-copy > .text-link { order: 5; }
       .hero h1, .hero-subtitle { margin-left: auto; margin-right: auto; }
       .hero-visual { width: min(100%, 440px); min-height: 390px; margin: 0 auto; }
       .treatment-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -462,15 +499,19 @@
       .faq-head { align-items: flex-start; flex-direction: column; }
       .career-grid, .contact-grid { grid-template-columns: 1fr; }
       .career-grid { gap: 38px; }
-      .hospital { padding-left: 20px; }
     }
     @media (max-width: 520px) {
       body { font-size: 17px; }
+      .hero { row-gap: 28px; }
+      .hero h1 { margin-bottom: 0; }
+      .hero-subtitle { margin-top: 0; }
       .hero-visual { min-height: 330px; }
       .about { padding-top: 75px; padding-bottom: 80px; }
       .treatments { padding: 55px 0 65px; }
       .treatment-tabs { gap: 6px; }
       .treatment-tab { padding: 10px 12px; font-size: 10px; }
+      .treatment-tabs-wrap { gap: 6px; }
+      .treatment-scroll-button { width: 32px; height: 32px; flex-basis: 32px; }
       .treatment-cards { grid-template-columns: 1fr; }
       .treatment-card { min-height: 92px; }
       .treatment-card h4 { margin-top: 12px; }
@@ -504,9 +545,10 @@
       <a href="#sss">Sıkça sorulan sorular</a>
       <a href="#iletisim">İletişim</a>
       <a class="admin-link" href="/admin">Yönetici girişi</a>
+      <button class="language-toggle" id="language-toggle" type="button" aria-label="Switch language to English">English</button>
+      <span class="language-status" id="language-status" role="status" aria-live="polite"></span>
     </div>
   </nav>
-
   <main>
     <header class="hero wrap" id="top">
       <div class="hero-copy">
@@ -534,16 +576,20 @@
           <span class="eyebrow">Ortopedi ve travmatoloji</span>
           <h2 class="section-title" id="treatments-title">Tedavi alanları</h2>
         </div>
-        <div class="treatment-tabs" role="tablist" aria-label="Tedavi alanları">
-          <button class="treatment-tab" id="tab-spor" type="button" role="tab" aria-selected="true" aria-controls="panel-spor" tabindex="0">Spor Cerrahisi ve Artroskopik Cerrahi</button>
-          <button class="treatment-tab" id="tab-ayak" type="button" role="tab" aria-selected="false" aria-controls="panel-ayak" tabindex="-1">Ayak ve Ayak Bileği Cerrahisi</button>
-          <button class="treatment-tab" id="tab-el" type="button" role="tab" aria-selected="false" aria-controls="panel-el" tabindex="-1">El Cerrahisi ve Mikrocerrahi</button>
-          <button class="treatment-tab" id="tab-protez" type="button" role="tab" aria-selected="false" aria-controls="panel-protez" tabindex="-1">Protez Cerrahisi</button>
-          <button class="treatment-tab" id="tab-kok-hucre" type="button" role="tab" aria-selected="false" aria-controls="panel-kok-hucre" tabindex="-1">Ortobiyolojik Tedaviler</button>
-          <button class="treatment-tab" id="tab-cocuk" type="button" role="tab" aria-selected="false" aria-controls="panel-cocuk" tabindex="-1">Çocuk Ortopedisi</button>
-          <button class="treatment-tab" id="tab-endoskopik-omurga" type="button" role="tab" aria-selected="false" aria-controls="panel-endoskopik-omurga" tabindex="-1">Endoskopik Omurga</button>
-          <button class="treatment-tab" id="tab-boy-uzatma" type="button" role="tab" aria-selected="false" aria-controls="panel-boy-uzatma" tabindex="-1">Boy Uzatma ve Deformite</button>
-          <button class="treatment-tab" id="tab-ultrason-enjeksiyon" type="button" role="tab" aria-selected="false" aria-controls="panel-ultrason-enjeksiyon" tabindex="-1">Ultrason Eşliğinde Enjeksiyonlar</button>
+        <div class="treatment-tabs-wrap">
+          <button class="treatment-scroll-button" type="button" data-direction="left" aria-label="Tedavi seçeneklerini sola kaydır" hidden>&lsaquo;</button>
+          <div class="treatment-tabs" role="tablist" aria-label="Tedavi alanları">
+            <button class="treatment-tab" id="tab-spor" type="button" role="tab" aria-selected="true" aria-controls="panel-spor" tabindex="0">Spor Cerrahisi ve Artroskopik Cerrahi</button>
+            <button class="treatment-tab" id="tab-ayak" type="button" role="tab" aria-selected="false" aria-controls="panel-ayak" tabindex="-1">Ayak ve Ayak Bileği Cerrahisi</button>
+            <button class="treatment-tab" id="tab-el" type="button" role="tab" aria-selected="false" aria-controls="panel-el" tabindex="-1">El Cerrahisi ve Mikrocerrahi</button>
+            <button class="treatment-tab" id="tab-protez" type="button" role="tab" aria-selected="false" aria-controls="panel-protez" tabindex="-1">Protez Cerrahisi</button>
+            <button class="treatment-tab" id="tab-kok-hucre" type="button" role="tab" aria-selected="false" aria-controls="panel-kok-hucre" tabindex="-1">Ortobiyolojik Tedaviler</button>
+            <button class="treatment-tab" id="tab-cocuk" type="button" role="tab" aria-selected="false" aria-controls="panel-cocuk" tabindex="-1">Çocuk Ortopedisi</button>
+            <button class="treatment-tab" id="tab-endoskopik-omurga" type="button" role="tab" aria-selected="false" aria-controls="panel-endoskopik-omurga" tabindex="-1">Endoskopik Omurga</button>
+            <button class="treatment-tab" id="tab-boy-uzatma" type="button" role="tab" aria-selected="false" aria-controls="panel-boy-uzatma" tabindex="-1">Boy Uzatma ve Deformite</button>
+            <button class="treatment-tab" id="tab-ultrason-enjeksiyon" type="button" role="tab" aria-selected="false" aria-controls="panel-ultrason-enjeksiyon" tabindex="-1">Ultrason Eşliğinde Enjeksiyonlar</button>
+          </div>
+          <button class="treatment-scroll-button" type="button" data-direction="right" aria-label="Tedavi seçeneklerini sağa kaydır" hidden>&rsaquo;</button>
         </div>
         <section class="treatment-panel" id="panel-spor" role="tabpanel" aria-labelledby="tab-spor">
           <h3>Spor Cerrahisi ve Artroskopik Cerrahi</h3>
@@ -858,10 +904,6 @@
             <span class="career-year">2021–2023</span>
             <div><h3>Ortopedi ve Travmatoloji uzmanı</h3><p>Özel Sultan Hastanesi</p></div>
           </article>
-          <article class="career-item">
-            <span class="career-year">2023–</span>
-            <div><h3>Ortopedi ve Travmatoloji uzmanı</h3><p>Başakşehir Çam ve Sakura Şehir Hastanesi</p></div>
-          </article>
         </div>
       </div>
     </section>
@@ -928,11 +970,6 @@
               <div><span class="eyebrow">Instagram</span><a href="https://www.instagram.com/assoc.prof.mesutkariksiz/" target="_blank" rel="noopener noreferrer">@assoc.prof.mesutkariksiz ↗</a></div>
             </div>
           </div>
-          <div class="hospital reveal">
-            <span class="eyebrow">Görev yeri</span>
-            <strong>Başakşehir Çam ve Sakura Şehir Hastanesi</strong>
-            <p>Ortopedi ve Travmatoloji Anabilim Dalı · İstanbul</p>
-          </div>
         </div>
         <form class="contact-form reveal" id="contact-form">
           <h3>İletişim talebi gönderin</h3>
@@ -963,6 +1000,12 @@
         <p class="disclaimer">Bu sayfadaki bilgiler genel bilgilendirme amacı taşır; tanı ve tedavi için hekiminize başvurunuz.</p>
       </div>
     </section>
+    <section class="map-section" aria-label="Konum haritası">
+      <div class="map-frame">
+        <iframe src="https://maps.google.com/maps?ll=41.0051949,29.0325574&z=17&t=m&hl=tr&output=embed" title="Google Haritalar konumu" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      </div>
+      <a class="map-link" href="https://maps.app.goo.gl/q97jCiCpqDRQ1fCu9" target="_blank" rel="noopener noreferrer">Google Haritalar’da aç ↗</a>
+    </section>
   </main>
 
   <footer>Doç. Dr. Mesut Karıksız · Ortopedi ve Travmatoloji</footer>
@@ -978,15 +1021,309 @@
   <script>
     const navbar = document.querySelector('.navbar');
     const menuToggle = document.querySelector('.menu-toggle');
+    const languageToggle = document.getElementById('language-toggle');
+    const languageStatus = document.getElementById('language-status');
+    const languageStorageKey = 'site-language';
+    const savedLanguage = localStorage.getItem(languageStorageKey) === 'en' ? 'en' : 'tr';
+    const englishTranslations = new Map(Object.entries({
+      'Hakkımda': 'About me',
+      'Tedavi alanları': 'Treatment areas',
+      'Tedavi seçeneklerini sola kaydır': 'Scroll treatment options left',
+      'Tedavi seçeneklerini sağa kaydır': 'Scroll treatment options right',
+      'Çalışma alanları': 'Areas of expertise',
+      'Akademik': 'Academic background',
+      'Sıkça sorulan sorular': 'Frequently asked questions',
+      'İletişim': 'Contact',
+      'Yönetici girişi': 'Admin login',
+      'Ortopedi ve Travmatoloji': 'Orthopedics and Traumatology',
+      'Ortopedi ve travmatoloji': 'Orthopedics and Traumatology',
+      'Doç. Dr.': 'Assoc. Prof. Dr.',
+      'Klinik deneyim ve akademik çalışmalarıyla ortopedi ve travmatoloji alanında.': 'Providing orthopedics and traumatology care informed by clinical experience and academic research.',
+      'İletişim bilgileri': 'Contact information',
+      '“Ortopedi ve travmatoloji alanındaki klinik deneyimimi bilimsel çalışmalarla destekliyorum.”': '“I support my clinical experience in orthopedics and traumatology with scientific research.”',
+      'Doç. Dr. Mesut Karıksız, ortopedi ve travmatoloji uzmanıdır. Mesleki ve akademik çalışmaları; alt ekstremite deformiteleri, uzatma ve eksternal fiksatör uygulamaları başta olmak üzere ortopedinin farklı alanlarını kapsamaktadır.': 'Assoc. Prof. Dr. Mesut Karıksız is an orthopedics and traumatology specialist. His clinical and academic work covers several areas of orthopedics, particularly lower-limb deformities, limb lengthening, and external fixation.',
+      'Tıp doktoru · Ortopedi ve Travmatoloji uzmanı · Doçent doktor': 'Medical doctor · Orthopedics and traumatology specialist · Associate professor',
+      'Spor Cerrahisi ve Artroskopik Cerrahi': 'Sports and arthroscopic surgery',
+      'Ayak ve Ayak Bileği Cerrahisi': 'Foot and ankle surgery',
+      'El Cerrahisi ve Mikrocerrahi': 'Hand surgery and microsurgery',
+      'Protez Cerrahisi': 'Joint replacement surgery',
+      'Protez cerrahisi': 'Joint replacement surgery',
+      'Ortobiyolojik Tedaviler': 'Orthobiologic treatments',
+      'Çocuk Ortopedisi': 'Pediatric orthopedics',
+      'Endoskopik Omurga': 'Endoscopic spine surgery',
+      'Boy Uzatma ve Deformite': 'Limb lengthening and deformity correction',
+      'Ultrason Eşliğinde Enjeksiyonlar': 'Ultrasound-guided injections',
+      'Diz': 'Knee',
+      'DİZ': 'KNEE',
+      'Ön çapraz bağ yaralanmaları': 'Anterior cruciate ligament injuries',
+      'Ön çapraz bağ, dizin dönme hareketleri sırasında stabilitesine katkı sağlar. Yaralanmanın tedavisi muayene, aktivite düzeyi ve görüntüleme bulgularına göre planlanır.': 'The anterior cruciate ligament helps stabilize the knee during rotational movements. Treatment is planned according to the examination, activity level, and imaging findings.',
+      'Menisküs yırtıkları': 'Meniscal tears',
+      'Menisküsler diz ekleminde yük dağılımına yardımcı kıkırdak yapılardır. Yırtıkların tedavisi yırtığın yeri, şikâyetler ve muayene bulgularına göre değerlendirilir.': 'The menisci are cartilage structures that help distribute load in the knee. Treatment options for a tear depend on its location, symptoms, and examination findings.',
+      'Kıkırdak yaralanmaları': 'Cartilage injuries',
+      'Eklem kıkırdağındaki hasar ağrıya veya hareket kısıtlılığına neden olabilir. Hasarın yeri ve boyutu, tedavi seçeneklerinin değerlendirilmesinde önem taşır.': 'Damage to joint cartilage may cause pain or limited movement. The location and extent of the damage help guide treatment options.',
+      'Diz kapağı çıkığı': 'Kneecap dislocation',
+      'Diz kapağının eklem oluğundan çıkması ağrı ve şişliğe yol açabilir. İlk veya tekrarlayan çıkıklarda yaklaşım, muayene ve eşlik eden hasarlara göre belirlenir.': 'A kneecap that slips out of its groove may cause pain and swelling. Care for a first-time or recurrent dislocation is determined by examination and any associated injuries.',
+      'Omuz': 'Shoulder',
+      'OMUZ': 'SHOULDER',
+      'Kas-tendon yırtıkları': 'Muscle and tendon tears',
+      'Omuz çevresindeki kas ve tendon yırtıkları ağrıya ve kol hareketlerinde güçlüğe neden olabilir. Yırtığın kapsamı muayene ve gerekli görüntülemelerle değerlendirilir.': 'Muscle and tendon tears around the shoulder may cause pain and difficulty moving the arm. The extent of a tear is assessed through examination and appropriate imaging.',
+      'Omuz çıkıkları': 'Shoulder dislocations',
+      'Omuz çıkığında eklem yüzleri normal konumundan ayrılır; çevre dokular da etkilenebilir. Tedavi planında çıkığın tekrarlayıp tekrarlamadığı ve eşlik eden hasarlar dikkate alınır.': 'A shoulder dislocation occurs when the joint surfaces move out of their normal position and surrounding tissues may also be affected. The treatment plan considers whether the dislocation has recurred and any associated injuries.',
+      'Kalça': 'Hip',
+      'KALÇA': 'HIP',
+      'Kalça sıkışma sendromu (FAI)': 'Femoroacetabular impingement (FAI)',
+      'Kalça eklemindeki kemik yapıların bazı hareketlerde teması ağrı ve hareket kısıtlılığına neden olabilir. Tanı, klinik değerlendirme ve uygun görüntülemelerle konur.': 'Contact between the bones of the hip during certain movements may cause pain and restricted motion. Diagnosis is based on clinical assessment and appropriate imaging.',
+      'Kalça artroskopisi': 'Hip arthroscopy',
+      'Kalça artroskopisi, küçük kesilerden kamera ve ince cerrahi aletlerle eklemin değerlendirilip uygun durumlarda tedavi edildiği bir yöntemdir.': 'Hip arthroscopy uses a camera and fine surgical instruments inserted through small incisions to assess and, when appropriate, treat the joint.',
+      'Ayak bileği': 'Ankle',
+      'AYAK BİLEĞİ': 'ANKLE',
+      'Ayak bileği artroskopisi': 'Ankle arthroscopy',
+      'Ayak bileği artroskopisi, eklem içindeki sorunların kamera yardımıyla değerlendirilmesine ve uygun durumlarda tedavisine olanak sağlar.': 'Ankle arthroscopy allows problems inside the joint to be assessed with a camera and treated when appropriate.',
+      'Bu sorunların değerlendirilmesi; muayene ve gerekli tetkiklerle kişiye özel yapılır. Uygun tedavi seçenekleri hekim görüşmesinde ele alınır.': 'Each condition is assessed individually through an examination and any necessary tests. Appropriate treatment options are discussed with the physician.',
+      'AYAK': 'FOOT',
+      'Halluks Valgus (Ayak Başparmağı Çıkıntısı)': 'Hallux valgus (bunion)',
+      'Ayak başparmağının diğer parmaklara yönelmesi ve eklem çevresinde çıkıntı oluşmasıdır. Ağrı ve günlük yaşama etkisine göre tedavi seçenekleri değerlendirilir.': 'Hallux valgus causes the big toe to angle toward the other toes, often forming a bump at the joint. Treatment options depend on pain and the impact on daily activities.',
+      'Çekiç Parmak Deformitesi': 'Hammertoe deformity',
+      'Parmağın eklemlerinden bükülü pozisyonda kalmasıyla ortaya çıkan şekil değişikliğidir. Deformitenin esnekliği, bası noktaları ve şikâyetler değerlendirilir.': 'This deformity occurs when a toe remains bent at one or more joints. Assessment considers flexibility, pressure points, and symptoms.',
+      'Pes Planus (Düz Tabanlık)': 'Pes planus (flatfoot)',
+      'Ayak iç kavisinin azalması veya yere yaklaşmasıdır. Her düz tabanlık belirti vermez; değerlendirme ağrı, işlev ve muayene bulgularına göre yapılır.': 'Pes planus is a reduced or lowered arch of the foot. Not all flatfeet cause symptoms; assessment is based on pain, function, and examination findings.',
+      'Pes Cavus (Çukur Tabanlık)': 'Pes cavus (high arch)',
+      'Ayak kavsinin normalden yüksek olduğu yapısal durumdur. Basınç dağılımı, denge ve eşlik edebilecek diğer bulgular muayenede ele alınır.': 'Pes cavus is a structural condition in which the foot has a higher-than-normal arch. Examination considers pressure distribution, balance, and any associated findings.',
+      'Plantar Fasiit (Topuk Dikeni ve Topuk Ağrısı)': 'Plantar fasciitis (heel pain)',
+      'Plantar fasya dokusunun zorlanması topuk tabanında ağrıya neden olabilir. Topuk ağrısının nedeni ve uygun yaklaşım klinik değerlendirmeyle belirlenir.': 'Strain of the plantar fascia may cause pain under the heel. Clinical assessment helps determine the cause of heel pain and an appropriate approach.',
+      'EL CERRAHİSİ': 'HAND SURGERY',
+      'Karpal Tünel Sendromu (Median Sinir Sıkışması) ve Cerrahi Gevşetme': 'Carpal tunnel syndrome (median nerve compression) and surgical release',
+      'Median sinirin el bileği düzeyinde sıkışması elde uyuşma, karıncalanma veya güç kaybına yol açabilir. Cerrahi gevşetme dahil seçenekler, sinir etkilenmesi ve muayene bulgularına göre değerlendirilir.': 'Compression of the median nerve at the wrist may cause numbness, tingling, or weakness in the hand. Options, including surgical release, are considered based on nerve involvement and examination findings.',
+      'Tetik Parmak Hastalığı ve Cerrahi Tedavisi': 'Trigger finger and surgical treatment',
+      'Parmağın bükülüp açılırken takılması veya kilitlenmesiyle kendini gösterebilir. Tedavi, yakınmaların şiddeti ve tendon kılıfındaki etkilenmeye göre planlanır.': 'Trigger finger may cause a finger to catch or lock when bending or straightening. Treatment is planned according to symptom severity and tendon-sheath involvement.',
+      'Ganglion Kisti ve Cerrahi Tedavisi': 'Ganglion cyst and surgical treatment',
+      'Ganglion, eklem veya tendon çevresinde görülebilen, içi sıvı dolu bir kitle oluşumudur. İzlem veya tedavi kararı; ağrı, hareket kısıtlılığı ve muayeneye göre verilir.': 'A ganglion is a fluid-filled lump that can develop near a joint or tendon. The decision to monitor or treat it depends on pain, restricted movement, and examination findings.',
+      'MİKROCERRAHİ': 'MICROSURGERY',
+      'Parmak Replantasyonu (Kopan Parmakların Mikrocerrahi ile Yerine Dikilmesi)': 'Finger replantation (microsurgical reattachment)',
+      'Uygun koşullardaki kopma yaralanmalarında parmağın damar, sinir ve diğer dokularının mikroskop altında onarılması hedeflenir. Bu yaralanmalar acil tıbbi değerlendirme gerektirir.': 'For suitable amputation injuries, the blood vessels, nerves, and other tissues may be repaired under a microscope to reattach the finger. These injuries require emergency medical assessment.',
+      'Mikrocerrahi ile Damar ve Sinir Onarımları': 'Microsurgical repair of blood vessels and nerves',
+      'İnce damar ve sinirlerin büyütme altında onarılması, seçilmiş yaralanmalarda doku dolaşımı ve sinir devamlılığının yeniden sağlanmasına yardımcı olabilir.': 'Repairing small blood vessels and nerves under magnification may help restore circulation and nerve continuity in selected injuries.',
+      'Revizyon cerrahisi': 'Revision surgery',
+      'Mevcut eklem protezinde gevşeme, aşınma veya başka bir sorun olduğunda nedenin belirlenmesi önemlidir. Revizyon cerrahisinin gerekliliği ve kapsamı kişiye özel değerlendirilir.': 'When an existing joint replacement loosens, wears, or develops another problem, identifying the cause is important. The need for and scope of revision surgery are assessed individually.',
+      'Diz kireçlenmesi': 'Knee osteoarthritis',
+      'Diz eklemindeki kıkırdak aşınması ağrıya ve hareket kısıtlılığına neden olabilir. Tedavi seçenekleri bulguların düzeyine ve kişinin günlük yaşamına etkisine göre ele alınır.': 'Cartilage wear in the knee may cause pain and restricted movement. Treatment options are considered based on the severity of findings and their impact on daily life.',
+      'Diz protezi': 'Knee replacement',
+      'Diz protezi, ileri eklem hasarında ağrı ve işlev kaybı için değerlendirilebilen cerrahi seçeneklerden biridir. Uygunluk, muayene ve görüntüleme bulgularıyla belirlenir.': 'Knee replacement is one surgical option that may be considered for pain and loss of function caused by advanced joint damage. Suitability is determined through examination and imaging.',
+      'Kalça protezi': 'Hip replacement',
+      'Kalça protezi, eklem hasarının belirgin ağrı ve hareket kısıtlılığına yol açtığı durumlarda gündeme gelebilir. Cerrahi kararı kişinin sağlık durumu ve değerlendirme sonuçlarına göre verilir.': 'Hip replacement may be considered when joint damage causes significant pain and restricted movement. The decision to operate is based on the person’s health and assessment results.',
+      'Kalça kireçlenmesi': 'Hip osteoarthritis',
+      'Kalça eklemindeki kıkırdak yapının zamanla bozulması ağrıya ve hareketlerde zorlanmaya neden olabilir. Tanı ve tedavi planı klinik değerlendirmeyle oluşturulur.': 'Gradual deterioration of cartilage in the hip may cause pain and difficulty moving. Diagnosis and treatment planning are based on clinical assessment.',
+      'Ganz ameliyatı': 'Ganz osteotomy',
+      'Revizyon öncesi gevşemiş kalça protezi röntgeni': 'X-ray of a loosened hip replacement before revision surgery',
+      'Diz kireçlenmesini gösteren röntgen': 'X-ray showing knee osteoarthritis',
+      'Diz protezi ameliyatı öncesi ve sonrası röntgen görüntüleri': 'X-rays before and after knee replacement surgery',
+      'Kalça protezini gösteren pelvis röntgeni': 'Pelvic X-ray showing a hip replacement',
+      'Kalça kireçlenmesine ait röntgen, BT ve MR görüntüleri': 'X-ray, CT, and MRI images of hip osteoarthritis',
+      'Ganz ameliyatı sonrası pelvis röntgeni': 'Pelvic X-ray after Ganz osteotomy',
+      'Ganz (periasetabular) osteotomi, uygun hastalarda kalça yuvasının konumunu düzeltmeyi amaçlayan eklem koruyucu bir cerrahidir. Uygunluk, kalça yapısı ve eklem durumu incelenerek değerlendirilir.': 'Ganz (periacetabular) osteotomy is a joint-preserving surgery that aims to correct the position of the hip socket in suitable patients. Suitability depends on hip anatomy and joint condition.',
+      'Ortobiyolojik Tedaviler': 'Orthobiologic treatments',
+      'Kök hücre uygulamalarının uygunluğu, hastanın klinik durumu ve bilimsel kanıtlar doğrultusunda hekim tarafından değerlendirilir.': 'A physician evaluates whether stem cell procedures are appropriate based on the patient’s clinical condition and available scientific evidence.',
+      'İnsan mezenkimal kök hücrelerinin mikroskop görüntüsü': 'Microscopic image of human mesenchymal stem cells',
+      'ORTOBİYOLOJİK TEDAVİ': 'ORTHOBIOLOGIC TREATMENT',
+      'Kök Hücre Tedavisi': 'Stem cell therapy',
+      'Kök hücre uygulamalarının içeriği ve kullanım alanları yönteme göre değişebilir. Bilimsel kanıtlar, olası yarar ve riskler ile kişiye uygunluk hekim tarafından değerlendirilmelidir.': 'The components and uses of stem cell procedures vary by method. A physician should assess the evidence, potential benefits and risks, and whether a procedure is appropriate for the individual.',
+      'PRP (Trombositten Zengin Plazma)': 'PRP (platelet-rich plasma)',
+      'PRP, kişiden alınan kan örneğinin hazırlanmasıyla trombosit yönünden zengin bir ürün elde edilmesini amaçlar. Kullanım alanı ve beklenen sonuçlar tanı ve mevcut kanıtlar çerçevesinde değerlendirilir.': 'PRP is prepared from a person’s blood to produce a platelet-rich preparation. Its potential use and expected outcomes are considered in light of the diagnosis and available evidence.',
+      'PLF': 'PLF',
+      'PLF adıyla belirtilen uygulamanın içeriği ve yöntemi kullanılan protokole göre açıklanmalıdır. Uygunluk, uygulama ayrıntıları ve mevcut kanıtlar hekim görüşmesinde ele alınır.': 'The contents and method of a procedure described as PLF should be clarified according to the protocol used. Suitability, procedural details, and available evidence should be discussed with a physician.',
+      'Eksozom Tedavisi': 'Exosome therapy',
+      'Eksozom adıyla sunulan uygulamaların içeriği ve klinik kanıt düzeyi farklılık gösterebilir. Kullanım kararı verilmeden önce yöntemin niteliği, belirsizlikleri ve kişiye uygunluğu değerlendirilmelidir.': 'Procedures offered as exosome therapy may vary in content and level of clinical evidence. The method, uncertainties, and individual suitability should be assessed before considering treatment.',
+      'Sanakin Tedavisi': 'Sanakin therapy',
+      'Sanakin, kişiden alınan kanın belirli koşullarda işlenmesiyle hazırlanan serumun kullanıldığı bir uygulamadır. Uygunluğu tanı, klinik durum ve mevcut bilimsel kanıtlar doğrultusunda değerlendirilir.': 'Sanakin uses serum prepared by processing a person’s blood under specific conditions. Suitability is assessed based on the diagnosis, clinical condition, and available scientific evidence.',
+      'Her yöntem her hasta için uygun olmayabilir. Tanı ve tedavi planı muayene sonrasında belirlenir.': 'A method may not be suitable for every patient. Diagnosis and treatment planning follow a medical examination.',
+      'Endoskopik (kapalı) omurga cerrahisi': 'Endoscopic (minimally invasive) spine surgery',
+      'ENDOSKOPİK OMURGA CERRAHİSİ': 'ENDOSCOPIC SPINE SURGERY',
+      'Endoskopik (kapalı) bel fıtığı ameliyatı': 'Endoscopic lumbar disc surgery',
+      'Bel fıtığının sinir dokusuna baskı yaptığı seçilmiş durumlarda, endoskopik yöntemle fıtık dokusuna müdahale değerlendirilebilir. Yöntemin uygunluğu muayene ve görüntüleme ile belirlenir.': 'In selected cases where a lumbar disc herniation presses on nerve tissue, endoscopic treatment may be considered. Suitability is determined by examination and imaging.',
+      'Endoskopik (kapalı) dar kanal ameliyatı': 'Endoscopic surgery for spinal stenosis',
+      'Omurga kanalındaki daralma sinirler üzerinde baskıya ve yürüme güçlüğü gibi yakınmalara yol açabilir. Cerrahi yaklaşım, darlığın yeri ve kapsamına göre planlanır.': 'Narrowing of the spinal canal can press on nerves and cause symptoms such as difficulty walking. The surgical approach is planned according to the location and extent of the narrowing.',
+      'Endoskopik (kapalı) bel kayması ameliyatı': 'Endoscopic surgery for lumbar spondylolisthesis',
+      'Omur kemiklerinden birinin diğerine göre yer değiştirmesi bel veya bacak yakınmalarına neden olabilir. Endoskopik yöntemin uygunluğu omurganın stabilitesi ve görüntüleme bulgularına göre değerlendirilir.': 'A vertebra shifting out of position may cause back or leg symptoms. Suitability for an endoscopic approach is assessed based on spinal stability and imaging findings.',
+      'ENJEKSİYON UYGULAMALARI': 'INJECTION PROCEDURES',
+      'Transforaminal enjeksiyonlar (nokta atışı)': 'Transforaminal injections',
+      'İlaç, görüntüleme eşliğinde sinir kökünün omurgadan çıktığı bölgeye uygulanır. Hangi durumlarda kullanılacağı ve olası riskleri hekim tarafından değerlendirilir.': 'Medication is delivered under imaging guidance to the area where a nerve root exits the spine. A physician assesses when it may be used and its potential risks.',
+      'Kaudal enjeksiyonlar': 'Caudal injections',
+      'İlaç, kuyruk sokumu bölgesindeki doğal açıklıktan epidural alana ulaştırılır. İşlem kararı, yakınmalar ve muayene bulguları birlikte değerlendirilerek verilir.': 'Medication is delivered to the epidural space through a natural opening near the tailbone. The decision to perform the procedure is based on symptoms and examination findings.',
+      'GİRİŞİMSEL TEDAVİLER': 'INTERVENTIONAL TREATMENTS',
+      'Radyofrekans faset ablasyonu': 'Radiofrequency facet ablation',
+      'Faset eklemlerden kaynaklandığı düşünülen ağrılarda, ilgili sinir dallarına radyofrekans enerjisi uygulanabilir. İşlem öncesi ağrının kaynağı ve yöntemin uygunluğu değerlendirilir.': 'Radiofrequency energy may be applied to nerve branches for pain thought to originate in the facet joints. The pain source and suitability of the procedure are assessed beforehand.',
+      'Boy uzatma ve deformite cerrahisi': 'Limb lengthening and deformity correction',
+      'BOY UZATMA': 'LIMB LENGTHENING',
+      'Boy uzatma': 'Limb lengthening',
+      'Kemiklerin kontrollü biçimde uzatılmasını amaçlayan tedaviler, dikkatli planlama ve düzenli takip gerektirir. Yöntem ve hedefler kişinin sağlık durumu ile beklentilerine göre değerlendirilir.': 'Treatments that gradually lengthen bone require careful planning and regular follow-up. The method and goals are considered in light of the person’s health and expectations.',
+      'DEFORMİTE CERRAHİSİ': 'DEFORMITY CORRECTION',
+      'Konjenital tibia psödoartrozu': 'Congenital tibial pseudarthrosis',
+      'Doğuştan gelen bu nadir durumda kaval kemiğinde kırık ve kaynamama gelişebilir. Kemik yapısı ve mevcut deformiteye göre uzman değerlendirmesiyle tedavi planı oluşturulur.': 'This rare congenital condition can cause a fracture and failure of the shinbone to heal. A specialist plans treatment based on bone structure and the deformity.',
+      'Hemimeli': 'Hemimelia',
+      'Hemimeli, doğuştan bir uzuv kemiğinin kısmen veya tamamen gelişmemesiyle görülebilen bir durumdur. Değerlendirme ve tedavi planı etkilenen kemiklere, büyümeye ve işlevsel ihtiyaçlara göre yapılır.': 'Hemimelia is a congenital condition in which a limb bone is partially or completely absent. Assessment and treatment planning consider the affected bones, growth, and functional needs.',
+      'KEMİK ENFEKSİYONLARI': 'BONE INFECTIONS',
+      'Osteomiyelit (kemik enfeksiyonu)': 'Osteomyelitis (bone infection)',
+      'Osteomiyelit kemik dokusunun enfeksiyonudur ve zamanında tıbbi değerlendirme gerektirir. Tedavi; enfeksiyonun etkeni, yaygınlığı ve kişinin genel durumuna göre planlanır.': 'Osteomyelitis is an infection of bone tissue that requires timely medical assessment. Treatment is planned according to the cause and extent of infection and the person’s overall health.',
+      'Akondroplazi (cücelik)': 'Achondroplasia',
+      'Akondroplazi, kemik büyümesini etkileyen genetik bir iskelet gelişim durumudur. Ortopedik takipte uzuv dizilimi, eklem sağlığı ve kişinin işlevsel gereksinimleri ele alınır.': 'Achondroplasia is a genetic skeletal condition that affects bone growth. Orthopedic follow-up considers limb alignment, joint health, and functional needs.',
+      'Bacak eğrilikleri': 'Leg deformities',
+      'Bacak eksenindeki içe veya dışa yönelim büyüme döneminde görülebilir ya da farklı nedenlerle gelişebilir. Yaş, eğriliğin derecesi ve ilerleyişi değerlendirilerek izlem veya tedavi seçenekleri belirlenir.': 'Inward or outward leg alignment may occur during growth or develop for other reasons. Monitoring and treatment options depend on age, the degree of deformity, and how it changes over time.',
+      'Ultrason eşliğinde enjeksiyonlar': 'Ultrasound-guided injections',
+      'Ultrason altında enjeksiyon uygulamaları': 'Ultrasound-guided injections',
+      'Ultrason, iğnenin ve hedef dokunun işlem sırasında görüntülenmesine yardımcı olur. Uygulanacak ilaç, bölge ve işlem gerekliliği tanı ve muayene bulgularına göre belirlenir.': 'Ultrasound helps visualize the needle and target tissue during a procedure. The medication, injection site, and need for the procedure are determined by the diagnosis and examination findings.',
+      'Çocuk ortopedisi': 'Pediatric orthopedics',
+      'Kalça çıkığı': 'Developmental hip dysplasia',
+      'Kalça displazisini gösteren röntgen görüntüsü': 'X-ray showing hip dysplasia',
+      'Gelişimsel kalça displazisinde kalça ekleminin yuvası ve uyluk kemiği başının ilişkisi etkilenebilir. Erken tanı ve tedavi yaklaşımı, çocuğun yaşına ve muayene bulgularına göre belirlenir.': 'Developmental hip dysplasia affects the relationship between the hip socket and the head of the thighbone. Early assessment and treatment depend on the child’s age and examination findings.',
+      'Çarpık ayak (PEV)': 'Clubfoot',
+      'Çarpık ayak (PEV) klinik görünümü': 'Clinical appearance of clubfoot',
+      'PEV, ayağın doğuştan içe ve aşağıya dönük olduğu bir şekil bozukluğudur. Tedavi yöntemi ve takip sıklığı deformitenin özelliklerine ve tedaviye yanıta göre planlanır.': 'Clubfoot is a congenital deformity in which the foot turns inward and downward. Treatment and follow-up are planned according to the deformity and response to treatment.',
+      'Serebral palsi': 'Cerebral palsy',
+      'Serebral palside kas tonusu ve hareket kontrolündeki farklılıklar kemik-eklem gelişimini etkileyebilir. Ortopedik değerlendirme çocuğun hareket kapasitesi ve ihtiyaçlarına göre yapılır.': 'Differences in muscle tone and movement control in cerebral palsy can affect bone and joint development. Orthopedic assessment is tailored to the child’s mobility and needs.',
+      'Kalça artroskopisinde kullanılan aletleri gösteren ameliyat sırası röntgen görüntüsü': 'Intraoperative X-ray showing instruments used in hip arthroscopy',
+      'Kalça artroskopisi, küçük kesilerden kamera yardımıyla eklemin değerlendirilmesini sağlar. Çocuk ve ergenlerde kullanım kararı, tanı ve eklem gelişimi dikkate alınarak verilir.': 'Hip arthroscopy uses a camera inserted through small incisions to assess the joint. In children and adolescents, its use depends on the diagnosis and joint development.',
+      'Bu başlıklar genel bilgilendirme amaçlıdır. Tanı ve tedavi seçenekleri hekim muayenesiyle kişiye özel belirlenir.': 'This information is for general educational purposes. Diagnosis and treatment options are determined individually after a medical examination.',
+      'Klinik görseller': 'Clinical images',
+      'Öncesi / Sonrası': 'Before and after',
+      'Alt ekstremite görünümü': 'Lower-limb appearance',
+      'Uzuv uzunluğu ve diz görünümü': 'Limb length and knee appearance',
+      'Röntgen ve klinik görünüm': 'X-ray and clinical appearance',
+      'Bacak dizilimi': 'Leg alignment',
+      'Ayak görünümü ve röntgen': 'Foot appearance and X-ray',
+      'Klinik görünüm': 'Clinical appearance',
+      'Öncesi': 'Before',
+      'Sonrası': 'After',
+      'Görseller bilgilendirme amaçlıdır. Her hastanın değerlendirme ve tedavi süreci kişiye özeldir.': 'Images are for general information. Each patient’s assessment and treatment plan is individual.',
+      'Mesleki ilgi alanları': 'Professional interests',
+      'Çalışma alanları': 'Areas of expertise',
+      'Özgeçmişinde yer alan klinik ve akademik çalışmalar doğrultusunda öne çıkan başlıklar.': 'Key areas reflected in his clinical and academic work.',
+      'Alt ekstremite deformiteleri': 'Lower-limb deformities',
+      'Deformite değerlendirmesi ve düzeltme yöntemleri üzerine çalışmalar.': 'Work on deformity assessment and correction methods.',
+      'Uzuv uzatma ve eksternal fiksatör': 'Limb lengthening and external fixation',
+      'Eksternal fiksatörler, uzatma uygulamaları ve bilgisayar destekli planlama.': 'External fixation, limb-lengthening procedures, and computer-assisted planning.',
+      'Ortopedik travma': 'Orthopedic trauma',
+      'Kırık tedavisi, travma sonrası komplikasyonlar ve kemik iyileşmesi.': 'Fracture care, post-traumatic complications, and bone healing.',
+      'Omuz ve diz': 'Shoulder and knee',
+      'Omuz instabilitesi, artroskopik cerrahi ve spor yaralanmaları üzerine akademik çalışmalar.': 'Academic work on shoulder instability, arthroscopic surgery, and sports injuries.',
+      'El ve üst ekstremite': 'Hand and upper limb',
+      'El, el bileği ve üst ekstremite ortopedisine ilişkin bilimsel çalışmalar.': 'Research in hand, wrist, and upper-limb orthopedics.',
+      'Çocuklarda ortopedik sorunlar ve alçı tedavisi üzerine yayınlar.': 'Publications on pediatric orthopedic conditions and cast treatment.',
+      'Eğitim ve mesleki geçmiş': 'Education and professional background',
+      'Deneyim': 'Experience',
+      'Tıp eğitimi, uzmanlık ve görev bilgileri özgeçmişinde yer aldığı şekildedir.': 'Medical education, specialist training, and appointments are listed as presented in the curriculum vitae.',
+      'Üyesi olduğu bilimsel kuruluşlar': 'Professional memberships',
+      'Pediatrik Ortopedi': 'Pediatric Orthopedics',
+      'Endoskopik Omurga Cerrahisi Derneği': 'Endoscopic Spine Surgery Association',
+      'Tıp Fakültesi': 'Medical school',
+      'Dicle Üniversitesi': 'Dicle University',
+      'Araştırma görevlisi': 'Research assistant',
+      'Tekirdağ Namık Kemal Üniversitesi, Ortopedi ve Travmatoloji Anabilim Dalı': 'Department of Orthopedics and Traumatology, Tekirdağ Namık Kemal University',
+      'Tıpta uzmanlık': 'Medical specialty training',
+      'Tekirdağ Namık Kemal Üniversitesi, Ortopedi ve Travmatoloji': 'Orthopedics and Traumatology, Tekirdağ Namık Kemal University',
+      'Ortopedi ve Travmatoloji uzmanı': 'Orthopedics and Traumatology specialist',
+      'Gazi Yaşargil Eğitim ve Araştırma Hastanesi': 'Gazi Yaşargil Training and Research Hospital',
+      'Özel Sultan Hastanesi': 'Sultan Private Hospital',
+      'Bilimsel çalışmalar': 'Research',
+      'Seçilmiş yayınlar': 'Selected publications',
+      'Özgeçmişte yer alan hakemli dergi makalelerinden seçilmiş örnekler.': 'Selected examples of peer-reviewed journal articles listed in the curriculum vitae.',
+      'Makale DOI bağlantısını aç': 'Open article DOI link',
+      'Merak edilenler': 'Frequently asked questions',
+      'Sıkça sorulan sorular': 'Frequently asked questions',
+      'SSS yönetimi →': 'Manage FAQs →',
+      'Sorular yükleniyor…': 'Loading questions…',
+      'İletişim': 'Contact',
+      'Bilgi ve iletişim': 'Contact information',
+      'Telefon': 'Phone',
+      'E-posta': 'Email',
+      'E-posta (isteğe bağlı)': 'Email (optional)',
+      'İletişim talebi gönderin': 'Send a contact request',
+      'Ad soyad': 'Full name',
+      'Mesaj': 'Message',
+      'Bilgileriniz iletişim talebinize yanıt vermek için kullanılır. Lütfen sağlık tanısı, tetkik sonucu veya kimlik bilgisi paylaşmayın.': 'Your information will be used to respond to your inquiry. Please do not share medical diagnoses, test results, or identity information.',
+      'İletişim talebimin yanıtlanması amacıyla kişisel verilerimin işlenmesini kabul ediyorum.': 'I consent to the processing of my personal data to respond to my inquiry.',
+      'Gönder': 'Send',
+      'Bu sayfadaki bilgiler genel bilgilendirme amacı taşır; tanı ve tedavi için hekiminize başvurunuz.': 'The information on this page is for general purposes. Please consult a physician for diagnosis and treatment.',
+      'Konum haritası': 'Location map',
+      'Google Haritalar konumu': 'Google Maps location',
+      'Google Haritalar’da aç ↗': 'Open in Google Maps ↗',
+      'Doç. Dr. Mesut Karıksız · Ortopedi ve Travmatoloji': 'Assoc. Prof. Dr. Mesut Karıksız · Orthopedics and Traumatology',
+      'İletişim formunu doldur': 'Fill out the contact form',
+      'Formu doldur': 'Fill out the form',
+      'Bize ulaş': 'Contact us',
+      '+90 506 291 80 49 numaralı WhatsApp hattına mesaj gönder': 'Message us on WhatsApp at +90 506 291 80 49',
+      'WhatsApp: +90 506 291 80 49': 'WhatsApp: +90 506 291 80 49',
+    }));
+    const translateStaticText = text => englishTranslations.get(text) || text;
+    const applyEnglishTranslations = () => {
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        const translated = translateStaticText(node.nodeValue.trim());
+        if (translated !== node.nodeValue.trim()) {
+          const leading = node.nodeValue.match(/^\s*/)[0];
+          const trailing = node.nodeValue.match(/\s*$/)[0];
+          node.nodeValue = `${leading}${translated}${trailing}`;
+        }
+      }
+      document.querySelectorAll('[alt], [aria-label], [placeholder], [title]').forEach(element => {
+        ['alt', 'aria-label', 'placeholder', 'title'].forEach(attribute => {
+          const value = element.getAttribute(attribute);
+          if (value) element.setAttribute(attribute, translateStaticText(value));
+        });
+      });
+    };
+    const updateLanguageLabels = language => {
+      const isEnglish = language === 'en';
+      document.documentElement.lang = language;
+      document.querySelector('.navbar').setAttribute('aria-label', isEnglish ? 'Main navigation' : 'Ana menü');
+      menuToggle.setAttribute('aria-label', isEnglish ? 'Open menu' : 'Menüyü aç');
+      languageToggle.textContent = isEnglish ? 'Türkçe' : 'English';
+      languageToggle.setAttribute('aria-label', isEnglish ? 'Switch language to Turkish' : 'Switch language to English');
+      document.title = isEnglish
+        ? 'Assoc. Prof. Dr. Mesut Karıksız | Orthopaedics and Traumatology'
+        : 'Doç. Dr. Mesut Karıksız | Ortopedi ve Travmatoloji';
+      document.querySelector('meta[name="description"]').content = isEnglish
+        ? 'Assoc. Prof. Dr. Mesut Karıksız’s professional experience, academic work and contact information in orthopaedics and traumatology.'
+        : 'Doç. Dr. Mesut Karıksız’ın ortopedi ve travmatoloji alanındaki mesleki deneyimi, akademik çalışmaları ve iletişim bilgileri.';
+      const mapFrame = document.querySelector('.map-frame iframe');
+      const mapUrl = new URL(mapFrame.src);
+      mapUrl.searchParams.set('hl', language);
+      mapFrame.src = mapUrl.href;
+      mapFrame.title = isEnglish ? 'Google Maps location' : 'Google Haritalar konumu';
+    };
+    updateLanguageLabels('tr');
+    if (savedLanguage === 'en') {
+      applyEnglishTranslations();
+      updateLanguageLabels('en');
+      document.dispatchEvent(new Event('site-language-change'));
+    }
     const closeMenu = () => {
       navbar.classList.remove('menu-open');
       menuToggle.setAttribute('aria-expanded', 'false');
-      menuToggle.setAttribute('aria-label', 'Menüyü aç');
+      menuToggle.setAttribute('aria-label', document.documentElement.lang === 'en' ? 'Open menu' : 'Menüyü aç');
     };
+    languageToggle.addEventListener('click', () => {
+      const nextLanguage = document.documentElement.lang === 'en' ? 'tr' : 'en';
+      languageStatus.textContent = '';
+      if (nextLanguage === 'tr') {
+        localStorage.setItem(languageStorageKey, 'tr');
+        window.location.reload();
+        return;
+      }
+
+      applyEnglishTranslations();
+      localStorage.setItem(languageStorageKey, 'en');
+      updateLanguageLabels('en');
+      document.dispatchEvent(new Event('site-language-change'));
+      closeMenu();
+    });
     menuToggle.addEventListener('click', () => {
       const isOpen = navbar.classList.toggle('menu-open');
       menuToggle.setAttribute('aria-expanded', String(isOpen));
-      menuToggle.setAttribute('aria-label', isOpen ? 'Menüyü kapat' : 'Menüyü aç');
+      const english = document.documentElement.lang === 'en';
+      menuToggle.setAttribute('aria-label', english
+        ? (isOpen ? 'Close menu' : 'Open menu')
+        : (isOpen ? 'Menüyü kapat' : 'Menüyü aç'));
     });
     document.querySelectorAll('.nav-links a').forEach(link => link.addEventListener('click', closeMenu));
     document.addEventListener('keydown', event => {
@@ -1000,6 +1337,32 @@
     window.addEventListener('scroll', updateNavbar, { passive: true });
 
     const treatmentTabs = [...document.querySelectorAll('.treatment-tab')];
+    const treatmentTabsContainer = document.querySelector('.treatment-tabs');
+    const treatmentScrollButtons = [...document.querySelectorAll('.treatment-scroll-button')];
+    const updateTreatmentScrollButtons = () => {
+      const canScroll = treatmentTabsContainer.scrollWidth > treatmentTabsContainer.clientWidth + 1;
+      treatmentScrollButtons.forEach(button => {
+        button.hidden = !canScroll;
+        const atStart = treatmentTabsContainer.scrollLeft <= 1;
+        const atEnd = treatmentTabsContainer.scrollLeft + treatmentTabsContainer.clientWidth >= treatmentTabsContainer.scrollWidth - 1;
+        button.disabled = button.dataset.direction === 'left' ? atStart : atEnd;
+      });
+    };
+    const scrollTreatmentTabs = direction => {
+      treatmentTabsContainer.scrollBy({
+        left: direction * Math.max(treatmentTabsContainer.clientWidth * .75, 120),
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      });
+    };
+    const ensureTreatmentTabVisible = tab => {
+      const containerLeft = treatmentTabsContainer.getBoundingClientRect().left;
+      const tabStart = tab.getBoundingClientRect().left - containerLeft + treatmentTabsContainer.scrollLeft;
+      const tabEnd = tabStart + tab.getBoundingClientRect().width;
+      const visibleStart = treatmentTabsContainer.scrollLeft;
+      const visibleEnd = visibleStart + treatmentTabsContainer.clientWidth;
+      if (tabStart < visibleStart) treatmentTabsContainer.scrollTo({ left: tabStart, behavior: 'smooth' });
+      else if (tabEnd > visibleEnd) treatmentTabsContainer.scrollTo({ left: tabEnd - treatmentTabsContainer.clientWidth, behavior: 'smooth' });
+    };
     const activateTreatmentTab = tab => {
       treatmentTabs.forEach(item => {
         const selected = item === tab;
@@ -1007,7 +1370,15 @@
         item.tabIndex = selected ? 0 : -1;
         document.getElementById(item.getAttribute('aria-controls')).hidden = !selected;
       });
+      ensureTreatmentTabVisible(tab);
     };
+    treatmentScrollButtons.forEach(button => {
+      button.addEventListener('click', () => scrollTreatmentTabs(button.dataset.direction === 'left' ? -1 : 1));
+    });
+    treatmentTabsContainer.addEventListener('scroll', updateTreatmentScrollButtons, { passive: true });
+    window.addEventListener('resize', updateTreatmentScrollButtons);
+    window.addEventListener('load', updateTreatmentScrollButtons);
+    updateTreatmentScrollButtons();
     treatmentTabs.forEach((tab, index) => {
       tab.addEventListener('click', () => activateTreatmentTab(tab));
       tab.addEventListener('keydown', event => {
@@ -1034,6 +1405,13 @@
     document.querySelectorAll('.reveal').forEach(element => revealObserver.observe(element));
 
     const faqList = document.getElementById('faq-list');
+    const faqMessageTranslations = new Map([
+      ['Henüz sıkça sorulan soru eklenmemiş.', 'No frequently asked questions have been added yet.'],
+      ['Sorular şu anda yüklenemiyor.', 'Questions are currently unavailable.'],
+    ]);
+    let faqEntries = [];
+    let faqLoaded = false;
+    let faqRenderVersion = 0;
     const renderFaq = faq => {
       const item = document.createElement('details');
       item.className = 'faq-item';
@@ -1045,32 +1423,83 @@
       item.append(question, answer);
       return item;
     };
+    const renderFaqs = () => {
+      if (!faqLoaded) return;
+      const version = ++faqRenderVersion;
+      const isEnglish = document.documentElement.lang === 'en';
+      if (!faqEntries.length) {
+        const empty = document.createElement('p');
+        empty.className = 'faq-empty';
+        empty.textContent = isEnglish ? faqMessageTranslations.get('Henüz sıkça sorulan soru eklenmemiş.') : 'Henüz sıkça sorulan soru eklenmemiş.';
+        faqList.replaceChildren(empty);
+        return;
+      }
+
+      if (isEnglish) {
+        const hasEnglishCopy = faqEntries.every(faq =>
+          englishTranslations.has(String(faq.question)) && englishTranslations.has(String(faq.answer)));
+        if (!hasEnglishCopy) {
+          const message = document.createElement('p');
+          message.className = 'faq-empty';
+          message.textContent = 'FAQ content is available in Turkish only.';
+          faqList.replaceChildren(message);
+          return;
+        }
+      }
+
+      const renderedFaqs = faqEntries.map(faq => renderFaq(isEnglish
+        ? {
+          question: translateStaticText(String(faq.question)),
+          answer: translateStaticText(String(faq.answer)),
+        }
+        : faq));
+      if (version === faqRenderVersion) faqList.replaceChildren(...renderedFaqs);
+    };
+    document.addEventListener('site-language-change', renderFaqs);
     fetch('/api/faqs')
       .then(response => {
         if (!response.ok) throw new Error('SSS kayıtları yüklenemedi.');
         return response.json();
       }).then(faqs => {
-        faqList.replaceChildren();
-        if (!faqs.length) {
-          const empty = document.createElement('p');
-          empty.className = 'faq-empty';
-          empty.textContent = 'Henüz sıkça sorulan soru eklenmemiş.';
-          faqList.append(empty);
-          return;
-        }
-        faqs.forEach(faq => faqList.append(renderFaq(faq)));
+        faqEntries = faqs;
+        faqLoaded = true;
+        return renderFaqs();
       })
       .catch(error => {
         console.error(error);
         faqList.replaceChildren();
         const message = document.createElement('p');
         message.className = 'faq-empty';
-        message.textContent = 'Sorular şu anda yüklenemiyor.';
+        message.textContent = document.documentElement.lang === 'en'
+          ? faqMessageTranslations.get('Sorular şu anda yüklenemiyor.')
+          : 'Sorular şu anda yüklenemiyor.';
         faqList.append(message);
       });
 
     const contactForm = document.getElementById('contact-form');
     const contactFormMessage = document.getElementById('contact-form-message');
+    const contactMessageTranslations = new Map([
+      ['Mesajınız iletildi. Teşekkür ederiz.', 'Your message has been sent. Thank you.'],
+      ['Güvenlik anahtarı alınamadı.', 'Could not retrieve the security token.'],
+      ['Form gönderilemedi.', 'Could not submit the form.'],
+      ['Form gönderilemedi. Lütfen tekrar deneyin.', 'Could not submit the form. Please try again.'],
+      ['Geçerli bir iletişim formu gönderin.', 'Please submit a valid contact form.'],
+      ['Geçerli bir telefon numarası girin.', 'Please enter a valid phone number.'],
+      ['Geçerli bir e-posta adresi girin.', 'Please enter a valid email address.'],
+      ['Formu göndermek için kişisel verilerin işlenmesine onay vermelisiniz.', 'You must consent to the processing of personal data to submit the form.'],
+      ['Oturum doğrulanamadı. Sayfayı yenileyip tekrar deneyin.', 'Session verification failed. Refresh the page and try again.'],
+      ['Çok fazla form gönderildi. Lütfen daha sonra tekrar deneyin.', 'Too many form submissions. Please try again later.'],
+    ]);
+    const localizeContactMessage = message => {
+      if (document.documentElement.lang !== 'en') return message;
+      const translated = contactMessageTranslations.get(message);
+      if (translated) return translated;
+      const nameLength = message.match(/^Ad soyad 2-(\d+) karakter olmalıdır\.$/);
+      if (nameLength) return `Full name must be 2-${nameLength[1]} characters long.`;
+      const messageLength = message.match(/^Mesaj 1-(\d+) karakter olmalıdır\.$/);
+      if (messageLength) return `Message must be 1-${messageLength[1]} characters long.`;
+      return message;
+    };
     contactForm.addEventListener('submit', async event => {
       event.preventDefault();
       const submit = contactForm.querySelector('button[type="submit"]');
@@ -1103,10 +1532,10 @@
 
         contactForm.reset();
         contactFormMessage.classList.add('success');
-        contactFormMessage.textContent = result.message;
+        contactFormMessage.textContent = localizeContactMessage(result.message);
       } catch (error) {
         contactFormMessage.classList.add('error');
-        contactFormMessage.textContent = error.message || 'Form gönderilemedi. Lütfen tekrar deneyin.';
+        contactFormMessage.textContent = localizeContactMessage(error.message || 'Form gönderilemedi. Lütfen tekrar deneyin.');
       } finally {
         submit.disabled = false;
       }

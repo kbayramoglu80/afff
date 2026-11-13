@@ -42,10 +42,12 @@ export function createApp() {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "data:"],
-        fontSrc: ["'self'", "data:"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://translate.google.com", "https://translate.googleapis.com", "https://translate-pa.googleapis.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://www.gstatic.com"],
+        imgSrc: ["'self'", "data:", "https://www.gstatic.com", "https://fonts.gstatic.com", "https://translate.googleapis.com", "https://www.google.com"],
+        fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
+        connectSrc: ["'self'", "https://translate.googleapis.com", "https://translate-pa.googleapis.com"],
+        frameSrc: ["'self'", "https://translate.google.com", "https://maps.google.com", "https://www.google.com"],
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],
