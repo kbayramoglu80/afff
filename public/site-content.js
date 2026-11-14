@@ -101,34 +101,6 @@
       }
     });
 
-    const title = doc.querySelector("head title");
-    if (title?.firstChild) {
-      fields.push({
-        key: encodeKey("metadata:title"),
-        type: "text",
-        attribute: null,
-        valueTr: title.textContent.trim(),
-        label: "SEO · Sayfa başlığı",
-        groupKey: "metadata",
-        groupLabel: "SEO ve sayfa bilgileri",
-        metadata: "title",
-        target: title.firstChild,
-      });
-    }
-    const description = doc.querySelector('meta[name="description"]');
-    if (description) {
-      fields.push({
-        key: encodeKey("metadata:description"),
-        type: "attribute",
-        attribute: "content",
-        valueTr: description.getAttribute("content") || "",
-        label: "SEO · Arama motoru açıklaması",
-        groupKey: "metadata",
-        groupLabel: "SEO ve sayfa bilgileri",
-        metadata: "description",
-        target: description,
-      });
-    }
     return { fields, images };
   }
 
@@ -140,9 +112,7 @@
       let value = entry?.[language];
       if (language === "en" && value === "" && entry.valueTr !== field.valueTr) value = entry.valueTr;
       if (value === undefined || value === null || (language === "en" && value === "")) continue;
-      if (field.metadata === "title") doc.title = value;
-      else if (field.metadata === "description") field.target.setAttribute("content", value);
-      else if (field.type === "text") {
+      if (field.type === "text") {
         const parent = field.parent || field.target?.parentElement;
         if (!parent) continue;
         const textNodes = [...parent.childNodes].filter(node => node.nodeType === global.Node.TEXT_NODE);

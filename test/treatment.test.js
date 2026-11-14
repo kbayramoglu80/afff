@@ -24,6 +24,12 @@ test("validateTreatmentPage accepts localized content and trims whitespace", () 
     summaryEn: "Summary",
     contentTr: "İçerik",
     contentEn: "Content",
+    seoTitleTr: "",
+    seoTitleEn: "",
+    seoDescriptionTr: "",
+    seoDescriptionEn: "",
+    referencesTr: "",
+    referencesEn: "",
   });
 });
 
@@ -34,4 +40,23 @@ test("validateTreatmentPage rejects missing Turkish fields and oversized content
     summaryTr: "Özet",
     contentTr: "x".repeat(20001),
   }).error, /Türkçe içerik/);
+});
+
+test("validateTreatmentPage accepts SEO metadata and secure scientific references", () => {
+  const result = validateTreatmentPage({
+    titleTr: "Diz Cerrahisi",
+    summaryTr: "Özet",
+    contentTr: "İçerik",
+    seoTitleTr: "Diz Cerrahisi | Uzman değerlendirmesi",
+    seoDescriptionTr: "Diz sorunlarının değerlendirilmesi.",
+    referencesTr: "Yazar. Makale başlığı. Dergi. 2025. | https://doi.org/10.1000/example",
+  });
+  assert.equal(result.value.seoTitleTr, "Diz Cerrahisi | Uzman değerlendirmesi");
+  assert.match(result.value.referencesTr, /^Yazar\./);
+  assert.match(validateTreatmentPage({
+    titleTr: "Diz Cerrahisi",
+    summaryTr: "Özet",
+    contentTr: "İçerik",
+    referencesTr: "Güvensiz kaynak | javascript:alert(1)",
+  }).error, /HTTPS bağlantısı/);
 });

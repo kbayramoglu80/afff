@@ -1,4 +1,5 @@
 import { randomBytes, timingSafeEqual } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import bcrypt from "bcryptjs";
@@ -15,11 +16,13 @@ import { ContactSubmission } from "./models/contact-submission.js";
 import { Faq } from "./models/faq.js";
 import { SiteAsset } from "./models/site-asset.js";
 import { SiteContent } from "./models/site-content.js";
+import { SeoSettings } from "./models/seo-settings.js";
 import { TreatmentPage } from "./models/treatment-page.js";
 import { validatePost } from "./lib/blog.js";
 import { validateContactSubmission } from "./lib/contact.js";
 import { validateFaq } from "./lib/faq.js";
 import { validateSiteAsset, validateSiteContentBatch } from "./lib/site-content.js";
+import { buildSitemapXml, escapeHtml, renderParagraphs, renderReferences, validateSeoSettings } from "./lib/seo.js";
 import { treatmentPages } from "./lib/treatment-seeds.js";
 import { validateTreatmentPage } from "./lib/treatment.js";
 
@@ -27,8 +30,83 @@ dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SESSION_COOKIE = "doctor_site_session";
+const DEFAULT_SITE_URL = "https://mesutkariksiz.com.tr";
+const DEFAULT_GA4_ID = "G-48FC4N5Z6D";
+const DEFAULT_HOME_SEO = {
+  titleTr: "Doç. Dr. Mesut Karıksız | Ortopedi ve Travmatoloji",
+  titleEn: "Assoc. Prof. Mesut Karıksız | Orthopedics and Traumatology",
+  descriptionTr: "Doç. Dr. Mesut Karıksız'ın ortopedi ve travmatoloji alanındaki mesleki deneyimi, akademik çalışmaları ve iletişim bilgileri.",
+  descriptionEn: "Information about Assoc. Prof. Mesut Karıksız, orthopedic and traumatology practice, academic work, and contact details.",
+};
+const PROFILE_IMAGE = "WhatsApp Image 2026-09-15 at 16.21.43-Photoroom.png";
 const asyncRoute = handler => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 
+function getPublicOrigin() {
+  const configuredUrl = process.env.PUBLIC_SITE_URL || DEFAULT_SITE_URL;
+  const url = new URL(configuredUrl);
+  if (url.protocol !== "https:" || url.username || url.password || url.pathname !== "/" || url.search || url.hash) {
+    throw new Error("PUBLIC_SITE_URL HTTPS adresi olmalı ve yol, sorgu ya da parça içermemelidir.");
+  }
+  return url.origin;
+}
+
+function getGa4Id() {
+  const measurementId = process.env.GA4_MEASUREMENT_ID || DEFAULT_GA4_ID;
+  if (!/^G-[A-Z0-9]{10}$/.test(measurementId)) {
+    throw new Error("GA4_MEASUREMENT_ID G- ve 10 harf/rakamdan oluşmalıdır.");
+  }
+  return measurementId;
+}
+
+function createAnalyticsScript() {
+  const measurementId = getGa4Id();
+  return `<script async src="https://www.googletagmanager.com/gtag/js?id=${measurementId}"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${measurementId}');</script>`;
+}
+
+function injectSeo(html, { title, description, canonical, image, structuredData }) {
+  const safeJson = JSON.stringify(structuredData).replace(/</g, "\\u003c");
+  return html
+    .replaceAll("__SEO_TITLE__", () => escapeHtml(title))
+    .replaceAll("__SEO_DESCRIPTION__", () => escapeHtml(description))
+    .replaceAll("__SEO_CANONICAL__", () => escapeHtml(canonical))
+    .replaceAll("__SEO_IMAGE__", () => escapeHtml(image))
+    .replace("__SEO_JSONLD__", () => safeJson)
+    .replace("__GA4_SCRIPT__", () => createAnalyticsScript());
+}
+
+function createPhysicianSchema(origin, description, image) {
+  const organizationId = `${origin}/#medical-organization`;
+  const physicianId = `${origin}/#physician`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "MedicalOrganization",
+        "@id": organizationId,
+        name: "Doç. Dr. Mesut Karıksız Ortopedi ve Travmatoloji",
+        url: origin,
+        telephone: "+905446289488",
+        email: "mesutkariksiz@hotmail.com",
+        sameAs: ["https://www.instagram.com/assoc.prof.mesutkariksiz/"],
+      },
+      {
+        "@type": "Physician",
+        "@id": physicianId,
+        name: "Doç. Dr. Mesut Karıksız",
+        url: origin,
+        image,
+        description,
+        medicalSpecialty: "https://schema.org/Orthopedic",
+        worksFor: { "@id": organizationId },
+      },
+    ],
+  };
+}
+
+function getCitationText(references) {
+  return String(references || "").split(/\r?\n/).map(line => line.split("|")[0].trim()).filter(Boolean);
+}
 function requireEnvironment() {
   const missing = ["MONGODB_URI", "SESSION_SECRET"].filter(key => !process.env[key]);
   if (missing.length) {
@@ -48,11 +126,11 @@ export function createApp() {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "https://translate.google.com", "https://translate.googleapis.com", "https://translate-pa.googleapis.com"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com", "https://translate.google.com", "https://translate.googleapis.com", "https://translate-pa.googleapis.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://www.gstatic.com"],
-        imgSrc: ["'self'", "data:", "https://www.gstatic.com", "https://fonts.gstatic.com", "https://translate.googleapis.com", "https://www.google.com", "https://i.ytimg.com"],
+        imgSrc: ["'self'", "data:", "https://www.gstatic.com", "https://fonts.gstatic.com", "https://translate.googleapis.com", "https://www.google.com", "https://i.ytimg.com", "https://www.google-analytics.com"],
         fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
-        connectSrc: ["'self'", "https://translate.googleapis.com", "https://translate-pa.googleapis.com"],
+        connectSrc: ["'self'", "https://translate.googleapis.com", "https://translate-pa.googleapis.com", "https://www.google-analytics.com", "https://region1.google-analytics.com"],
         frameSrc: ["'self'", "https://translate.google.com", "https://maps.google.com", "https://www.google.com"],
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
@@ -84,6 +162,12 @@ export function createApp() {
     res.json({ status: mongoose.connection.readyState === 1 ? "ok" : "connecting" });
   });
 
+  app.get("/sitemap.xml", asyncRoute(async (req, res) => {
+    const origin = getPublicOrigin();
+    const pages = await TreatmentPage.find().select("slug updatedAt").lean();
+    res.type("application/xml").send(buildSitemapXml(origin, pages));
+  }));
+
   app.get("/api/csrf", (req, res) => {
     if (!req.session.csrfToken) req.session.csrfToken = randomBytes(32).toString("hex");
     res.set("Cache-Control", "no-store").json({ csrfToken: req.session.csrfToken });
@@ -104,7 +188,7 @@ export function createApp() {
 
   app.get("/api/treatments/:slug", asyncRoute(async (req, res) => {
     const treatment = await TreatmentPage.findOne({ slug: req.params.slug })
-      .select("slug titleTr titleEn summaryTr summaryEn contentTr contentEn")
+      .select("slug titleTr titleEn summaryTr summaryEn contentTr contentEn seoTitleTr seoTitleEn seoDescriptionTr seoDescriptionEn referencesTr referencesEn")
       .lean();
     if (!treatment) return res.status(404).json({ error: "Tedavi sayfası bulunamadı." });
     res.set("Cache-Control", "no-store").json(treatment);
@@ -207,6 +291,22 @@ export function createApp() {
   app.get("/api/admin/session", (req, res) => {
     res.set("Cache-Control", "no-store").json({ authenticated: Boolean(req.session.adminId) });
   });
+
+  app.get("/api/admin/seo", requireAdmin, asyncRoute(async (req, res) => {
+    const settings = await SeoSettings.findOne({ key: "home" }).lean();
+    res.set("Cache-Control", "no-store").json(settings || DEFAULT_HOME_SEO);
+  }));
+
+  app.put("/api/admin/seo", verifyCsrf, requireAdmin, asyncRoute(async (req, res) => {
+    const parsed = validateSeoSettings(req.body);
+    if (parsed.error) return res.status(400).json({ error: parsed.error });
+    const settings = await SeoSettings.findOneAndUpdate(
+      { key: "home" },
+      { $set: parsed.value, $setOnInsert: { key: "home" } },
+      { upsert: true, new: true, runValidators: true },
+    ).lean();
+    res.json(settings);
+  }));
 
   app.get("/api/admin/site-content", requireAdmin, asyncRoute(async (req, res) => {
     const [entries, assets] = await Promise.all([
@@ -382,9 +482,55 @@ export function createApp() {
     res.status(204).end();
   }));
 
-  app.get("/tedavi/:slug", (req, res) => res.sendFile(path.join(__dirname, "public", "treatment.html")));
+  app.get("/tedavi/:slug", asyncRoute(async (req, res) => {
+    const page = await TreatmentPage.findOne({ slug: req.params.slug }).lean();
+    if (!page) return res.status(404).type("text").send("Tedavi sayfası bulunamadı.");
+
+    const origin = getPublicOrigin();
+    const canonical = `${origin}/tedavi/${encodeURIComponent(page.slug)}`;
+    const image = `${origin}/${encodeURIComponent(PROFILE_IMAGE)}`;
+    const title = page.seoTitleTr || `${page.titleTr} | Doç. Dr. Mesut Karıksız`;
+    const description = page.seoDescriptionTr || page.summaryTr;
+    const content = await readFile(path.join(__dirname, "public", "treatment.html"), "utf8");
+    const citations = getCitationText(page.referencesTr);
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "MedicalWebPage",
+      name: title,
+      description,
+      url: canonical,
+      about: { "@id": `${origin}/#physician` },
+      citation: citations,
+      breadcrumb: {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Ana sayfa", item: `${origin}/` },
+          { "@type": "ListItem", position: 2, name: page.titleTr, item: canonical },
+        ],
+      },
+    };
+    const html = content
+      .replace("__TREATMENT_TITLE__", escapeHtml(page.titleTr))
+      .replace("__TREATMENT_SUMMARY__", escapeHtml(page.summaryTr))
+      .replace("__TREATMENT_CONTENT__", renderParagraphs(page.contentTr))
+      .replace("__TREATMENT_REFERENCES__", renderReferences(page.referencesTr));
+    res.send(injectSeo(html, { title, description, canonical, image, structuredData }));
+  }));
   app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.html")));
-  app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
+  app.get("/robots.txt", (req, res) => res.sendFile(path.join(__dirname, "robots.txt")));
+  app.get("/", asyncRoute(async (req, res) => {
+    const origin = getPublicOrigin();
+    const settings = await SeoSettings.findOne({ key: "home" }).lean() || DEFAULT_HOME_SEO;
+    const image = `${origin}/${encodeURIComponent(PROFILE_IMAGE)}`;
+    const html = await readFile(path.join(__dirname, "index.html"), "utf8");
+    res.send(injectSeo(html, {
+      title: settings.titleTr,
+      description: settings.descriptionTr,
+      canonical: `${origin}/`,
+      image,
+      structuredData: createPhysicianSchema(origin, settings.descriptionTr, image),
+    }));
+  }));
   app.get("/fonts.css", (req, res) => res.sendFile(path.join(__dirname, "fonts.css")));
   app.get("/lenis.min.js", (req, res) => res.sendFile(path.join(__dirname, "lenis.min.js")));
   app.get("/public/admin.js", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.js")));
@@ -446,11 +592,20 @@ async function ensureInitialTreatmentPages() {
   )));
 }
 
+async function ensureInitialSeoSettings() {
+  await SeoSettings.updateOne(
+    { key: "home" },
+    { $setOnInsert: { key: "home", ...DEFAULT_HOME_SEO } },
+    { upsert: true },
+  );
+}
+
 async function start() {
   requireEnvironment();
   await mongoose.connect(process.env.MONGODB_URI);
   await ensureInitialAdmin();
   await ensureInitialTreatmentPages();
+  await ensureInitialSeoSettings();
   const port = Number(process.env.PORT) || 3000;
   createApp().listen(port, () => console.log(`Site http://localhost:${port} adresinde çalışıyor.`));
 }

@@ -119,12 +119,27 @@
       </div>
       <p class="message" id="dashboard-message" role="status"></p>
       <nav class="admin-shortcuts" aria-label="Yönetim bölümlerine git">
+        <a href="#seo-settings">SEO ve paylaşım</a>
         <a href="#site-content">Ana sayfa metinleri</a>
         <a href="#treatment-management">Tedavi alt sayfaları</a>
         <a href="#post-management">Yazılar</a>
         <a href="#faq-management">Soru ve yanıtlar</a>
         <a href="#contact-management">İletişim talepleri</a>
       </nav>
+      <section class="panel site-content-panel" id="seo-settings">
+        <div class="panel-heading">
+          <div><span class="eyebrow">Arama ve sosyal paylaşım</span><h2>Ana sayfa SEO başlığı ve açıklaması</h2></div>
+          <button type="submit" form="seo-form" id="seo-save-button">SEO bilgilerini kaydet</button>
+        </div>
+        <p class="site-content-note">Bu alanlar sayfa HTML'ine sunucu tarafında eklenir. Search Console DNS doğrulaması için Google'ın verdiği TXT kaydını alan adı DNS panelinize ayrıca eklemeniz gerekir.</p>
+        <p class="message" id="seo-message" role="status"></p>
+        <form id="seo-form" class="form-grid">
+          <label>Türkçe SEO başlığı<input name="titleTr" maxlength="160" required></label>
+          <label>Türkçe meta açıklaması<textarea name="descriptionTr" maxlength="500" required></textarea></label>
+          <label>English SEO title<input name="titleEn" maxlength="160"></label>
+          <label>English meta description<textarea name="descriptionEn" maxlength="500"></textarea></label>
+        </form>
+      </section>
       <section class="panel site-content-panel" id="site-content">
         <div class="site-content-head">
           <div><span class="eyebrow">Ana sayfa düzenleyicisi</span><h2>Başlıklar, metinler ve görseller</h2></div>
@@ -162,6 +177,13 @@
               <label>English summary<textarea name="summaryEn" maxlength="500"></textarea></label>
               <label>Türkçe sayfa içeriği<textarea name="contentTr" required maxlength="20000"></textarea></label>
               <label>English page content<textarea name="contentEn" maxlength="20000"></textarea></label>
+              <label>Türkçe SEO başlığı<input name="seoTitleTr" maxlength="160"></label>
+              <label>Türkçe meta açıklaması<textarea name="seoDescriptionTr" maxlength="500"></textarea></label>
+              <label>English SEO title<input name="seoTitleEn" maxlength="160"></label>
+              <label>English meta description<textarea name="seoDescriptionEn" maxlength="500"></textarea></label>
+              <label>Türkçe bilimsel kaynaklar<textarea name="referencesTr" maxlength="10000" placeholder="Yazarlar. Makale başlığı. Dergi. Yıl. | https://doi.org/..."></textarea></label>
+              <label>English scientific references<textarea name="referencesEn" maxlength="10000" placeholder="Authors. Article title. Journal. Year. | https://doi.org/..."></textarea></label>
+              <p class="site-content-note">Her kaynak ayrı satırda ve “Kaynak bilgisi | https://...” biçiminde olmalı. Yalnızca kontrol edilmiş bilimsel kaynaklar ekleyin.</p>
               <div class="actions"><button type="submit" id="save-treatment-button">Tedavi sayfasını kaydet</button></div>
             </form>
           </section>

@@ -4,6 +4,7 @@ const loginForm = document.getElementById("login-form");
 const faqForm = document.getElementById("faq-form");
 const postForm = document.getElementById("post-form");
 const treatmentForm = document.getElementById("treatment-form");
+const seoForm = document.getElementById("seo-form");
 const loginMessage = document.getElementById("login-message");
 const dashboardMessage = document.getElementById("dashboard-message");
 const faqList = document.getElementById("faq-list");
@@ -16,6 +17,7 @@ const siteContentGroups = document.getElementById("site-content-groups");
 const siteContentMessage = document.getElementById("site-content-message");
 const postMessage = document.getElementById("post-message");
 const treatmentMessage = document.getElementById("treatment-message");
+const seoMessage = document.getElementById("seo-message");
 const postImageInput = document.getElementById("post-image");
 const postImagePreviewWrap = document.getElementById("post-image-preview-wrap");
 const postImagePreview = document.getElementById("post-image-preview");
@@ -206,6 +208,13 @@ async function loadSiteContent() {
   renderSiteContent();
 }
 
+async function loadSeoSettings() {
+  const settings = await apiRequest("/api/admin/seo");
+  for (const field of ["titleTr", "titleEn", "descriptionTr", "descriptionEn"]) {
+    seoForm.elements[field].value = settings[field] || "";
+  }
+}
+
 async function saveSiteContent() {
   showMessage(siteContentMessage, "");
   const buttons = [
@@ -250,7 +259,10 @@ function filterSiteContent(query) {
 
 function selectTreatmentPage(page) {
   treatmentForm.elements.key.value = page.key;
-  for (const field of ["titleTr", "titleEn", "summaryTr", "summaryEn", "contentTr", "contentEn"]) {
+  for (const field of [
+    "titleTr", "titleEn", "summaryTr", "summaryEn", "contentTr", "contentEn",
+    "seoTitleTr", "seoTitleEn", "seoDescriptionTr", "seoDescriptionEn", "referencesTr", "referencesEn",
+  ]) {
     treatmentForm.elements[field].value = page[field] || "";
   }
   document.getElementById("treatment-form-title").textContent = `${page.titleTr} — alt sayfa`;
@@ -537,7 +549,7 @@ async function initialize() {
     const sessionState = await apiRequest("/api/admin/session");
     if (sessionState.authenticated) {
       showDashboard();
-      await Promise.all([loadFaqs(), loadPosts(), loadContactSubmissions(), loadSiteContent(), loadTreatmentPages()]);
+      await Promise.all([loadFaqs(), loadPosts(), loadContactSubmissions(), loadSiteContent(), loadTreatmentPages(), loadSeoSettings()]);
     } else {
       loginView.hidden = false;
     }
@@ -562,7 +574,7 @@ loginForm.addEventListener("submit", async event => {
     csrfToken = result.csrfToken;
     loginForm.reset();
     showDashboard();
-    await Promise.all([loadFaqs(), loadPosts(), loadContactSubmissions(), loadSiteContent(), loadTreatmentPages()]);
+    await Promise.all([loadFaqs(), loadPosts(), loadContactSubmissions(), loadSiteContent(), loadTreatmentPages(), loadSeoSettings()]);
   } catch (error) {
     showMessage(loginMessage, error.message);
   } finally {
@@ -596,7 +608,10 @@ treatmentForm.addEventListener("submit", async event => {
   showMessage(treatmentMessage, "");
   const key = treatmentForm.elements.key.value;
   const payload = Object.fromEntries(
-    ["titleTr", "titleEn", "summaryTr", "summaryEn", "contentTr", "contentEn"]
+    [
+      "titleTr", "titleEn", "summaryTr", "summaryEn", "contentTr", "contentEn",
+      "seoTitleTr", "seoTitleEn", "seoDescriptionTr", "seoDescriptionEn", "referencesTr", "referencesEn",
+    ]
       .map(field => [field, treatmentForm.elements[field].value]),
   );
   const saveButton = document.getElementById("save-treatment-button");
@@ -610,6 +625,23 @@ treatmentForm.addEventListener("submit", async event => {
     showMessage(treatmentMessage, "Tedavi alt sayfası kaydedildi.", true);
   } catch (error) {
     showMessage(treatmentMessage, error.message);
+  } finally {
+    saveButton.disabled = false;
+  }
+});
+
+seoForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  showMessage(seoMessage, "");
+  const saveButton = document.getElementById("seo-save-button");
+  saveButton.disabled = true;
+  try {
+    const payload = Object.fromEntries(["titleTr", "titleEn", "descriptionTr", "descriptionEn"]
+      .map(field => [field, seoForm.elements[field].value]));
+    await apiRequest("/api/admin/seo", { method: "PUT", body: JSON.stringify(payload) });
+    showMessage(seoMessage, "Ana sayfa SEO bilgileri kaydedildi.", true);
+  } catch (error) {
+    showMessage(seoMessage, error.message);
   } finally {
     saveButton.disabled = false;
   }

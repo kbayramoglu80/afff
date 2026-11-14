@@ -1,6 +1,6 @@
 # Doç. Dr. Mesut Karıksız web sitesi
 
-Site, Node.js/Express sunucusu ve MongoDB ile çalışır. Yönetim panelinden ana sayfanın metinleri, başlıkları, bağlantıları ve görselleri yönetilebilir; içerikler Türkçe ve İngilizce alanlara ayrılmıştır. Ana sayfadaki dokuz tedavi alanının her birinin ayrı bir alt sayfası vardır; başlık, özet ve sayfa içerikleri yönetim panelinden düzenlenebilir. Sıkça sorulan sorular eklenebilir, düzenlenebilir ve silinebilir; ziyaretçiler yanıtları açılır kutularda görüntüler. İletişim formu gönderileri MongoDB'de saklanır ve admin panelinden okunup silinebilir.
+Site, Node.js/Express sunucusu ve MongoDB ile çalışır. Yönetim panelinden ana sayfanın metinleri, başlıkları, bağlantıları ve görselleri yönetilebilir; içerikler Türkçe ve İngilizce alanlara ayrılmıştır. Ana sayfadaki dokuz tedavi alanının her birinin ayrı bir alt sayfası vardır; içerikleri, SEO başlık/açıklamaları ve kaynakçaları yönetim panelinden düzenlenebilir. Sıkça sorulan sorular eklenebilir, düzenlenebilir ve silinebilir; ziyaretçiler yanıtları açılır kutularda görüntüler. İletişim formu gönderileri MongoDB'de saklanır ve admin panelinden okunup silinebilir.
 
 ## Gereksinimler
 
@@ -15,7 +15,7 @@ Site, Node.js/Express sunucusu ve MongoDB ile çalışır. Yönetim panelinden a
    npm install
    ```
 
-2. `.env.example` dosyasını `.env` olarak kopyalayın. MongoDB bağlantı adresini, en az 32 karakterli rastgele `SESSION_SECRET` değerini ve ilk yönetici için `ADMIN_USERNAME` / en az 8 karakterli `ADMIN_PASSWORD` değerlerini girin. `.env` dosyası Git'e eklenmez.
+2. `.env.example` dosyasını `.env` olarak kopyalayın. `PUBLIC_SITE_URL` değerini canlı sitenin tercih edilen HTTPS alan adıyla, `GA4_MEASUREMENT_ID` değerini GA4'teki `G-...` ölçüm kimliğiyle eşleştirin. MongoDB bağlantı adresini, en az 32 karakterli rastgele `SESSION_SECRET` değerini ve ilk yönetici için `ADMIN_USERNAME` / en az 8 karakterli `ADMIN_PASSWORD` değerlerini girin. `.env` dosyası Git'e eklenmez.
 
 3. Sunucuyu başlatın:
 
@@ -28,6 +28,11 @@ Site, Node.js/Express sunucusu ve MongoDB ile çalışır. Yönetim panelinden a
 4. Siteyi `http://localhost:3000`, yönetim panelini `http://localhost:3000/admin` adresinden açın. İlk yönetici hesabı, veritabanında yönetici yoksa başlangıçta oluşturulur. Sonraki açılışlarda ortam değişkenleri mevcut yönetici parolasını değiştirmez.
 
 ## Güvenlik ve içerik
+
+- `/robots.txt` tarama kurallarını, `/sitemap.xml` ana sayfa ile tedavi alt sayfalarını sunar. Kanonik URL'ler, Open Graph/Twitter etiketleri ve JSON-LD sayfa HTML'ine sunucu tarafında eklenir.
+- Ana sayfa SEO alanları ile tedavi sayfalarının Türkçe/İngilizce SEO başlıkları ve açıklamaları yönetim panelinden düzenlenir. Tedavi sayfaları ayrıca her satırda `Kaynak bilgisi | https://...` biçiminde, HTTPS bağlantılı bilimsel kaynakça kabul eder; kaynakların doğruluğu editör tarafından teyit edilmelidir.
+- GA4, `GA4_MEASUREMENT_ID` ile yapılandırılır ve bu uygulamada ziyaretçi onayı olmadan yüklenir. Yayına almadan önce yürürlükteki gizlilik/çerez yükümlülüklerinize ve aydınlatma metninize uygunluğu değerlendirin.
+- Search Console alan adı doğrulaması için Google'ın oluşturduğu `google-site-verification=...` TXT değerini DNS sağlayıcınızda kök alan adına ekleyin. DNS kaydı uygulama koduyla oluşturulamaz.
 
 - Yönetici hesabı herkese açık kayıt formuyla oluşturulmaz.
 - Yönetici parolaları bcrypt ile hash'lenerek saklanır.

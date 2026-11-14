@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /health
+Sitemap: https://mesutkariksiz.com.tr/sitemap.xml
+Content-Signal: search=yes, ai-input=yes, ai-train=no
