@@ -13,9 +13,15 @@ import { Admin } from "./models/admin.js";
 import { BlogPost } from "./models/blog-post.js";
 import { ContactSubmission } from "./models/contact-submission.js";
 import { Faq } from "./models/faq.js";
+import { SiteAsset } from "./models/site-asset.js";
+import { SiteContent } from "./models/site-content.js";
+import { TreatmentPage } from "./models/treatment-page.js";
 import { validatePost } from "./lib/blog.js";
 import { validateContactSubmission } from "./lib/contact.js";
 import { validateFaq } from "./lib/faq.js";
+import { validateSiteAsset, validateSiteContentBatch } from "./lib/site-content.js";
+import { treatmentPages } from "./lib/treatment-seeds.js";
+import { validateTreatmentPage } from "./lib/treatment.js";
 
 dotenv.config();
 
@@ -44,7 +50,7 @@ export function createApp() {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'", "https://translate.google.com", "https://translate.googleapis.com", "https://translate-pa.googleapis.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://www.gstatic.com"],
-        imgSrc: ["'self'", "data:", "https://www.gstatic.com", "https://fonts.gstatic.com", "https://translate.googleapis.com", "https://www.google.com"],
+        imgSrc: ["'self'", "data:", "https://www.gstatic.com", "https://fonts.gstatic.com", "https://translate.googleapis.com", "https://www.google.com", "https://i.ytimg.com"],
         fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
         connectSrc: ["'self'", "https://translate.googleapis.com", "https://translate-pa.googleapis.com"],
         frameSrc: ["'self'", "https://translate.google.com", "https://maps.google.com", "https://www.google.com"],
@@ -94,6 +100,41 @@ export function createApp() {
   app.get("/api/faqs", asyncRoute(async (req, res) => {
     const faqs = await Faq.find().sort({ createdAt: 1 }).select("question answer").lean();
     res.set("Cache-Control", "no-store").json(faqs);
+  }));
+
+  app.get("/api/treatments/:slug", asyncRoute(async (req, res) => {
+    const treatment = await TreatmentPage.findOne({ slug: req.params.slug })
+      .select("slug titleTr titleEn summaryTr summaryEn contentTr contentEn")
+      .lean();
+    if (!treatment) return res.status(404).json({ error: "Tedavi sayfası bulunamadı." });
+    res.set("Cache-Control", "no-store").json(treatment);
+  }));
+
+  app.get("/api/site-content", asyncRoute(async (req, res) => {
+    const [entries, assets] = await Promise.all([
+      SiteContent.find().select("key valueTr valueEn").lean(),
+      SiteAsset.find().select("key updatedAt").lean(),
+    ]);
+    const content = Object.fromEntries(entries.map(entry => [
+      entry.key,
+      { tr: entry.valueTr, en: entry.valueEn },
+    ]));
+    const imageUrls = Object.fromEntries(assets.map(asset => [
+      asset.key,
+      `/api/site-assets/${asset.key}?v=${asset.updatedAt.getTime()}`,
+    ]));
+    res.set("Cache-Control", "no-store").json({ entries: content, assets: imageUrls });
+  }));
+
+  app.get("/api/site-assets/:key", asyncRoute(async (req, res) => {
+    const asset = await SiteAsset.findOne({ key: req.params.key }).select("imageData contentType").lean();
+    if (!asset) return res.status(404).json({ error: "Görsel bulunamadı." });
+    const imageData = asset.imageData.replace(/^data:image\/(?:jpeg|png|webp);base64,/, "");
+    res.set({
+      "Cache-Control": "public, max-age=31536000, immutable",
+      "Content-Type": asset.contentType,
+      "X-Content-Type-Options": "nosniff",
+    }).send(Buffer.from(imageData, "base64"));
   }));
 
   const contactLimiter = rateLimit({
@@ -167,6 +208,50 @@ export function createApp() {
     res.set("Cache-Control", "no-store").json({ authenticated: Boolean(req.session.adminId) });
   });
 
+  app.get("/api/admin/site-content", requireAdmin, asyncRoute(async (req, res) => {
+    const [entries, assets] = await Promise.all([
+      SiteContent.find().select("key type attribute valueTr valueEn").lean(),
+      SiteAsset.find().select("key updatedAt").lean(),
+    ]);
+    res.set("Cache-Control", "no-store").json({
+      entries,
+      assets: Object.fromEntries(assets.map(asset => [
+        asset.key,
+        `/api/site-assets/${asset.key}?v=${asset.updatedAt.getTime()}`,
+      ])),
+    });
+  }));
+
+  app.put("/api/admin/site-content", verifyCsrf, requireAdmin, asyncRoute(async (req, res) => {
+    const parsed = validateSiteContentBatch(req.body);
+    if (parsed.error) return res.status(400).json({ error: parsed.error });
+    if (parsed.value.length) {
+      await SiteContent.bulkWrite(parsed.value.map(entry => ({
+        updateOne: {
+          filter: { key: entry.key },
+          update: { $set: entry },
+          upsert: true,
+        },
+      })));
+    }
+    res.json({ saved: parsed.value.length });
+  }));
+
+  app.put("/api/admin/site-assets", verifyCsrf, requireAdmin, asyncRoute(async (req, res) => {
+    const parsed = validateSiteAsset(req.body);
+    if (parsed.error) return res.status(400).json({ error: parsed.error });
+    if (!parsed.value.imageData) {
+      await SiteAsset.findOneAndDelete({ key: parsed.value.key });
+      return res.status(204).end();
+    }
+    await SiteAsset.findOneAndUpdate(
+      { key: parsed.value.key },
+      { $set: parsed.value },
+      { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true },
+    );
+    res.json({ saved: true });
+  }));
+
   app.post("/api/admin/logout", verifyCsrf, requireAdmin, (req, res, next) => {
     req.session.destroy(error => {
       if (error) return next(error);
@@ -226,6 +311,23 @@ export function createApp() {
     res.set("Cache-Control", "no-store").json(faqs);
   }));
 
+  app.get("/api/admin/treatments", requireAdmin, asyncRoute(async (req, res) => {
+    const pages = await TreatmentPage.find().sort({ order: 1 }).lean();
+    res.set("Cache-Control", "no-store").json(pages);
+  }));
+
+  app.put("/api/admin/treatments/:key", verifyCsrf, requireAdmin, asyncRoute(async (req, res) => {
+    const parsed = validateTreatmentPage(req.body);
+    if (parsed.error) return res.status(400).json({ error: parsed.error });
+    const page = await TreatmentPage.findOneAndUpdate(
+      { key: req.params.key },
+      { $set: parsed.value },
+      { new: true, runValidators: true },
+    );
+    if (!page) return res.status(404).json({ error: "Tedavi sayfası bulunamadı." });
+    res.json(page);
+  }));
+
   app.post("/api/admin/faqs", verifyCsrf, requireAdmin, asyncRoute(async (req, res) => {
     const parsed = validateFaq(req.body);
     if (parsed.error) return res.status(400).json({ error: parsed.error });
@@ -280,11 +382,14 @@ export function createApp() {
     res.status(204).end();
   }));
 
+  app.get("/tedavi/:slug", (req, res) => res.sendFile(path.join(__dirname, "public", "treatment.html")));
   app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.html")));
   app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
   app.get("/fonts.css", (req, res) => res.sendFile(path.join(__dirname, "fonts.css")));
   app.get("/lenis.min.js", (req, res) => res.sendFile(path.join(__dirname, "lenis.min.js")));
   app.get("/public/admin.js", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.js")));
+  app.get("/public/site-content.js", (req, res) => res.sendFile(path.join(__dirname, "public", "site-content.js")));
+  app.get("/public/treatment.js", (req, res) => res.sendFile(path.join(__dirname, "public", "treatment.js")));
   app.use("/fonts", express.static(path.join(__dirname, "fonts"), { dotfiles: "deny", index: false }));
   app.use("/galeri", express.static(path.join(__dirname, "galeri"), { dotfiles: "deny", index: false }));
   const publicAssets = new Set([
@@ -333,10 +438,19 @@ async function ensureInitialAdmin() {
   console.log("İlk yönetici hesabı güvenli biçimde oluşturuldu.");
 }
 
+async function ensureInitialTreatmentPages() {
+  await Promise.all(treatmentPages.map(page => TreatmentPage.updateOne(
+    { key: page.key },
+    { $setOnInsert: page },
+    { upsert: true },
+  )));
+}
+
 async function start() {
   requireEnvironment();
   await mongoose.connect(process.env.MONGODB_URI);
   await ensureInitialAdmin();
+  await ensureInitialTreatmentPages();
   const port = Number(process.env.PORT) || 3000;
   createApp().listen(port, () => console.log(`Site http://localhost:${port} adresinde çalışıyor.`));
 }

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>SSS Yönetimi | Doç. Dr. Mesut Karıksız</title>
+  <title>Site Yönetimi | Doç. Dr. Mesut Karıksız</title>
   <link rel="stylesheet" href="/fonts.css">
   <style>
     :root { --paper: #f7f4ed; --ink: #2e2a24; --dim: #514d46; --line: rgba(46,42,36,.18); --sage: #66715d; --deep: #353d32; --gold: #a6885a; --serif: "Montserrat", Arial, sans-serif; --sans: "Montserrat", Arial, sans-serif; }
@@ -34,7 +34,41 @@
     .message { min-height: 27px; margin: 10px 0; color: #8b332c; font-weight: 700; }
     .message.success { color: #315e39; }
     .dashboard-head { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    .admin-shortcuts { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+    .admin-shortcuts a, .preview-link { padding: 9px 13px; border: 1px solid var(--line); color: var(--sage); font: 700 10px/1.5 var(--sans); letter-spacing: .04em; }
+    .admin-shortcuts a:hover, .preview-link:hover { border-color: var(--sage); }
     .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr); gap: 24px; align-items: start; }
+    .site-content-panel { margin: 24px 0; }
+    .site-content-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; }
+    .site-content-head h2 { margin: 4px 0; }
+    .site-content-search { max-width: 440px; margin: 18px 0; }
+    .site-content-groups { display: grid; gap: 10px; }
+    .site-content-group { border: 1px solid var(--line); background: #fffdf8; }
+    .site-content-group > summary { padding: 14px 17px; cursor: pointer; font: 700 14px/1.5 var(--sans); }
+    .site-content-group-body { display: grid; gap: 12px; padding: 0 16px 16px; }
+    .site-content-entry { min-width: 0; padding: 14px; border: 1px solid var(--line); }
+    .site-content-entry-title { display: block; margin-bottom: 10px; color: var(--dim); font: 700 10px/1.6 var(--sans); overflow-wrap: anywhere; }
+    .site-content-locales { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .site-content-locales textarea { min-height: 76px; }
+    .site-content-image-preview { display: block; width: min(100%, 220px); max-height: 150px; margin: 8px 0; object-fit: contain; object-position: left; background: #f2efe7; }
+    .site-content-image-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .site-content-image-actions input { max-width: 320px; }
+    .site-content-note { color: var(--dim); font-size: 13px; }
+    .treatments-panel { margin: 24px 0; }
+    .treatment-admin-note { color: var(--dim); font-size: 13px; }
+    .posts-panel { margin: 24px 0; }
+    .post-list { display: grid; gap: 12px; }
+    .post-row { padding: 17px; border: 1px solid var(--line); background: #fffdf8; }
+    .post-row-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 16px; }
+    .post-row h3 { margin: 0; font: 700 21px/1.3 var(--serif); }
+    .post-row-status { color: var(--sage); font: 700 9px/1.5 var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+    .post-row-status.draft { color: #8b332c; }
+    .post-row p { margin: 8px 0 0; color: var(--dim); font-size: 14px; }
+    .post-row .actions { margin-top: 12px; }
+    .post-row button { min-height: 36px; padding: 7px 12px; }
+    .post-image-preview { display: block; width: min(100%, 320px); max-height: 200px; margin: 8px 0; object-fit: contain; object-position: left; background: #f2efe7; }
+    .panel-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+    .panel-heading h2 { margin: 4px 0; }
     .faq-list { display: grid; gap: 12px; }
     .faq-row { padding: 17px; border: 1px solid var(--line); background: #fffdf8; }
     .faq-row h3 { margin: 0 0 6px; font: 700 21px/1.25 var(--serif); }
@@ -57,18 +91,19 @@
     .contact-submission button { min-height: 36px; padding: 7px 12px; }
     [hidden] { display: none !important; }
     @media (max-width: 760px) { .dashboard-grid { grid-template-columns: 1fr; } .dashboard-head { align-items: flex-start; } }
+    @media (max-width: 620px) { .site-content-locales { grid-template-columns: 1fr; } }
     @media (max-width: 480px) { .dashboard-head { flex-direction: column; } main { margin-top: 35px; } }
   </style>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="/">MESUT <span style="color:var(--gold)">K.</span> · SSS</a>
+    <a class="brand" href="/">MESUT <span style="color:var(--gold)">K.</span> · SİTE YÖNETİMİ</a>
     <a href="/">← Siteye dön</a>
   </header>
   <main>
     <section id="login-view" class="login-card" hidden>
       <span class="eyebrow">Yönetici erişimi</span>
-      <h1>SSS yönetimi</h1>
+      <h1>Yönetici girişi</h1>
       <p>Yönetici parolanızla giriş yapın.</p>
       <form id="login-form" class="form-grid">
         <label>Parola<input name="password" type="password" autocomplete="current-password" required maxlength="200"></label>
@@ -79,12 +114,103 @@
 
     <section id="dashboard-view" hidden>
       <div class="dashboard-head">
-        <div><span class="eyebrow">İçerik yönetimi</span><h1>Sıkça sorulan sorular</h1></div>
+        <div><span class="eyebrow">İçerik yönetimi</span><h1>Site yönetimi</h1></div>
         <button class="secondary" id="logout-button" type="button">Güvenli çıkış</button>
       </div>
       <p class="message" id="dashboard-message" role="status"></p>
+      <nav class="admin-shortcuts" aria-label="Yönetim bölümlerine git">
+        <a href="#site-content">Ana sayfa metinleri</a>
+        <a href="#treatment-management">Tedavi alt sayfaları</a>
+        <a href="#post-management">Yazılar</a>
+        <a href="#faq-management">Soru ve yanıtlar</a>
+        <a href="#contact-management">İletişim talepleri</a>
+      </nav>
+      <section class="panel site-content-panel" id="site-content">
+        <div class="site-content-head">
+          <div><span class="eyebrow">Ana sayfa düzenleyicisi</span><h2>Başlıklar, metinler ve görseller</h2></div>
+          <div class="actions">
+            <a class="preview-link" href="/" target="_blank" rel="noopener noreferrer">Ana sayfayı önizle ↗</a>
+            <button type="button" id="site-content-save">Değişiklikleri kaydet</button>
+          </div>
+        </div>
+        <p class="site-content-note">Bir bölümü açıp istediğiniz metni düzenleyin. Kaydettikten sonra ana sayfayı yenileyerek değişiklikleri görün. Türkçe metni değiştirirken İngilizce alanını da güncelleyin. Görsel değişiklikleri yükleme tamamlandığında kaydedilir.</p>
+        <label class="site-content-search">İçeriklerde ara<input id="site-content-search" type="search" placeholder="Başlık, metin veya bölüm adı"></label>
+        <p class="message" id="site-content-message" role="status"></p>
+        <div class="site-content-groups" id="site-content-groups"></div>
+        <div class="actions"><button type="button" id="site-content-save-bottom">Değişiklikleri kaydet</button></div>
+      </section>
+      <section class="panel treatments-panel" id="treatment-management">
+        <div class="panel-heading">
+          <div><span class="eyebrow">Tedavi alanları</span><h2>Alt sayfa içerikleri</h2></div>
+          <a class="preview-link" id="treatment-preview-link" href="/tedavi/spor-cerrahisi" target="_blank" rel="noopener noreferrer">Sayfayı önizle ↗</a>
+        </div>
+        <p class="treatment-admin-note">Ana sayfadaki 9 tedavi alanının alt sayfalarını buradan düzenleyin. İngilizce alanları boş bırakılırsa Türkçe içerik gösterilir.</p>
+        <p class="message" id="treatment-message" role="status"></p>
+        <div class="dashboard-grid">
+          <div>
+            <h2>Tedavi alt sayfaları</h2>
+            <div class="post-list" id="treatment-page-list" aria-live="polite"></div>
+          </div>
+          <section>
+            <span class="eyebrow">Alt sayfa düzenleyicisi</span>
+            <h2 id="treatment-form-title">Tedavi sayfasını düzenle</h2>
+            <form id="treatment-form" class="form-grid">
+              <input type="hidden" name="key">
+              <label>Türkçe başlık<input name="titleTr" required maxlength="160"></label>
+              <label>English title<input name="titleEn" maxlength="160"></label>
+              <label>Türkçe kısa açıklama<textarea name="summaryTr" required maxlength="500"></textarea></label>
+              <label>English summary<textarea name="summaryEn" maxlength="500"></textarea></label>
+              <label>Türkçe sayfa içeriği<textarea name="contentTr" required maxlength="20000"></textarea></label>
+              <label>English page content<textarea name="contentEn" maxlength="20000"></textarea></label>
+              <div class="actions"><button type="submit" id="save-treatment-button">Tedavi sayfasını kaydet</button></div>
+            </form>
+          </section>
+        </div>
+      </section>
+      <section class="panel posts-panel" id="post-management">
+        <div class="panel-heading">
+          <div><span class="eyebrow">Ana sayfada yayımlanır</span><h2>Yazı yönetimi</h2></div>
+          <button class="secondary" type="button" id="new-post-button">Yeni yazı</button>
+        </div>
+        <p class="site-content-note">Yayımlanan yazılar ana sayfada görünür. Taslaklar ziyaretçilere gösterilmez. Başlık, kısa özet ve yazı içeriğini girip durumunu seçin.</p>
+        <p class="message" id="post-message" role="status"></p>
+        <div class="dashboard-grid">
+          <div>
+            <h2>Yazılarınız</h2>
+            <div class="post-list" id="post-list" aria-live="polite"></div>
+          </div>
+          <section>
+            <span class="eyebrow">Yazı düzenleyicisi</span>
+            <h2 id="post-form-title">Yeni yazı</h2>
+            <form id="post-form" class="form-grid">
+              <input type="hidden" name="id">
+              <label>Başlık<input name="title" required maxlength="160"></label>
+              <label>Kısa özet<textarea name="excerpt" required maxlength="300"></textarea></label>
+              <label>Yazı içeriği<textarea name="content" required maxlength="20000"></textarea></label>
+              <label>Kapak görseli (isteğe bağlı)
+                <input id="post-image" type="file" accept="image/jpeg,image/png,image/webp">
+              </label>
+              <p class="site-content-note">JPEG, PNG veya WebP; en fazla 2 MB.</p>
+              <div id="post-image-preview-wrap" hidden>
+                <img id="post-image-preview" class="post-image-preview" alt="Yazı kapak görseli önizlemesi">
+                <button class="secondary" type="button" id="remove-post-image">Kapak görselini kaldır</button>
+              </div>
+              <label>Yayın durumu
+                <select name="status">
+                  <option value="draft">Taslak — ana sayfada gösterme</option>
+                  <option value="published">Yayımla — ana sayfada göster</option>
+                </select>
+              </label>
+              <div class="actions">
+                <button type="submit" id="save-post-button">Yazıyı kaydet</button>
+                <button class="secondary" type="button" id="reset-post-button">Formu temizle</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </section>
       <div class="dashboard-grid">
-        <section>
+        <section id="faq-management">
           <h2>Soru ve yanıtlar</h2>
           <div class="faq-list" id="faq-list"></div>
         </section>
@@ -102,7 +228,7 @@
           </form>
         </section>
       </div>
-      <section class="panel inbox-panel">
+      <section class="panel inbox-panel" id="contact-management">
         <div class="inbox-heading">
           <div><span class="eyebrow">Gelen kutusu</span><h2>İletişim talepleri</h2></div>
           <button class="secondary" type="button" id="refresh-contact-button">Yenile</button>
@@ -111,6 +237,7 @@
       </section>
     </section>
   </main>
+  <script src="/public/site-content.js" defer></script>
   <script src="/public/admin.js" defer></script>
 </body>
 </html>
