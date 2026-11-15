@@ -11,6 +11,9 @@ const faqList = document.getElementById("faq-list");
 const postList = document.getElementById("post-list");
 const contactList = document.getElementById("contact-list");
 const treatmentPageList = document.getElementById("treatment-page-list");
+const treatmentDetailPageList = document.getElementById("treatment-detail-page-list");
+const treatmentDetailGroups = document.getElementById("treatment-detail-content-groups");
+const treatmentDetailMessage = document.getElementById("treatment-detail-message");
 const faqFormTitle = document.getElementById("faq-form-title");
 const postFormTitle = document.getElementById("post-form-title");
 const siteContentGroups = document.getElementById("site-content-groups");
@@ -25,6 +28,11 @@ let csrfToken = "";
 let faqs = [];
 let posts = [];
 let treatmentPages = [];
+let treatmentDetailPages = [];
+let treatmentDetailCatalog = { fields: [], images: [] };
+let treatmentDetailControls = new Map();
+let treatmentDetailSlug = "";
+let treatmentDetailDirty = false;
 let postImageData = null;
 let contactSubmissions = [];
 let siteCatalog = { fields: [], images: [] };
@@ -75,6 +83,80 @@ function createSiteContentInput(field, value, locale) {
   return { label, control };
 }
 
+function createSiteContentImageEditor(image, messageElement) {
+  const entry = document.createElement("article");
+  entry.className = "site-content-entry";
+  entry.dataset.search = `${image.groupLabel} ${image.label}`.toLocaleLowerCase("tr");
+  const title = document.createElement("span");
+  title.className = "site-content-entry-title";
+  title.textContent = image.label;
+  const preview = document.createElement("img");
+  preview.className = "site-content-image-preview";
+  preview.alt = image.label;
+  preview.src = savedSiteAssets[image.key] || new URL(image.src, window.location.origin).href;
+  const actions = document.createElement("div");
+  actions.className = "site-content-image-actions";
+  const uploadLabel = document.createElement("label");
+  uploadLabel.textContent = "Görseli değiştir";
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/jpeg,image/png,image/webp";
+  uploadLabel.append(fileInput);
+  const reset = document.createElement("button");
+  reset.type = "button";
+  reset.className = "secondary";
+  reset.textContent = "Varsayılan görsele dön";
+  reset.disabled = !savedSiteAssets[image.key];
+  fileInput.addEventListener("change", async () => {
+    const [file] = fileInput.files;
+    if (!file) return;
+    fileInput.disabled = true;
+    reset.disabled = true;
+    try {
+      const imageData = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          if (typeof reader.result !== "string") reject(new Error("Görsel okunamadı."));
+          else resolve(reader.result);
+        });
+        reader.addEventListener("error", () => reject(new Error("Görsel okunamadı.")));
+        reader.readAsDataURL(file);
+      });
+      await apiRequest("/api/admin/site-assets", {
+        method: "PUT",
+        body: JSON.stringify({ key: image.key, imageData }),
+      });
+      savedSiteAssets[image.key] = `/api/site-assets/${image.key}?v=${Date.now()}`;
+      preview.src = savedSiteAssets[image.key];
+      reset.disabled = false;
+      showMessage(messageElement, "Görsel kaydedildi.", true);
+    } catch (error) {
+      showMessage(messageElement, error.message);
+    } finally {
+      fileInput.disabled = false;
+      fileInput.value = "";
+    }
+  });
+  reset.addEventListener("click", async () => {
+    reset.disabled = true;
+    try {
+      await apiRequest("/api/admin/site-assets", {
+        method: "PUT",
+        body: JSON.stringify({ key: image.key, imageData: null }),
+      });
+      delete savedSiteAssets[image.key];
+      preview.src = new URL(image.src, window.location.origin).href;
+      showMessage(messageElement, "Varsayılan görsele dönüldü.", true);
+    } catch (error) {
+      showMessage(messageElement, error.message);
+      reset.disabled = false;
+    }
+  });
+  actions.append(uploadLabel, reset);
+  entry.append(title, preview, actions);
+  return entry;
+}
+
 function renderSiteContent() {
   siteContentGroups.replaceChildren();
   siteContentControls = new Map();
@@ -118,76 +200,7 @@ function renderSiteContent() {
       siteContentControls.set(field.key, { field, turkish: turkish.control, english: english.control });
     }
 
-    for (const image of group.images) {
-      const entry = document.createElement("article");
-      entry.className = "site-content-entry";
-      entry.dataset.search = `${image.groupLabel} ${image.label}`.toLocaleLowerCase("tr");
-      const title = document.createElement("span");
-      title.className = "site-content-entry-title";
-      title.textContent = image.label;
-      const preview = document.createElement("img");
-      preview.className = "site-content-image-preview";
-      preview.alt = image.label;
-      preview.src = savedSiteAssets[image.key] || new URL(image.src, window.location.origin).href;
-      const actions = document.createElement("div");
-      actions.className = "site-content-image-actions";
-      const uploadLabel = document.createElement("label");
-      uploadLabel.textContent = "Görseli değiştir";
-      const fileInput = document.createElement("input");
-      fileInput.type = "file";
-      fileInput.accept = "image/jpeg,image/png,image/webp";
-      uploadLabel.append(fileInput);
-      const reset = document.createElement("button");
-      reset.type = "button";
-      reset.className = "secondary";
-      reset.textContent = "Varsayılan görsele dön";
-      reset.disabled = !savedSiteAssets[image.key];
-      fileInput.addEventListener("change", async () => {
-        const [file] = fileInput.files;
-        if (!file) return;
-        fileInput.disabled = true;
-        reset.disabled = true;
-        try {
-          const imageData = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.addEventListener("load", () => resolve(reader.result));
-            reader.addEventListener("error", () => reject(new Error("Görsel okunamadı.")));
-            reader.readAsDataURL(file);
-          });
-          await apiRequest("/api/admin/site-assets", {
-            method: "PUT",
-            body: JSON.stringify({ key: image.key, imageData }),
-          });
-          savedSiteAssets[image.key] = `/api/site-assets/${image.key}?v=${Date.now()}`;
-          preview.src = savedSiteAssets[image.key];
-          reset.disabled = false;
-          showMessage(siteContentMessage, "Görsel kaydedildi.", true);
-        } catch (error) {
-          showMessage(siteContentMessage, error.message);
-        } finally {
-          fileInput.disabled = false;
-          fileInput.value = "";
-        }
-      });
-      reset.addEventListener("click", async () => {
-        reset.disabled = true;
-        try {
-          await apiRequest("/api/admin/site-assets", {
-            method: "PUT",
-            body: JSON.stringify({ key: image.key, imageData: null }),
-          });
-          delete savedSiteAssets[image.key];
-          preview.src = new URL(image.src, window.location.origin).href;
-          showMessage(siteContentMessage, "Varsayılan görsel geri yüklendi.", true);
-        } catch (error) {
-          showMessage(siteContentMessage, error.message);
-          reset.disabled = false;
-        }
-      });
-      actions.append(uploadLabel, reset);
-      entry.append(title, preview, actions);
-      body.append(entry);
-    }
+    for (const image of group.images) body.append(createSiteContentImageEditor(image, siteContentMessage));
 
     details.append(summary, body);
     siteContentGroups.append(details);
@@ -296,6 +309,170 @@ async function loadTreatmentPages(selectedKey = treatmentForm.elements.key.value
   renderTreatmentPages();
   const selected = treatmentPages.find(page => page.key === selectedKey) || treatmentPages[0];
   if (selected) selectTreatmentPage(selected);
+}
+
+function renderTreatmentDetailContent() {
+  treatmentDetailGroups.replaceChildren();
+  treatmentDetailControls = new Map();
+  const storedEntries = new Map(savedSiteEntries.map(entry => [entry.key, entry]));
+  const groups = new Map();
+  const getGroup = item => {
+    let group = groups.get(item.groupKey);
+    if (!group) {
+      group = { label: item.groupLabel, fields: [], images: [] };
+      groups.set(item.groupKey, group);
+    }
+    return group;
+  };
+  treatmentDetailCatalog.fields.forEach(field => getGroup(field).fields.push(field));
+  treatmentDetailCatalog.images.forEach(image => getGroup(image).images.push(image));
+
+  for (const group of groups.values()) {
+    const details = document.createElement("details");
+    details.className = "site-content-group";
+    const summary = document.createElement("summary");
+    summary.textContent = `${group.label} (${group.fields.length + group.images.length})`;
+    const body = document.createElement("div");
+    body.className = "site-content-group-body";
+    for (const field of group.fields) {
+      const saved = storedEntries.get(field.key);
+      const entry = document.createElement("article");
+      entry.className = "site-content-entry";
+      entry.dataset.search = `${field.groupLabel} ${field.label} ${saved?.valueTr || field.valueTr} ${saved?.valueEn || ""}`.toLocaleLowerCase("tr");
+      const title = document.createElement("span");
+      title.className = "site-content-entry-title";
+      title.textContent = field.label;
+      const locales = document.createElement("div");
+      locales.className = "site-content-locales";
+      const turkish = createSiteContentInput(field, saved?.valueTr ?? field.valueTr, "tr");
+      const english = createSiteContentInput(field, saved?.valueEn ?? "", "en");
+      const markDirty = () => { treatmentDetailDirty = true; };
+      turkish.control.addEventListener("input", markDirty);
+      english.control.addEventListener("input", markDirty);
+      locales.append(turkish.label, english.label);
+      entry.append(title, locales);
+      body.append(entry);
+      treatmentDetailControls.set(field.key, { field, turkish: turkish.control, english: english.control });
+    }
+    for (const image of group.images) body.append(createSiteContentImageEditor(image, treatmentDetailMessage));
+    details.append(summary, body);
+    treatmentDetailGroups.append(details);
+  }
+}
+
+async function loadTreatmentDetailPage(slug) {
+  if (!slug) return;
+  const response = await fetch(`/tedavi/${encodeURIComponent(slug)}.html`, {
+    credentials: "same-origin",
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error("Tedavi detay sayfası yüklenemedi.");
+  const html = await response.text();
+  const pageDocument = new DOMParser().parseFromString(html, "text/html");
+  treatmentDetailCatalog = window.SiteContent.collect(pageDocument, `tedavi/${slug}`);
+  treatmentDetailSlug = slug;
+  treatmentDetailDirty = false;
+  document.getElementById("treatment-detail-preview-link").href = `/tedavi/${encodeURIComponent(slug)}.html`;
+  document.getElementById("treatment-detail-form-title").textContent =
+    treatmentDetailPages.find(page => page.slug === slug)?.title || slug;
+  renderTreatmentDetailContent();
+  renderTreatmentDetailPages();
+  showMessage(treatmentDetailMessage, "");
+}
+
+function renderTreatmentDetailPages() {
+  treatmentDetailPageList.replaceChildren();
+  for (const page of treatmentDetailPages) {
+    const row = document.createElement("article");
+    row.className = "post-row";
+    row.classList.toggle("selected", page.slug === treatmentDetailSlug);
+    row.dataset.search = `${page.title} ${page.slug}`.toLocaleLowerCase("tr");
+    const heading = document.createElement("div");
+    heading.className = "post-row-head";
+    const title = document.createElement("h3");
+    title.textContent = page.title;
+    heading.append(title);
+    if (page.slug === treatmentDetailSlug) {
+      const selected = document.createElement("span");
+      selected.className = "post-row-status";
+      selected.textContent = "Seçili";
+      heading.append(selected);
+    }
+    const slug = document.createElement("p");
+    slug.textContent = `/tedavi/${page.slug}.html`;
+    const actions = document.createElement("div");
+    actions.className = "actions";
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.className = "secondary";
+    edit.dataset.treatmentDetailSlug = page.slug;
+    edit.textContent = "İçeriği düzenle";
+    const preview = document.createElement("a");
+    preview.className = "preview-link";
+    preview.href = `/tedavi/${encodeURIComponent(page.slug)}.html`;
+    preview.target = "_blank";
+    preview.rel = "noopener noreferrer";
+    preview.textContent = "Önizle ↗";
+    actions.append(edit, preview);
+    row.append(heading, slug, actions);
+    treatmentDetailPageList.append(row);
+  }
+}
+
+async function loadTreatmentDetailPages() {
+  treatmentDetailPages = await apiRequest("/api/admin/treatment-details");
+  renderTreatmentDetailPages();
+  if (treatmentDetailPages.length) await loadTreatmentDetailPage(treatmentDetailPages[0].slug);
+}
+
+function filterTreatmentDetailPages(query) {
+  const term = query.trim().toLocaleLowerCase("tr");
+  treatmentDetailPageList.querySelectorAll(".post-row").forEach(row => {
+    row.hidden = term && !row.dataset.search.includes(term);
+  });
+}
+
+function filterTreatmentDetailContent(query) {
+  const term = query.trim().toLocaleLowerCase("tr");
+  treatmentDetailGroups.querySelectorAll(".site-content-group").forEach(group => {
+    let matches = 0;
+    group.querySelectorAll(".site-content-entry").forEach(entry => {
+      const visible = !term || entry.dataset.search.includes(term);
+      entry.hidden = !visible;
+      if (visible) matches += 1;
+    });
+    group.hidden = matches === 0;
+    if (term && matches) group.open = true;
+  });
+}
+
+async function saveTreatmentDetailContent() {
+  if (!treatmentDetailSlug) return;
+  showMessage(treatmentDetailMessage, "");
+  const button = document.getElementById("treatment-detail-save-button");
+  button.disabled = true;
+  try {
+    const entries = [...treatmentDetailControls.values()].map(({ field, turkish, english }) => ({
+      key: field.key,
+      type: field.type,
+      attribute: field.attribute,
+      valueTr: turkish.value,
+      valueEn: english.value,
+    }));
+    await apiRequest("/api/admin/site-content", {
+      method: "PUT",
+      body: JSON.stringify({ entries }),
+    });
+    const storedEntries = new Map(savedSiteEntries.map(entry => [entry.key, entry]));
+    entries.forEach(entry => storedEntries.set(entry.key, entry));
+    savedSiteEntries = [...storedEntries.values()];
+    treatmentDetailDirty = false;
+    showMessage(treatmentDetailMessage, "Tedavi detay sayfası içerikleri kaydedildi.", true);
+  } catch (error) {
+    showMessage(treatmentDetailMessage, error.message);
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function resetFaqForm() {
@@ -559,6 +736,7 @@ async function initialize() {
     if (sessionState.authenticated) {
       showDashboard();
       await Promise.all([loadFaqs(), loadPosts(), loadContactSubmissions(), loadSiteContent(), loadTreatmentPages(), loadSeoSettings()]);
+      await loadTreatmentDetailPages();
     } else {
       loginView.hidden = false;
     }
@@ -584,6 +762,7 @@ loginForm.addEventListener("submit", async event => {
     loginForm.reset();
     showDashboard();
     await Promise.all([loadFaqs(), loadPosts(), loadContactSubmissions(), loadSiteContent(), loadTreatmentPages(), loadSeoSettings()]);
+    await loadTreatmentDetailPages();
   } catch (error) {
     showMessage(loginMessage, error.message);
   } finally {
@@ -724,6 +903,23 @@ postForm.addEventListener("submit", async event => {
 document.getElementById("site-content-save").addEventListener("click", saveSiteContent);
 document.getElementById("site-content-save-bottom").addEventListener("click", saveSiteContent);
 document.getElementById("site-content-search").addEventListener("input", event => filterSiteContent(event.currentTarget.value));
+document.getElementById("treatment-detail-search").addEventListener("input", event => filterTreatmentDetailContent(event.currentTarget.value));
+document.getElementById("treatment-detail-page-search").addEventListener("input", event => filterTreatmentDetailPages(event.currentTarget.value));
+document.getElementById("treatment-detail-save-button").addEventListener("click", saveTreatmentDetailContent);
+treatmentDetailPageList.addEventListener("click", async event => {
+  const button = event.target.closest("[data-treatment-detail-slug]");
+  if (!button) return;
+  const slug = button.dataset.treatmentDetailSlug;
+  if (slug === treatmentDetailSlug) return;
+  if (treatmentDetailDirty && !window.confirm("Kaydedilmemiş değişiklikler var. Sayfayı değiştirmek istiyor musunuz?")) {
+    return;
+  }
+  try {
+    await loadTreatmentDetailPage(slug);
+  } catch (error) {
+    showMessage(treatmentDetailMessage, error.message);
+  }
+});
 
 document.getElementById("refresh-contact-button").addEventListener("click", async event => {
   const button = event.currentTarget;

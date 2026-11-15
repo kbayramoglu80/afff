@@ -25,6 +25,15 @@
     return `c-${btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")}`;
   }
 
+  function getPageNamespace() {
+    const match = global.location.pathname.match(/^\/tedavi\/([^/]+)\.html$/);
+    return match ? `tedavi/${match[1]}` : "";
+  }
+
+  function getContentKey(namespace, value) {
+    return encodeKey(namespace ? `${namespace}:${value}` : value);
+  }
+
   function getGroup(element, doc) {
     const section = element.closest("section, header, footer, nav");
     if (!section) return { key: "page", label: "Sayfa ve gezinme" };
@@ -41,7 +50,7 @@
     return Boolean(element.closest("script, style, noscript, svg, [data-cms-ignore], [aria-live], .faq-list"));
   }
 
-  function collect(doc) {
+  function collect(doc, namespace = getPageNamespace()) {
     const fields = [];
     const images = [];
     const walker = doc.createTreeWalker(doc.body, global.NodeFilter.SHOW_TEXT);
@@ -58,7 +67,7 @@
       if (!value) continue;
       const group = getGroup(element, doc);
       fields.push({
-        key: encodeKey(`text:${getElementPath(element, doc.body)}:${textIndex}`),
+        key: getContentKey(namespace, `text:${getElementPath(element, doc.body)}:${textIndex}`),
         type: "text",
         attribute: null,
         valueTr: value,
@@ -79,7 +88,7 @@
         if (!element.hasAttribute(attribute)) return;
         const value = element.getAttribute(attribute);
         fields.push({
-          key: encodeKey(`attribute:${path}:${attribute}`),
+          key: getContentKey(namespace, `attribute:${path}:${attribute}`),
           type: "attribute",
           attribute,
           valueTr: value,
@@ -91,7 +100,7 @@
       });
       if (element.tagName === "IMG" && element.hasAttribute("src")) {
         images.push({
-          key: encodeKey(`image:${path}`),
+          key: getContentKey(namespace, `image:${path}`),
           src: element.getAttribute("src"),
           label: `img · ${(element.getAttribute("alt") || element.getAttribute("src") || "Görsel").slice(0, 100)}`,
           groupKey: group.key,
@@ -129,8 +138,10 @@
     });
   }
 
-  function refresh() {
-    if (savedContent) apply(global.document, savedContent, savedLanguage);
+  function refresh(language = savedLanguage) {
+    if (!savedContent) return;
+    savedLanguage = language;
+    apply(global.document, savedContent, savedLanguage);
   }
 
   function capture() {

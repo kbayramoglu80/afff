@@ -1,5 +1,5 @@
 import { randomBytes, timingSafeEqual } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import bcrypt from "bcryptjs";
@@ -414,6 +414,24 @@ export function createApp() {
 
   app.get("/api/admin/treatments", requireAdmin, asyncRoute(async (req, res) => {
     const pages = await TreatmentPage.find().sort({ order: 1 }).lean();
+    res.set("Cache-Control", "no-store").json(pages);
+  }));
+
+  app.get("/api/admin/treatment-details", requireAdmin, asyncRoute(async (req, res) => {
+    const directory = path.join(__dirname, "tedavi");
+    const files = await readdir(directory, { withFileTypes: true });
+    const pages = await Promise.all(files
+      .filter(file => file.isFile() && file.name.endsWith(".html"))
+      .map(async file => {
+        const slug = file.name.slice(0, -5);
+        const html = await readFile(path.join(directory, file.name), "utf8");
+        const title = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]
+          ?.replace(/&amp;/g, "&")
+          .replace(/\s+/g, " ")
+          .trim() || slug;
+        return { slug, title };
+      }));
+    pages.sort((left, right) => left.title.localeCompare(right.title, "tr"));
     res.set("Cache-Control", "no-store").json(pages);
   }));
 

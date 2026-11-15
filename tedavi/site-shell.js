@@ -43,6 +43,7 @@ function loadGoogleTranslate() {
 }
 
 async function translatePage(language) {
+  window.SiteContent?.refresh(language === "en" ? "en" : "tr");
   if (language === "tr" && !googleTranslatePromise) {
     updateLanguageButtons("tr");
     return;
@@ -57,6 +58,24 @@ window.SiteLanguage = {
   updateButtons: updateLanguageButtons,
   translatePage,
 };
+
+function loadPageContent() {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "/public/site-content.js";
+    script.addEventListener("load", async () => {
+      try {
+        window.SiteContent.capture();
+        await window.SiteContent.load();
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    }, { once: true });
+    script.addEventListener("error", () => reject(new Error("Sayfa içerik düzenleyicisi yüklenemedi.")), { once: true });
+    document.head.append(script);
+  });
+}
 
 if (document.body.dataset.languageMode !== "database") {
   function closeMenu() {
@@ -87,8 +106,12 @@ if (document.body.dataset.languageMode !== "database") {
 if (document.body.dataset.languageMode === "google") {
   const savedLanguage = localStorage.getItem("site-language") === "en" ? "en" : "tr";
   updateLanguageButtons(savedLanguage);
+  const pageContentPromise = loadPageContent().catch(error => {
+    languageStatus.textContent = "Sayfa içerikleri yüklenemedi.";
+    console.error("Could not load treatment page content:", error);
+  });
   if (savedLanguage === "en") {
-    translatePage("en").catch(error => {
+    pageContentPromise.then(() => translatePage("en")).catch(error => {
       languageStatus.textContent = "English translation could not be loaded.";
       console.error("Could not load English translation:", error);
     });
@@ -100,6 +123,7 @@ if (document.body.dataset.languageMode === "google") {
     languageStatus.textContent = "";
     updateLanguageButtons(language);
     try {
+      await pageContentPromise;
       await translatePage(language);
     } catch (error) {
       languageStatus.textContent = language === "en"

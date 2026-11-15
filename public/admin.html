@@ -55,6 +55,8 @@
     .site-content-image-actions input { max-width: 320px; }
     .site-content-note { color: var(--dim); font-size: 13px; }
     .treatments-panel { margin: 24px 0; }
+    .treatment-detail-pages { max-height: 620px; overflow-y: auto; }
+    .post-row.selected { border-color: var(--sage); }
     .treatment-admin-note { color: var(--dim); font-size: 13px; }
     .posts-panel { margin: 24px 0; }
     .post-list { display: grid; gap: 12px; }
@@ -124,6 +126,7 @@
         <a href="#seo-settings">SEO ve paylaşım</a>
         <a href="#site-content">Ana sayfa metinleri</a>
         <a href="#treatment-management">Tedavi alt sayfaları</a>
+        <a href="#treatment-detail-management">Tedavi detay sayfaları</a>
         <a href="#post-management">Yazılar</a>
         <a href="#faq-management">Soru ve yanıtlar</a>
         <a href="#contact-management">İletişim talepleri</a>
@@ -158,14 +161,14 @@
       </section>
       <section class="panel treatments-panel" id="treatment-management">
         <div class="panel-heading">
-          <div><span class="eyebrow">Tedavi alanları</span><h2>Alt sayfa içerikleri</h2></div>
+          <div><span class="eyebrow">Tedavi sayfaları</span><h2>Tedavi alanları ve tüm alt sayfaları</h2></div>
           <a class="preview-link" id="treatment-preview-link" href="/tedavi/spor-cerrahisi" target="_blank" rel="noopener noreferrer">Sayfayı önizle ↗</a>
         </div>
         <p class="treatment-admin-note">Ana sayfadaki 9 tedavi alanının alt sayfalarını buradan düzenleyin. İngilizce alanları boş bırakılırsa Türkçe içerik gösterilir.</p>
         <p class="message" id="treatment-message" role="status"></p>
         <div class="dashboard-grid">
           <div>
-            <h2>Tedavi alt sayfaları</h2>
+            <h2>9 ana tedavi alanı sayfası</h2>
             <div class="post-list" id="treatment-page-list" aria-live="polite"></div>
           </div>
           <section>
@@ -190,6 +193,29 @@
             </form>
           </section>
         </div>
+        <section class="treatment-detail-management" id="treatment-detail-management">
+          <div class="panel-heading">
+            <div><span class="eyebrow">Detay içerikleri</span><h2>Tüm tedavi alt sayfaları</h2></div>
+            <a class="preview-link" id="treatment-detail-preview-link" href="/tedavi/" target="_blank" rel="noopener noreferrer">Seçili sayfayı önizle ↗</a>
+          </div>
+          <p class="treatment-admin-note">Aşağıdaki listede yer alan tedavi alt sayfalarının başlıklarını, metinlerini, tablolarını, listelerini ve görsellerini düzenleyin.</p>
+          <label class="site-content-search">Alt sayfalarda ara<input id="treatment-detail-page-search" type="search" placeholder="Sayfa adı veya slug"></label>
+          <p class="message" id="treatment-detail-message" role="status"></p>
+          <div class="dashboard-grid">
+            <div>
+              <h3>Alt sayfa listesi</h3>
+              <div class="post-list treatment-detail-pages" id="treatment-detail-page-list" aria-live="polite"></div>
+            </div>
+            <section>
+              <div class="panel-heading">
+                <h3 id="treatment-detail-form-title">Bir alt sayfa seçin</h3>
+                <label class="site-content-search">Bu sayfada ara<input id="treatment-detail-search" type="search" placeholder="Başlık veya metin"></label>
+              </div>
+              <div class="site-content-groups" id="treatment-detail-content-groups"></div>
+              <div class="actions"><button type="button" id="treatment-detail-save-button">Bu sayfanın içeriklerini kaydet</button></div>
+            </section>
+          </div>
+        </section>
       </section>
       <section class="panel posts-panel" id="post-management">
         <div class="panel-heading">

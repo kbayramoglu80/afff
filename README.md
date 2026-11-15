@@ -1,6 +1,6 @@
 # Doç. Dr. Mesut Karıksız web sitesi
 
-Site, Node.js/Express sunucusu ve MongoDB ile çalışır. Yönetim panelinden ana sayfanın metinleri, başlıkları, bağlantıları ve görselleri yönetilebilir; içerikler Türkçe ve İngilizce alanlara ayrılmıştır. Ana sayfadaki dokuz tedavi alanının her birinin ayrı bir alt sayfası vardır; içerikleri, SEO başlık/açıklamaları ve kaynakçaları yönetim panelinden düzenlenebilir. Sıkça sorulan sorular eklenebilir, düzenlenebilir ve silinebilir; ziyaretçiler yanıtları açılır kutularda görüntüler. İletişim formu gönderileri MongoDB'de saklanır ve admin panelinden okunup silinebilir.
+Site, Node.js/Express sunucusu ve MongoDB ile çalışır. Yönetim panelinden ana sayfanın metinleri, başlıkları, bağlantıları ve görselleri yönetilebilir; içerikler Türkçe ve İngilizce alanlara ayrılmıştır. Ana sayfadaki dokuz tedavi alanının içerikleri, SEO başlık/açıklamaları ve kaynakçaları düzenlenebilir. Ayrıca tedavi detay sayfalarının tüm metinleri ve görselleri, yönetim panelindeki “Tedavi detay sayfaları” bölümünden sayfa seçilerek yönetilebilir. Sıkça sorulan sorular eklenebilir, düzenlenebilir ve silinebilir; ziyaretçiler yanıtları açılır kutularda görüntüler. İletişim formu gönderileri MongoDB'de saklanır ve admin panelinden okunup silinebilir.
 
 ## Gereksinimler
 
