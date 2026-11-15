@@ -534,7 +534,7 @@ export function createApp() {
       ? `/api/site-assets/${HERO_IMAGE_ASSET_KEY}?v=${heroAsset.updatedAt.getTime()}`
       : `/${encodeURIComponent(PROFILE_IMAGE)}`;
     const html = (await readFile(path.join(__dirname, "index.html"), "utf8"))
-      .replace("__HERO_IMAGE__", () => escapeHtml(heroImage));
+      .replaceAll("__HERO_IMAGE__", () => escapeHtml(heroImage));
     res.send(injectSeo(html, {
       title: settings.titleTr,
       description: settings.descriptionTr,
