@@ -77,6 +77,12 @@
     .navbar.scrolled { border-color: var(--line); box-shadow: 0 8px 26px rgba(46, 42, 36, .04); }
     .brand { font: 700 20px/1 var(--serif); letter-spacing: .12em; white-space: nowrap; }
     .brand strong { color: var(--gold); font-weight: 700; }
+    .brand-group { display: flex; align-items: center; gap: clamp(12px, 2vw, 22px); min-width: 0; }
+    .language-switch { display: flex; align-items: center; gap: 3px; padding: 3px; border: 1px solid var(--line); }
+    .language-button { display: inline-flex; align-items: center; gap: 5px; padding: 7px 8px; border: 0; background: transparent; color: var(--dim); cursor: pointer; font: 700 10px/1.2 var(--sans); }
+    .language-button[aria-pressed="true"] { background: var(--deep); color: var(--cream); }
+    .language-button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+    .language-flag { font: 15px/1 var(--sans); }
     .menu-toggle {
       display: grid;
       gap: 5px;
@@ -116,22 +122,18 @@
       transition: opacity .2s, transform .2s, visibility .2s;
     }
     .navbar.menu-open .nav-links { opacity: 1; visibility: visible; transform: none; }
-    .nav-links a, .nav-links .language-toggle {
+    .nav-links a {
       padding: 13px 0;
       border-bottom: 1px solid var(--line);
-      background: transparent;
       color: var(--dim);
-      cursor: pointer;
       font: 700 10px/1.5 var(--sans);
       letter-spacing: .1em;
-      text-align: left;
       text-transform: uppercase;
       transition: color .2s;
     }
-    .nav-links a:last-child, .nav-links .language-toggle:last-child { border-bottom: 0; }
-    .nav-links a:hover, .nav-links .language-toggle:hover { color: var(--ink); }
+    .nav-links a:last-child { border-bottom: 0; }
+    .nav-links a:hover { color: var(--ink); }
     .nav-links .admin-link { color: var(--sage); }
-    .nav-links .language-toggle { width: 100%; border: 0; border-bottom: 0; }
     .language-status:not(:empty) { padding: 8px 0; color: #8b332c; font: 600 12px/1.5 var(--sans); }
     .hero {
       display: grid;
@@ -155,7 +157,7 @@
       position: relative;
       min-height: 460px;
       overflow: hidden;
-      border-radius: 48% 48% 2px 2px;
+      border-radius: 0;
     }
     .hero-visual img {
       position: absolute;
@@ -163,7 +165,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center;
+      object-position: center top;
     }
     .hero-visual::after {
       position: absolute;
@@ -341,15 +343,25 @@
     .treatment-card-image.shoulder-image, .treatment-card-image.prosthesis-image, .treatment-card-image.specialty-image { object-fit: contain; background: #e9e5da; }
     .treatment-card::before { position: absolute; top: -1px; left: 20px; width: 34px; height: 2px; background: var(--gold); content: ""; }
     .treatment-card:hover { transform: translateY(-3px); border-color: rgba(102, 113, 93, .4); box-shadow: 0 12px 24px rgba(46, 42, 36, .07); }
+    .treatment-card-link { color: inherit; cursor: pointer; text-decoration: none; }
+    .treatment-card-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
     .treatment-card span { color: var(--sage); font: 700 9px/1.5 var(--sans); letter-spacing: .14em; }
     .treatment-card h4 { margin: 24px 0 0; font: 700 21px/1.25 var(--serif); }
+    .treatment-card h4 a { color: inherit; text-decoration: none; }
+    .treatment-card h4 a:hover { color: var(--sage); text-decoration: underline; text-underline-offset: 4px; }
     .treatment-card.has-image span, .treatment-card.has-image h4, .treatment-card.has-image p { margin-right: 16px; margin-left: 16px; }
     .treatment-card.has-image span { margin-top: 14px; }
     .treatment-card.has-image h4 { margin-top: 8px; }
     .treatment-card p { margin: 10px 0 0; color: var(--dim); font-size: 14px; line-height: 1.55; font-weight: 600; }
+    .treatment-subpages { margin-top: 24px; padding: 18px 22px; border: 1px solid var(--line); background: rgba(242, 238, 228, .65); }
+    .treatment-subpages p { margin: 0 0 8px; color: var(--sage); font: 700 10px/1.6 var(--sans); letter-spacing: .12em; text-transform: uppercase; }
+    .treatment-subpages ul { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0; padding: 0; list-style: none; }
+    .treatment-subpages a { color: var(--ink); font-size: 13px; font-weight: 600; text-decoration-color: rgba(102, 113, 93, .4); text-underline-offset: 3px; }
     .treatment-note { margin: 24px 0 0; color: var(--dim); font-size: 14px; font-weight: 600; }
-    .treatment-page-link { display: inline-block; margin-top: 24px; color: var(--sage); font: 700 10px/1.5 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
-    .treatment-page-link:hover { color: var(--deep); }
+    .treatment-page-link { align-self: flex-start; display: inline-block; margin-top: auto; padding: 9px 13px; border: 1px solid rgba(102, 113, 93, .38); background: #f2efe7; color: var(--sage); font: 700 10px/1.5 var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+    .treatment-page-link:hover { border-color: var(--deep); background: var(--deep); color: #fff; }
+    .treatment-page-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+    .treatment-card.has-image .treatment-page-link { margin-right: 16px; margin-left: 16px; }
 
     .before-after { padding-top: 15px; padding-bottom: 105px; }
     .before-after-head { margin-bottom: 34px; text-align: center; }
@@ -573,7 +585,13 @@
 </head>
 <body>
   <nav class="navbar" aria-label="Ana menü">
-    <a class="brand" href="#top">MESUT <strong>K.</strong></a>
+    <div class="brand-group">
+      <a class="brand" href="#top">MESUT <strong>K.</strong></a>
+      <div class="language-switch notranslate" role="group" aria-label="Dil seçimi">
+        <button class="language-button" type="button" data-site-language="tr" aria-label="Türkçe" aria-pressed="true"><span class="language-flag" aria-hidden="true">&#x1F1F9;&#x1F1F7;</span><span>TR</span></button>
+        <button class="language-button" type="button" data-site-language="en" aria-label="English" aria-pressed="false"><span class="language-flag" aria-hidden="true">&#x1F1EC;&#x1F1E7;</span><span>ENG</span></button>
+      </div>
+    </div>
     <button class="menu-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="site-menu">
       <span></span><span></span><span></span>
     </button>
@@ -585,7 +603,6 @@
       <a href="#sss">Sıkça sorulan sorular</a>
       <a href="#iletisim">İletişim</a>
       <a class="admin-link" href="/admin">Yönetici girişi</a>
-      <button class="language-toggle" id="language-toggle" type="button" aria-label="Switch language to English">English</button>
       <span class="language-status" id="language-status" role="status" aria-live="polite"></span>
       <a href="#yazilar" id="posts-nav-link" hidden>Yazılar</a>
     </div>
@@ -599,7 +616,7 @@
         <a class="text-link" href="#iletisim">İletişim bilgileri <span aria-hidden="true">→</span></a>
       </div>
       <div class="hero-visual">
-        <img src="WhatsApp%20Image%202026-09-15%20at%2016.21.43-Photoroom.png" alt="Doç. Dr. Mesut Karıksız" width="2048" height="808" fetchpriority="high" decoding="async">
+        <img src="__HERO_IMAGE__" alt="Doç. Dr. Mesut Karıksız" width="2048" height="808" fetchpriority="high" decoding="async">
         <span class="visual-caption">Ortopedi ve Travmatoloji</span>
       </div>
     </header>
@@ -638,54 +655,63 @@
             <details>
               <summary>Diz</summary>
               <div class="treatment-cards">
-                <article class="treatment-card has-image">
+                <a class="treatment-card has-image treatment-card-link" href="/tedavi/on-capraz-bag-yaralanmasi.html" aria-label="Ön Çapraz Bağ Yaralanması">
                   <img class="treatment-card-image" src="o-n-c-apraz-bag-yaralanmasi-nedenleri-belirtileri-ve-tedavisi.webp" alt="Ön çapraz bağ yaralanması görseli" loading="lazy">
-                  <span>DİZ</span><h4>Ön çapraz bağ yaralanmaları</h4>
+                  <span>DİZ</span><h4>Ön Çapraz Bağ Yaralanması</h4>
                   <p>Ön çapraz bağ, dizin dönme hareketleri sırasında stabilitesine katkı sağlar. Yaralanmanın tedavisi muayene, aktivite düzeyi ve görüntüleme bulgularına göre planlanır.</p>
-                </article>
-                <article class="treatment-card has-image">
+                <span class="treatment-page-link">Detaya git</span></a>
+                <a class="treatment-card has-image treatment-card-link" href="/tedavi/meniskus-yirtigi.html" aria-label="Menisküs Yırtığı">
                   <img class="treatment-card-image" src="meniscal-tear-mri.webp" alt="Menisküs yırtığı MR görüntüsü" loading="lazy">
                   <span>DİZ</span><h4>Menisküs yırtıkları</h4>
                   <p>Menisküsler diz ekleminde yük dağılımına yardımcı kıkırdak yapılardır. Yırtıkların tedavisi yırtığın yeri, şikâyetler ve muayene bulgularına göre değerlendirilir.</p>
-                </article>
-                <article class="treatment-card has-image">
+                <span class="treatment-page-link">Detaya git</span></a>
+                <a class="treatment-card has-image treatment-card-link" href="/tedavi/kikirdak-yaralanmalari.html" aria-label="Diz Kıkırdak Yaralanması">
                   <img class="treatment-card-image" src="images.jpg" alt="Kıkırdak yaralanması görseli" loading="lazy">
                   <span>DİZ</span><h4>Kıkırdak yaralanmaları</h4>
                   <p>Eklem kıkırdağındaki hasar ağrıya veya hareket kısıtlılığına neden olabilir. Hasarın yeri ve boyutu, tedavi seçeneklerinin değerlendirilmesinde önem taşır.</p>
-                </article>
-                <article class="treatment-card has-image">
+                <span class="treatment-page-link">Detaya git</span></a>
+                <a class="treatment-card has-image treatment-card-link" href="/tedavi/diz-kapagi-cikigi.html" aria-label="Diz Kapağı Çıkığı">
                   <img class="treatment-card-image" src="egemen-turhan-diz-kapaği-cikmasi-img-4.jpg" alt="Diz kapağı çıkığı görseli" loading="lazy">
                   <span>DİZ</span><h4>Diz kapağı çıkığı</h4>
                   <p>Diz kapağının eklem oluğundan çıkması ağrı ve şişliğe yol açabilir. İlk veya tekrarlayan çıkıklarda yaklaşım, muayene ve eşlik eden hasarlara göre belirlenir.</p>
-                </article>
+                <span class="treatment-page-link">Detaya git</span></a>
               </div>
             </details>
             <details>
               <summary>Omuz</summary>
               <div class="treatment-cards">
-                <article class="treatment-card has-image">
+                <a class="treatment-card has-image treatment-card-link" href="/tedavi/omuz-kas-tendon-yirtiklari.html" aria-label="Omuz Kas-Tendon Yırtıkları">
                   <img class="treatment-card-image shoulder-image" src="Omuz-kas-yırtığı-1.jpg" alt="Omuz kas yırtığı görseli" loading="lazy">
                   <span>OMUZ</span><h4>Kas-tendon yırtıkları</h4>
                   <p>Omuz çevresindeki kas ve tendon yırtıkları ağrıya ve kol hareketlerinde güçlüğe neden olabilir. Yırtığın kapsamı muayene ve gerekli görüntülemelerle değerlendirilir.</p>
-                </article>
-                <article class="treatment-card has-image">
+                <span class="treatment-page-link">Detaya git</span></a>
+                <a class="treatment-card has-image treatment-card-link" href="/tedavi/omuz-cikigi.html" aria-label="Omuz Çıkığı">
                   <img class="treatment-card-image shoulder-image" src="omuz-cikigi-1024x576.webp" alt="Omuz çıkığı görseli" loading="lazy">
                   <span>OMUZ</span><h4>Omuz çıkıkları</h4>
                   <p>Omuz çıkığında eklem yüzleri normal konumundan ayrılır; çevre dokular da etkilenebilir. Tedavi planında çıkığın tekrarlayıp tekrarlamadığı ve eşlik eden hasarlar dikkate alınır.</p>
-                </article>
+                <span class="treatment-page-link">Detaya git</span></a>
               </div>
             </details>
             <details>
               <summary>Kalça</summary>
               <div class="treatment-cards">
-                <article class="treatment-card"><span>KALÇA</span><h4>Kalça sıkışma sendromu (FAI)</h4><p>Kalça eklemindeki kemik yapıların bazı hareketlerde teması ağrı ve hareket kısıtlılığına neden olabilir. Tanı, klinik değerlendirme ve uygun görüntülemelerle konur.</p></article>
-                <article class="treatment-card"><span>KALÇA</span><h4>Kalça artroskopisi</h4><p>Kalça artroskopisi, küçük kesilerden kamera ve ince cerrahi aletlerle eklemin değerlendirilip uygun durumlarda tedavi edildiği bir yöntemdir.</p></article>
+                <a class="treatment-card treatment-card-link" href="/tedavi/kalca-sikisma-sendromu.html" aria-label="Kalça Sıkışma Sendromu">
+                  <span>KALÇA</span><h4>Kalça sıkışma sendromu (FAI)</h4>
+                  <p>Kalça eklemindeki kemik yapıların bazı hareketlerde teması ağrı ve hareket kısıtlılığına neden olabilir. Tanı, klinik değerlendirme ve uygun görüntülemelerle konur.</p>
+                <span class="treatment-page-link">Detaya git</span></a>
+                <a class="treatment-card treatment-card-link" href="/tedavi/kalca-artroskopisi.html" aria-label="Kalça Artroskopisi">
+                  <span>KALÇA</span><h4>Kalça Artroskopisi</h4>
+                  <p>Kalça artroskopisi, küçük kesilerden kamera ve ince cerrahi aletlerle eklemin değerlendirilip uygun durumlarda tedavi edildiği bir yöntemdir.</p>
+                <span class="treatment-page-link">Detaya git</span></a>
               </div>
             </details>
             <details>
               <summary>Ayak bileği</summary>
               <div class="treatment-cards">
-                <article class="treatment-card"><span>AYAK BİLEĞİ</span><h4>Ayak bileği artroskopisi</h4><p>Ayak bileği artroskopisi, eklem içindeki sorunların kamera yardımıyla değerlendirilmesine ve uygun durumlarda tedavisine olanak sağlar.</p></article>
+                <a class="treatment-card treatment-card-link" href="/tedavi/ayak-bilegi-artroskopisi.html" aria-label="Ayak Bileği Artroskopisi">
+                  <span>AYAK BİLEĞİ</span><h4>Ayak Bileği Artroskopisi</h4>
+                  <p>Ayak bileği artroskopisi, eklem içindeki sorunların kamera yardımıyla değerlendirilmesine ve uygun durumlarda tedavisine olanak sağlar.</p>
+                <span class="treatment-page-link">Detaya git</span></a>
               </div>
             </details>
           </div>
@@ -694,21 +720,21 @@
         <section class="treatment-panel" id="panel-ayak" role="tabpanel" aria-labelledby="tab-ayak" hidden>
           <h3>Ayak ve Ayak Bileği Cerrahisi</h3>
           <div class="treatment-cards">
-            <article class="treatment-card"><span>AYAK</span><h4>Halluks Valgus (Ayak Başparmağı Çıkıntısı)</h4><p>Ayak başparmağının diğer parmaklara yönelmesi ve eklem çevresinde çıkıntı oluşmasıdır. Ağrı ve günlük yaşama etkisine göre tedavi seçenekleri değerlendirilir.</p></article>
-            <article class="treatment-card"><span>AYAK</span><h4>Çekiç Parmak Deformitesi</h4><p>Parmağın eklemlerinden bükülü pozisyonda kalmasıyla ortaya çıkan şekil değişikliğidir. Deformitenin esnekliği, bası noktaları ve şikâyetler değerlendirilir.</p></article>
-            <article class="treatment-card"><span>AYAK</span><h4>Pes Planus (Düz Tabanlık)</h4><p>Ayak iç kavisinin azalması veya yere yaklaşmasıdır. Her düz tabanlık belirti vermez; değerlendirme ağrı, işlev ve muayene bulgularına göre yapılır.</p></article>
-            <article class="treatment-card"><span>AYAK</span><h4>Pes Cavus (Çukur Tabanlık)</h4><p>Ayak kavsinin normalden yüksek olduğu yapısal durumdur. Basınç dağılımı, denge ve eşlik edebilecek diğer bulgular muayenede ele alınır.</p></article>
-            <article class="treatment-card"><span>AYAK</span><h4>Plantar Fasiit (Topuk Dikeni ve Topuk Ağrısı)</h4><p>Plantar fasya dokusunun zorlanması topuk tabanında ağrıya neden olabilir. Topuk ağrısının nedeni ve uygun yaklaşım klinik değerlendirmeyle belirlenir.</p></article>
+            <article class="treatment-card"><span>AYAK</span><h4><a href="/tedavi/halluks-valgus.html">Halluks Valgus (Bunyon)</a></h4><p>Ayak başparmağının diğer parmaklara yönelmesi ve eklem çevresinde çıkıntı oluşmasıdır. Ağrı ve günlük yaşama etkisine göre tedavi seçenekleri değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/halluks-valgus.html">Detaya git</a></article>
+            <article class="treatment-card"><span>AYAK</span><h4><a href="/tedavi/cekic-parmak-deformitesi.html">Çekiç Parmak Deformitesi</a></h4><p>Parmağın eklemlerinden bükülü pozisyonda kalmasıyla ortaya çıkan şekil değişikliğidir. Deformitenin esnekliği, bası noktaları ve şikâyetler değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/cekic-parmak-deformitesi.html">Detaya git</a></article>
+            <article class="treatment-card"><span>AYAK</span><h4><a href="/tedavi/pes-planus.html">Pes Planus (Düztabanlık)</a></h4><p>Ayak iç kavisinin azalması veya yere yaklaşmasıdır. Her düz tabanlık belirti vermez; değerlendirme ağrı, işlev ve muayene bulgularına göre yapılır.</p><a class="treatment-page-link" href="/tedavi/pes-planus.html">Detaya git</a></article>
+            <article class="treatment-card"><span>AYAK</span><h4><a href="/tedavi/pes-cavus.html">Pes Cavus (Çukur Ayak)</a></h4><p>Ayak kavsinin normalden yüksek olduğu yapısal durumdur. Basınç dağılımı, denge ve eşlik edebilecek diğer bulgular muayenede ele alınır.</p><a class="treatment-page-link" href="/tedavi/pes-cavus.html">Detaya git</a></article>
+            <article class="treatment-card"><span>AYAK</span><h4><a href="/tedavi/plantar-fasiit-topuk-agrisi.html">Topuk Ağrısı ve Topuk Dikeni</a></h4><p>Plantar fasya dokusunun zorlanması topuk tabanında ağrıya neden olabilir. Topuk ağrısının nedeni ve uygun yaklaşım klinik değerlendirmeyle belirlenir.</p><a class="treatment-page-link" href="/tedavi/plantar-fasiit-topuk-agrisi.html">Detaya git</a></article>
           </div>
         </section>
         <section class="treatment-panel" id="panel-el" role="tabpanel" aria-labelledby="tab-el" hidden>
           <h3>El Cerrahisi ve Mikrocerrahi</h3>
           <div class="treatment-cards">
-            <article class="treatment-card"><span>EL CERRAHİSİ</span><h4>Karpal Tünel Sendromu (Median Sinir Sıkışması) ve Cerrahi Gevşetme</h4><p>Median sinirin el bileği düzeyinde sıkışması elde uyuşma, karıncalanma veya güç kaybına yol açabilir. Cerrahi gevşetme dahil seçenekler, sinir etkilenmesi ve muayene bulgularına göre değerlendirilir.</p></article>
-            <article class="treatment-card"><span>EL CERRAHİSİ</span><h4>Tetik Parmak Hastalığı ve Cerrahi Tedavisi</h4><p>Parmağın bükülüp açılırken takılması veya kilitlenmesiyle kendini gösterebilir. Tedavi, yakınmaların şiddeti ve tendon kılıfındaki etkilenmeye göre planlanır.</p></article>
-            <article class="treatment-card"><span>EL CERRAHİSİ</span><h4>Ganglion Kisti ve Cerrahi Tedavisi</h4><p>Ganglion, eklem veya tendon çevresinde görülebilen, içi sıvı dolu bir kitle oluşumudur. İzlem veya tedavi kararı; ağrı, hareket kısıtlılığı ve muayeneye göre verilir.</p></article>
-            <article class="treatment-card"><span>MİKROCERRAHİ</span><h4>Parmak Replantasyonu (Kopan Parmakların Mikrocerrahi ile Yerine Dikilmesi)</h4><p>Uygun koşullardaki kopma yaralanmalarında parmağın damar, sinir ve diğer dokularının mikroskop altında onarılması hedeflenir. Bu yaralanmalar acil tıbbi değerlendirme gerektirir.</p></article>
-            <article class="treatment-card"><span>MİKROCERRAHİ</span><h4>Mikrocerrahi ile Damar ve Sinir Onarımları</h4><p>İnce damar ve sinirlerin büyütme altında onarılması, seçilmiş yaralanmalarda doku dolaşımı ve sinir devamlılığının yeniden sağlanmasına yardımcı olabilir.</p></article>
+            <article class="treatment-card"><span>EL CERRAHİSİ</span><h4><a href="/tedavi/karpal-tunel-sendromu.html">Karpal Tünel Sendromu</a></h4><p>Median sinirin el bileği düzeyinde sıkışması elde uyuşma, karıncalanma veya güç kaybına yol açabilir. Cerrahi gevşetme dahil seçenekler, sinir etkilenmesi ve muayene bulgularına göre değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/karpal-tunel-sendromu.html">Detaya git</a></article>
+            <article class="treatment-card"><span>EL CERRAHİSİ</span><h4><a href="/tedavi/tetik-parmak.html">Tetik Parmak Cerrahisi</a></h4><p>Parmağın bükülüp açılırken takılması veya kilitlenmesiyle kendini gösterebilir. Tedavi, yakınmaların şiddeti ve tendon kılıfındaki etkilenmeye göre planlanır.</p><a class="treatment-page-link" href="/tedavi/tetik-parmak.html">Detaya git</a></article>
+            <article class="treatment-card"><span>EL CERRAHİSİ</span><h4><a href="/tedavi/ganglion-kisti.html">Ganglion Kisti</a></h4><p>Ganglion, eklem veya tendon çevresinde görülebilen, içi sıvı dolu bir kitle oluşumudur. İzlem veya tedavi kararı; ağrı, hareket kısıtlılığı ve muayeneye göre verilir.</p><a class="treatment-page-link" href="/tedavi/ganglion-kisti.html">Detaya git</a></article>
+            <article class="treatment-card"><span>MİKROCERRAHİ</span><h4><a href="/tedavi/parmak-replantasyonu.html">Parmak Replantasyonu</a></h4><p>Uygun koşullardaki kopma yaralanmalarında parmağın damar, sinir ve diğer dokularının mikroskop altında onarılması hedeflenir. Bu yaralanmalar acil tıbbi değerlendirme gerektirir.</p><a class="treatment-page-link" href="/tedavi/parmak-replantasyonu.html">Detaya git</a></article>
+            <article class="treatment-card"><span>MİKROCERRAHİ</span><h4><a href="/tedavi/sinir-ve-damar-onarimi.html">Sinir ve Damar Onarımı</a></h4><p>İnce damar ve sinirlerin büyütme altında onarılması, seçilmiş yaralanmalarda doku dolaşımı ve sinir devamlılığının yeniden sağlanmasına yardımcı olabilir.</p><a class="treatment-page-link" href="/tedavi/sinir-ve-damar-onarimi.html">Detaya git</a></article>
           </div>
         </section>
         <section class="treatment-panel" id="panel-protez" role="tabpanel" aria-labelledby="tab-protez" hidden>
@@ -716,78 +742,78 @@
           <div class="treatment-cards">
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="prosthesis-revision.png" alt="Revizyon öncesi gevşemiş kalça protezi röntgeni" loading="lazy">
-              <span>01</span><h4>Revizyon cerrahisi</h4>
+              <span>01</span><h4><a href="/tedavi/revizyon-protez-cerrahisi.html">Revizyon Protez Cerrahisi</a></h4>
               <p>Mevcut eklem protezinde gevşeme, aşınma veya başka bir sorun olduğunda nedenin belirlenmesi önemlidir. Revizyon cerrahisinin gerekliliği ve kapsamı kişiye özel değerlendirilir.</p>
-            </article>
+            <a class="treatment-page-link" href="/tedavi/revizyon-protez-cerrahisi.html">Detaya git</a></article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="knee-osteoarthritis.jpg" alt="Diz kireçlenmesini gösteren röntgen" loading="lazy">
-              <span>02</span><h4>Diz kireçlenmesi</h4>
+              <span>02</span><h4><a href="/tedavi/diz-protezi.html">Diz kireçlenmesi</a></h4>
               <p>Diz eklemindeki kıkırdak aşınması ağrıya ve hareket kısıtlılığına neden olabilir. Tedavi seçenekleri bulguların düzeyine ve kişinin günlük yaşamına etkisine göre ele alınır.</p>
-            </article>
+            <a class="treatment-page-link" href="/tedavi/diz-protezi.html">Detaya git</a></article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="knee-replacement.jpg" alt="Diz protezi ameliyatı öncesi ve sonrası röntgen görüntüleri" loading="lazy">
-              <span>03</span><h4>Diz protezi</h4>
+              <span>03</span><h4><a href="/tedavi/diz-protezi.html">Diz Protezi Ameliyatı</a></h4>
               <p>Diz protezi, ileri eklem hasarında ağrı ve işlev kaybı için değerlendirilebilen cerrahi seçeneklerden biridir. Uygunluk, muayene ve görüntüleme bulgularıyla belirlenir.</p>
-            </article>
+            <a class="treatment-page-link" href="/tedavi/diz-protezi.html">Detaya git</a></article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="hip-replacement.jpg" alt="Kalça protezini gösteren pelvis röntgeni" loading="lazy">
-              <span>04</span><h4>Kalça protezi</h4>
+              <span>04</span><h4><a href="/tedavi/kalca-protezi.html">Kalça Protezi Ameliyatı</a></h4>
               <p>Kalça protezi, eklem hasarının belirgin ağrı ve hareket kısıtlılığına yol açtığı durumlarda gündeme gelebilir. Cerrahi kararı kişinin sağlık durumu ve değerlendirme sonuçlarına göre verilir.</p>
-            </article>
+            <a class="treatment-page-link" href="/tedavi/kalca-protezi.html">Detaya git</a></article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="hip-osteoarthritis.jpg" alt="Kalça kireçlenmesine ait röntgen, BT ve MR görüntüleri" loading="lazy">
-              <span>05</span><h4>Kalça kireçlenmesi</h4>
+              <span>05</span><h4><a href="/tedavi/kalca-protezi.html">Kalça Protezi Ameliyatı</a></h4>
               <p>Kalça eklemindeki kıkırdak yapının zamanla bozulması ağrıya ve hareketlerde zorlanmaya neden olabilir. Tanı ve tedavi planı klinik değerlendirmeyle oluşturulur.</p>
-            </article>
+            <a class="treatment-page-link" href="/tedavi/kalca-protezi.html">Detaya git</a></article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="ganz-pao.jpg" alt="Ganz ameliyatı sonrası pelvis röntgeni" loading="lazy">
-              <span>06</span><h4>Ganz ameliyatı</h4>
+              <span>06</span><h4><a href="/tedavi/ganz-ameliyati-pao.html">Ganz ameliyatı</a></h4>
               <p>Ganz (periasetabular) osteotomi, uygun hastalarda kalça yuvasının konumunu düzeltmeyi amaçlayan eklem koruyucu bir cerrahidir. Uygunluk, kalça yapısı ve eklem durumu incelenerek değerlendirilir.</p>
-            </article>
+            <a class="treatment-page-link" href="/tedavi/ganz-ameliyati-pao.html">Detaya git</a></article>
           </div>
-        </section>
+        <div class="treatment-subpages"><p>Bu alandaki diğer tedavi sayfaları</p><ul><li><a href="/tedavi/ganz-ameliyati-pao.html">Ganz Ameliyatı (PAO)</a></li><li><a href="/tedavi/unikondiler-diz-protezi.html">Unikondiler (Kısmi) Diz Protezi</a></li><li><a href="/tedavi/yuksek-tibial-osteotomi.html">Yüksek Tibial Osteotomi (HTO)</a></li></ul></div></section>
         <section class="treatment-panel" id="panel-kok-hucre" role="tabpanel" aria-labelledby="tab-kok-hucre" hidden>
           <h3>Ortobiyolojik Tedaviler</h3>
           <p class="treatment-panel-intro">Kök hücre uygulamalarının uygunluğu, hastanın klinik durumu ve bilimsel kanıtlar doğrultusunda hekim tarafından değerlendirilir.</p>
           <div class="treatment-cards">
             <article class="treatment-card has-image">
               <img class="treatment-card-image specialty-image" src="stem-cells.jpg" alt="İnsan mezenkimal kök hücrelerinin mikroskop görüntüsü" loading="lazy">
-              <span>ORTOBİYOLOJİK TEDAVİ</span><h4>Kök Hücre Tedavisi</h4>
+              <span>ORTOBİYOLOJİK TEDAVİ</span><h4><a href="/tedavi/kok-hucre-tedavisi.html">Kök Hücre Tedavisi</a></h4>
               <p>Kök hücre uygulamalarının içeriği ve kullanım alanları yönteme göre değişebilir. Bilimsel kanıtlar, olası yarar ve riskler ile kişiye uygunluk hekim tarafından değerlendirilmelidir.</p>
-            </article>
-            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4>PRP (Trombositten Zengin Plazma)</h4><p>PRP, kişiden alınan kan örneğinin hazırlanmasıyla trombosit yönünden zengin bir ürün elde edilmesini amaçlar. Kullanım alanı ve beklenen sonuçlar tanı ve mevcut kanıtlar çerçevesinde değerlendirilir.</p></article>
-            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4>PLF</h4><p>PLF adıyla belirtilen uygulamanın içeriği ve yöntemi kullanılan protokole göre açıklanmalıdır. Uygunluk, uygulama ayrıntıları ve mevcut kanıtlar hekim görüşmesinde ele alınır.</p></article>
-            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4>Eksozom Tedavisi</h4><p>Eksozom adıyla sunulan uygulamaların içeriği ve klinik kanıt düzeyi farklılık gösterebilir. Kullanım kararı verilmeden önce yöntemin niteliği, belirsizlikleri ve kişiye uygunluğu değerlendirilmelidir.</p></article>
-            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4>Sanakin Tedavisi</h4><p>Sanakin, kişiden alınan kanın belirli koşullarda işlenmesiyle hazırlanan serumun kullanıldığı bir uygulamadır. Uygunluğu tanı, klinik durum ve mevcut bilimsel kanıtlar doğrultusunda değerlendirilir.</p></article>
+            <a class="treatment-page-link" href="/tedavi/kok-hucre-tedavisi.html">Detaya git</a></article>
+            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4><a href="/tedavi/prp-tedavisi.html">PRP Tedavisi</a></h4><p>PRP, kişiden alınan kan örneğinin hazırlanmasıyla trombosit yönünden zengin bir ürün elde edilmesini amaçlar. Kullanım alanı ve beklenen sonuçlar tanı ve mevcut kanıtlar çerçevesinde değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/prp-tedavisi.html">Detaya git</a></article>
+            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4>PLF</h4><p>PLF adıyla belirtilen uygulamanın içeriği ve yöntemi kullanılan protokole göre açıklanmalıdır. Uygunluk, uygulama ayrıntıları ve mevcut kanıtlar hekim görüşmesinde ele alınır.</p><a class="treatment-page-link" href="/tedavi/ortobiyolojik-tedaviler">Detaya git</a></article>
+            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4><a href="/tedavi/eksozom-tedavisi.html">Eksozom Tedavisi</a></h4><p>Eksozom adıyla sunulan uygulamaların içeriği ve klinik kanıt düzeyi farklılık gösterebilir. Kullanım kararı verilmeden önce yöntemin niteliği, belirsizlikleri ve kişiye uygunluğu değerlendirilmelidir.</p><a class="treatment-page-link" href="/tedavi/eksozom-tedavisi.html">Detaya git</a></article>
+            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4><a href="/tedavi/sanakin-tedavisi.html">Sanakin Tedavisi</a></h4><p>Sanakin, kişiden alınan kanın belirli koşullarda işlenmesiyle hazırlanan serumun kullanıldığı bir uygulamadır. Uygunluğu tanı, klinik durum ve mevcut bilimsel kanıtlar doğrultusunda değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/sanakin-tedavisi.html">Detaya git</a></article>
           </div>
           <p class="treatment-note">Her yöntem her hasta için uygun olmayabilir. Tanı ve tedavi planı muayene sonrasında belirlenir.</p>
-        </section>
+        <div class="treatment-subpages"><p>Bu alandaki diğer tedavi sayfaları</p><ul><li><a href="/tedavi/prf-tedavisi.html">PRF Tedavisi</a></li></ul></div></section>
         <section class="treatment-panel" id="panel-endoskopik-omurga" role="tabpanel" aria-labelledby="tab-endoskopik-omurga" hidden>
           <h3>Endoskopik (kapalı) omurga cerrahisi</h3>
           <div class="treatment-cards">
-            <article class="treatment-card"><span>ENDOSKOPİK OMURGA CERRAHİSİ</span><h4>Endoskopik (kapalı) bel fıtığı ameliyatı</h4><p>Bel fıtığının sinir dokusuna baskı yaptığı seçilmiş durumlarda, endoskopik yöntemle fıtık dokusuna müdahale değerlendirilebilir. Yöntemin uygunluğu muayene ve görüntüleme ile belirlenir.</p></article>
-            <article class="treatment-card"><span>ENDOSKOPİK OMURGA CERRAHİSİ</span><h4>Endoskopik (kapalı) dar kanal ameliyatı</h4><p>Omurga kanalındaki daralma sinirler üzerinde baskıya ve yürüme güçlüğü gibi yakınmalara yol açabilir. Cerrahi yaklaşım, darlığın yeri ve kapsamına göre planlanır.</p></article>
-            <article class="treatment-card"><span>ENDOSKOPİK OMURGA CERRAHİSİ</span><h4>Endoskopik (kapalı) bel kayması ameliyatı</h4><p>Omur kemiklerinden birinin diğerine göre yer değiştirmesi bel veya bacak yakınmalarına neden olabilir. Endoskopik yöntemin uygunluğu omurganın stabilitesi ve görüntüleme bulgularına göre değerlendirilir.</p></article>
-            <article class="treatment-card"><span>ENJEKSİYON UYGULAMALARI</span><h4>Transforaminal enjeksiyonlar (nokta atışı)</h4><p>İlaç, görüntüleme eşliğinde sinir kökünün omurgadan çıktığı bölgeye uygulanır. Hangi durumlarda kullanılacağı ve olası riskleri hekim tarafından değerlendirilir.</p></article>
-            <article class="treatment-card"><span>ENJEKSİYON UYGULAMALARI</span><h4>Kaudal enjeksiyonlar</h4><p>İlaç, kuyruk sokumu bölgesindeki doğal açıklıktan epidural alana ulaştırılır. İşlem kararı, yakınmalar ve muayene bulguları birlikte değerlendirilerek verilir.</p></article>
-            <article class="treatment-card"><span>GİRİŞİMSEL TEDAVİLER</span><h4>Radyofrekans faset ablasyonu</h4><p>Faset eklemlerden kaynaklandığı düşünülen ağrılarda, ilgili sinir dallarına radyofrekans enerjisi uygulanabilir. İşlem öncesi ağrının kaynağı ve yöntemin uygunluğu değerlendirilir.</p></article>
+            <article class="treatment-card"><span>ENDOSKOPİK OMURGA CERRAHİSİ</span><h4>Endoskopik (kapalı) bel fıtığı ameliyatı</h4><p>Bel fıtığının sinir dokusuna baskı yaptığı seçilmiş durumlarda, endoskopik yöntemle fıtık dokusuna müdahale değerlendirilebilir. Yöntemin uygunluğu muayene ve görüntüleme ile belirlenir.</p><a class="treatment-page-link" href="/tedavi/endoskopik-bel-fitigi-ameliyati.html">Detaya git</a></article>
+            <article class="treatment-card"><span>ENDOSKOPİK OMURGA CERRAHİSİ</span><h4>Endoskopik (kapalı) dar kanal ameliyatı</h4><p>Omurga kanalındaki daralma sinirler üzerinde baskıya ve yürüme güçlüğü gibi yakınmalara yol açabilir. Cerrahi yaklaşım, darlığın yeri ve kapsamına göre planlanır.</p><a class="treatment-page-link" href="/tedavi/endoskopik-dar-kanal-ameliyati.html">Detaya git</a></article>
+            <article class="treatment-card"><span>ENDOSKOPİK OMURGA CERRAHİSİ</span><h4>Endoskopik (kapalı) bel kayması ameliyatı</h4><p>Omur kemiklerinden birinin diğerine göre yer değiştirmesi bel veya bacak yakınmalarına neden olabilir. Endoskopik yöntemin uygunluğu omurganın stabilitesi ve görüntüleme bulgularına göre değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/endoskopik-bel-kaymasi-ameliyati.html">Detaya git</a></article>
+            <article class="treatment-card"><span>ENJEKSİYON UYGULAMALARI</span><h4><a href="/tedavi/transforaminal-enjeksiyon.html">Transforaminal Enjeksiyon</a></h4><p>İlaç, görüntüleme eşliğinde sinir kökünün omurgadan çıktığı bölgeye uygulanır. Hangi durumlarda kullanılacağı ve olası riskleri hekim tarafından değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/transforaminal-enjeksiyon.html">Detaya git</a></article>
+            <article class="treatment-card"><span>ENJEKSİYON UYGULAMALARI</span><h4><a href="/tedavi/kaudal-enjeksiyon.html">Kaudal Enjeksiyon</a></h4><p>İlaç, kuyruk sokumu bölgesindeki doğal açıklıktan epidural alana ulaştırılır. İşlem kararı, yakınmalar ve muayene bulguları birlikte değerlendirilerek verilir.</p><a class="treatment-page-link" href="/tedavi/kaudal-enjeksiyon.html">Detaya git</a></article>
+            <article class="treatment-card"><span>GİRİŞİMSEL TEDAVİLER</span><h4><a href="/tedavi/radyofrekans-faset-ablasyonu.html">Radyofrekans Faset Ablasyonu</a></h4><p>Faset eklemlerden kaynaklandığı düşünülen ağrılarda, ilgili sinir dallarına radyofrekans enerjisi uygulanabilir. İşlem öncesi ağrının kaynağı ve yöntemin uygunluğu değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/radyofrekans-faset-ablasyonu.html">Detaya git</a></article>
           </div>
-        </section>
+        <div class="treatment-subpages"><p>Bu alandaki diğer tedavi sayfaları</p><ul><li><a href="/tedavi/endoskopik-bel-fitigi-ameliyati.html">Endoskopik Bel Fıtığı Ameliyatı</a></li><li><a href="/tedavi/endoskopik-dar-kanal-ameliyati.html">Endoskopik Dar Kanal Ameliyatı</a></li><li><a href="/tedavi/endoskopik-bel-kaymasi-ameliyati.html">Bel Kayması Endoskopik Ameliyat</a></li><li><a href="/tedavi/kifoplasti.html">Kifoplasti</a></li></ul></div></section>
         <section class="treatment-panel" id="panel-boy-uzatma" role="tabpanel" aria-labelledby="tab-boy-uzatma" hidden>
           <h3>Boy uzatma ve deformite cerrahisi</h3>
           <div class="treatment-cards">
-            <article class="treatment-card"><span>BOY UZATMA</span><h4>Boy uzatma</h4><p>Kemiklerin kontrollü biçimde uzatılmasını amaçlayan tedaviler, dikkatli planlama ve düzenli takip gerektirir. Yöntem ve hedefler kişinin sağlık durumu ile beklentilerine göre değerlendirilir.</p></article>
-            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4>Konjenital tibia psödoartrozu</h4><p>Doğuştan gelen bu nadir durumda kaval kemiğinde kırık ve kaynamama gelişebilir. Kemik yapısı ve mevcut deformiteye göre uzman değerlendirmesiyle tedavi planı oluşturulur.</p></article>
-            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4>Hemimeli</h4><p>Hemimeli, doğuştan bir uzuv kemiğinin kısmen veya tamamen gelişmemesiyle görülebilen bir durumdur. Değerlendirme ve tedavi planı etkilenen kemiklere, büyümeye ve işlevsel ihtiyaçlara göre yapılır.</p></article>
-            <article class="treatment-card"><span>KEMİK ENFEKSİYONLARI</span><h4>Osteomiyelit (kemik enfeksiyonu)</h4><p>Osteomiyelit kemik dokusunun enfeksiyonudur ve zamanında tıbbi değerlendirme gerektirir. Tedavi; enfeksiyonun etkeni, yaygınlığı ve kişinin genel durumuna göre planlanır.</p></article>
-            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4>Akondroplazi (cücelik)</h4><p>Akondroplazi, kemik büyümesini etkileyen genetik bir iskelet gelişim durumudur. Ortopedik takipte uzuv dizilimi, eklem sağlığı ve kişinin işlevsel gereksinimleri ele alınır.</p></article>
-            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4>Bacak eğrilikleri</h4><p>Bacak eksenindeki içe veya dışa yönelim büyüme döneminde görülebilir ya da farklı nedenlerle gelişebilir. Yaş, eğriliğin derecesi ve ilerleyişi değerlendirilerek izlem veya tedavi seçenekleri belirlenir.</p></article>
+            <article class="treatment-card"><span>BOY UZATMA</span><h4><a href="/tedavi/boy-uzatma-ve-estetik-boy-uzatma.html">Boy Uzatma Ameliyatı</a></h4><p>Kemiklerin kontrollü biçimde uzatılmasını amaçlayan tedaviler, dikkatli planlama ve düzenli takip gerektirir. Yöntem ve hedefler kişinin sağlık durumu ile beklentilerine göre değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/boy-uzatma-ve-estetik-boy-uzatma.html">Detaya git</a></article>
+            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4><a href="/tedavi/konjenital-tibia-psodoartrozu.html">Konjenital Tibia Psödoartrozu</a></h4><p>Doğuştan gelen bu nadir durumda kaval kemiğinde kırık ve kaynamama gelişebilir. Kemik yapısı ve mevcut deformiteye göre uzman değerlendirmesiyle tedavi planı oluşturulur.</p><a class="treatment-page-link" href="/tedavi/konjenital-tibia-psodoartrozu.html">Detaya git</a></article>
+            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4><a href="/tedavi/hemimeli.html">Hemimeli (Fibula-Tibia Hemimeli)</a></h4><p>Hemimeli, doğuştan bir uzuv kemiğinin kısmen veya tamamen gelişmemesiyle görülebilen bir durumdur. Değerlendirme ve tedavi planı etkilenen kemiklere, büyümeye ve işlevsel ihtiyaçlara göre yapılır.</p><a class="treatment-page-link" href="/tedavi/hemimeli.html">Detaya git</a></article>
+            <article class="treatment-card"><span>KEMİK ENFEKSİYONLARI</span><h4><a href="/tedavi/osteomiyelit.html">Osteomiyelit (Kemik Enfeksiyonu)</a></h4><p>Osteomiyelit kemik dokusunun enfeksiyonudur ve zamanında tıbbi değerlendirme gerektirir. Tedavi; enfeksiyonun etkeni, yaygınlığı ve kişinin genel durumuna göre planlanır.</p><a class="treatment-page-link" href="/tedavi/osteomiyelit.html">Detaya git</a></article>
+            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4><a href="/tedavi/akondroplazi.html">Akondroplazi (Cücelik)</a></h4><p>Akondroplazi, kemik büyümesini etkileyen genetik bir iskelet gelişim durumudur. Ortopedik takipte uzuv dizilimi, eklem sağlığı ve kişinin işlevsel gereksinimleri ele alınır.</p><a class="treatment-page-link" href="/tedavi/akondroplazi.html">Detaya git</a></article>
+            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4><a href="/tedavi/bacak-egrilikleri.html">Bacak Eğrilikleri (O ve X Bacak)</a></h4><p>Bacak eksenindeki içe veya dışa yönelim büyüme döneminde görülebilir ya da farklı nedenlerle gelişebilir. Yaş, eğriliğin derecesi ve ilerleyişi değerlendirilerek izlem veya tedavi seçenekleri belirlenir.</p><a class="treatment-page-link" href="/tedavi/bacak-egrilikleri.html">Detaya git</a></article>
           </div>
-        </section>
+        <div class="treatment-subpages"><p>Bu alandaki diğer tedavi sayfaları</p><ul><li><a href="/tedavi/boy-uzatma-ve-deformite.html">Boy Uzatma ve Deformite Cerrahisi</a></li></ul></div></section>
         <section class="treatment-panel" id="panel-ultrason-enjeksiyon" role="tabpanel" aria-labelledby="tab-ultrason-enjeksiyon" hidden>
           <h3>Ultrason eşliğinde enjeksiyonlar</h3>
           <div class="treatment-cards">
-            <article class="treatment-card"><span>GİRİŞİMSEL TEDAVİLER</span><h4>Ultrason altında enjeksiyon uygulamaları</h4><p>Ultrason, iğnenin ve hedef dokunun işlem sırasında görüntülenmesine yardımcı olur. Uygulanacak ilaç, bölge ve işlem gerekliliği tanı ve muayene bulgularına göre belirlenir.</p></article>
+            <article class="treatment-card"><span>GİRİŞİMSEL TEDAVİLER</span><h4><a href="/tedavi/ultrason-esliginde-enjeksiyonlar.html">Ultrason Eşliğinde Enjeksiyon</a></h4><p>Ultrason, iğnenin ve hedef dokunun işlem sırasında görüntülenmesine yardımcı olur. Uygulanacak ilaç, bölge ve işlem gerekliliği tanı ve muayene bulgularına göre belirlenir.</p><a class="treatment-page-link" href="/tedavi/ultrason-esliginde-enjeksiyonlar.html">Detaya git</a></article>
           </div>
         </section>
         <section class="treatment-panel" id="panel-cocuk" role="tabpanel" aria-labelledby="tab-cocuk" hidden>
@@ -797,20 +823,20 @@
               <img class="treatment-card-image specialty-image" src="pediatric-hip-dysplasia.jpg" alt="Kalça displazisini gösteren röntgen görüntüsü" loading="lazy">
               <span>ÇOCUK ORTOPEDİSİ</span><h4>Kalça çıkığı</h4>
               <p>Gelişimsel kalça displazisinde kalça ekleminin yuvası ve uyluk kemiği başının ilişkisi etkilenebilir. Erken tanı ve tedavi yaklaşımı, çocuğun yaşına ve muayene bulgularına göre belirlenir.</p>
-            </article>
+            <a class="treatment-page-link" href="/tedavi/kalca-cikigi-gelisimsel-kalca-displazisi.html">Detaya git</a></article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image specialty-image" src="clubfoot-openstax.jpg" alt="Çarpık ayak (PEV) klinik görünümü" loading="lazy">
               <span>ÇOCUK ORTOPEDİSİ</span><h4>Çarpık ayak (PEV)</h4>
               <p>PEV, ayağın doğuştan içe ve aşağıya dönük olduğu bir şekil bozukluğudur. Tedavi yöntemi ve takip sıklığı deformitenin özelliklerine ve tedaviye yanıta göre planlanır.</p>
-            </article>
-            <article class="treatment-card"><span>ÇOCUK ORTOPEDİSİ</span><h4>Serebral palsi</h4><p>Serebral palside kas tonusu ve hareket kontrolündeki farklılıklar kemik-eklem gelişimini etkileyebilir. Ortopedik değerlendirme çocuğun hareket kapasitesi ve ihtiyaçlarına göre yapılır.</p></article>
+            <a class="treatment-page-link" href="/tedavi/carpik-ayak-pev.html">Detaya git</a></article>
+            <article class="treatment-card"><span>ÇOCUK ORTOPEDİSİ</span><h4><a href="/tedavi/serebral-palsi.html">Serebral Palsi Ortopedik Tedavi</a></h4><p>Serebral palside kas tonusu ve hareket kontrolündeki farklılıklar kemik-eklem gelişimini etkileyebilir. Ortopedik değerlendirme çocuğun hareket kapasitesi ve ihtiyaçlarına göre yapılır.</p><a class="treatment-page-link" href="/tedavi/serebral-palsi.html">Detaya git</a></article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image specialty-image" src="hip-arthroscopy.png" alt="Kalça artroskopisinde kullanılan aletleri gösteren ameliyat sırası röntgen görüntüsü" loading="lazy">
-              <span>ORTOPEDİ</span><h4>Kalça artroskopisi</h4>
+              <span>ORTOPEDİ</span><h4><a href="/tedavi/pediatrik-kalca-artroskopisi.html">Pediatrik Kalça Artroskopisi</a></h4>
               <p>Kalça artroskopisi, küçük kesilerden kamera yardımıyla eklemin değerlendirilmesini sağlar. Çocuk ve ergenlerde kullanım kararı, tanı ve eklem gelişimi dikkate alınarak verilir.</p>
-            </article>
+            <a class="treatment-page-link" href="/tedavi/pediatrik-kalca-artroskopisi.html">Detaya git</a></article>
           </div>
-        </section>
+        <div class="treatment-subpages"><p>Bu alandaki diğer tedavi sayfaları</p><ul><li><a href="/tedavi/kalca-cikigi-gelisimsel-kalca-displazisi.html">Bebeklerde Kalça Çıkığı (DDH)</a></li><li><a href="/tedavi/carpik-ayak-pev.html">Çarpık Ayak (PEV)</a></li><li><a href="/tedavi/femur-basi-epifiz-kaymasi.html">Femur Başı Epifiz Kayması</a></li><li><a href="/tedavi/legg-calve-perthes.html">Legg-Calvé-Perthes Hastalığı</a></li></ul></div></section>
         <p class="treatment-note">Bu başlıklar genel bilgilendirme amaçlıdır. Tanı ve tedavi seçenekleri hekim muayenesiyle kişiye özel belirlenir.</p>
       </div>
     </section>
@@ -1104,13 +1130,14 @@
   <script>
     const navbar = document.querySelector('.navbar');
     const menuToggle = document.querySelector('.menu-toggle');
-    const languageToggle = document.getElementById('language-toggle');
+    const languageButtons = document.querySelectorAll('[data-site-language]');
     const languageStatus = document.getElementById('language-status');
     const languageStorageKey = 'site-language';
     const savedLanguage = localStorage.getItem(languageStorageKey) === 'en' ? 'en' : 'tr';
     const englishTranslations = new Map(Object.entries({
       'Hakkımda': 'About me',
       'Tedavi alanları': 'Treatment areas',
+      'Detaya git': 'View details',
       'Tedavi seçeneklerini sola kaydır': 'Scroll treatment options left',
       'Tedavi seçeneklerini sağa kaydır': 'Scroll treatment options right',
       'Çalışma alanları': 'Areas of expertise',
@@ -1366,8 +1393,7 @@
       document.documentElement.lang = language;
       document.querySelector('.navbar').setAttribute('aria-label', isEnglish ? 'Main navigation' : 'Ana menü');
       menuToggle.setAttribute('aria-label', isEnglish ? 'Open menu' : 'Menüyü aç');
-      languageToggle.textContent = isEnglish ? 'Türkçe' : 'English';
-      languageToggle.setAttribute('aria-label', isEnglish ? 'Switch language to Turkish' : 'Switch language to English');
+      languageButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.siteLanguage === language)));
       document.title = isEnglish
         ? 'Assoc. Prof. Dr. Mesut Karıksız | Orthopaedics and Traumatology'
         : 'Doç. Dr. Mesut Karıksız | Ortopedi ve Travmatoloji';
@@ -1400,8 +1426,9 @@
       menuToggle.setAttribute('aria-label', document.documentElement.lang === 'en' ? 'Open menu' : 'Menüyü aç');
       window.SiteContent.refresh();
     };
-    languageToggle.addEventListener('click', () => {
-      const nextLanguage = document.documentElement.lang === 'en' ? 'tr' : 'en';
+    languageButtons.forEach(button => button.addEventListener('click', () => {
+      const nextLanguage = button.dataset.siteLanguage;
+      if (nextLanguage === document.documentElement.lang) return;
       languageStatus.textContent = '';
       if (nextLanguage === 'tr') {
         localStorage.setItem(languageStorageKey, 'tr');
@@ -1414,7 +1441,7 @@
       updateLanguageLabels('en');
       document.dispatchEvent(new Event('site-language-change'));
       closeMenu();
-    });
+    }));
     menuToggle.addEventListener('click', () => {
       const isOpen = navbar.classList.toggle('menu-open');
       menuToggle.setAttribute('aria-expanded', String(isOpen));
@@ -1436,34 +1463,6 @@
     window.addEventListener('scroll', updateNavbar, { passive: true });
 
     const treatmentTabs = [...document.querySelectorAll('.treatment-tab')];
-    const treatmentPageKeys = {
-      'panel-spor': 'spor-cerrahisi',
-      'panel-ayak': 'ayak-ayak-bilegi',
-      'panel-el': 'el-mikrocerrahi',
-      'panel-protez': 'protez-cerrahisi',
-      'panel-kok-hucre': 'ortobiyolojik-tedaviler',
-      'panel-cocuk': 'cocuk-ortopedisi',
-      'panel-endoskopik-omurga': 'endoskopik-omurga',
-      'panel-boy-uzatma': 'boy-uzatma-deformite',
-      'panel-ultrason-enjeksiyon': 'ultrason-enjeksiyon',
-    };
-    const treatmentPageLinks = [];
-    for (const [panelId, slug] of Object.entries(treatmentPageKeys)) {
-      const panel = document.getElementById(panelId);
-      if (!panel) continue;
-      const link = document.createElement('a');
-      link.className = 'treatment-page-link';
-      link.href = `/tedavi/${slug}`;
-      link.textContent = document.documentElement.lang === 'en' ? 'Read more about this treatment area →' : 'Bu tedavi alanı hakkında detaylı bilgi →';
-      panel.append(link);
-      treatmentPageLinks.push(link);
-    }
-    document.addEventListener('site-language-change', () => {
-      const text = document.documentElement.lang === 'en'
-        ? 'Read more about this treatment area →'
-        : 'Bu tedavi alanı hakkında detaylı bilgi →';
-      treatmentPageLinks.forEach(link => { link.textContent = text; });
-    });
     const treatmentTabsContainer = document.querySelector('.treatment-tabs');
     const treatmentScrollButtons = [...document.querySelectorAll('.treatment-scroll-button')];
     const updateTreatmentScrollButtons = () => {

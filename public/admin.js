@@ -462,6 +462,9 @@ function renderContactSubmissions() {
     header.className = "contact-submission-head";
     const name = document.createElement("h3");
     name.textContent = submission.fullName;
+    const kind = document.createElement("span");
+    kind.className = "contact-submission-kind";
+    kind.textContent = submission.requestType === "appointment" ? "Randevu talebi" : "İletişim";
     const status = document.createElement("span");
     status.className = "contact-submission-status";
     status.classList.toggle("unread", !submission.isRead);
@@ -472,7 +475,7 @@ function renderContactSubmissions() {
       dateStyle: "medium",
       timeStyle: "short",
     }).format(new Date(submission.createdAt));
-    header.append(name, status, received);
+    header.append(name, kind, status, received);
 
     const details = document.createElement("div");
     details.className = "contact-submission-meta";
@@ -485,6 +488,12 @@ function renderContactSubmissions() {
       email.href = `mailto:${submission.email}`;
       email.textContent = submission.email;
       details.append(email);
+    }
+    if (submission.treatment) {
+      const treatment = document.createElement("span");
+      treatment.className = "contact-submission-treatment";
+      treatment.textContent = `Tedavi alanı: ${submission.treatment}`;
+      details.append(treatment);
     }
 
     const message = document.createElement("p");

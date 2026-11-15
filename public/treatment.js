@@ -2,20 +2,27 @@ const titleElement = document.getElementById("page-title");
 const summaryElement = document.getElementById("page-summary");
 const contentElement = document.getElementById("page-content");
 const errorElement = document.getElementById("page-error");
-const languageToggle = document.getElementById("language-toggle");
+const languageStatus = document.getElementById("language-status");
+const navbar = document.querySelector(".navbar");
+const menuToggle = document.querySelector(".menu-toggle");
+const languageButtons = document.querySelectorAll("[data-site-language]");
 const languageStorageKey = "site-language";
 let treatment = null;
 let language = localStorage.getItem(languageStorageKey) === "en" ? "en" : "tr";
 
 function localizedValue(field) {
   const translated = treatment[`${field}En`];
-  return language === "en" && translated ? translated : treatment[`${field}Tr`];
+  const value = language === "en" && translated ? translated : treatment[`${field}Tr`];
+  return typeof value === "string" ? value : "";
 }
 
 function renderTreatment() {
+  const isEnglish = language === "en";
+  const requestedTitle = new URLSearchParams(window.location.search).get("title")?.trim();
+  const pageTitle = requestedTitle && requestedTitle.length <= 160 ? requestedTitle : localizedValue("title");
   document.documentElement.lang = language;
-  const defaultSuffix = language === "tr" ? "Doç. Dr. Mesut Karıksız" : "Assoc. Prof. Mesut Karıksız";
-  const seoTitle = localizedValue("seoTitle") || `${localizedValue("title")} | ${defaultSuffix}`;
+  const defaultSuffix = isEnglish ? "Assoc. Prof. Mesut Karıksız" : "Doç. Dr. Mesut Karıksız";
+  const seoTitle = localizedValue("seoTitle") || `${pageTitle} | ${defaultSuffix}`;
   const seoDescription = localizedValue("seoDescription") || localizedValue("summary");
   document.title = seoTitle;
   document.querySelector('meta[name="description"]').content = seoDescription;
@@ -23,12 +30,22 @@ function renderTreatment() {
   document.querySelector('meta[property="og:description"]').content = seoDescription;
   document.querySelector('meta[name="twitter:title"]').content = seoTitle;
   document.querySelector('meta[name="twitter:description"]').content = seoDescription;
-  titleElement.textContent = localizedValue("title");
+  titleElement.textContent = pageTitle;
   summaryElement.textContent = localizedValue("summary");
-  languageToggle.textContent = language === "tr" ? "EN" : "TR";
-  document.getElementById("page-eyebrow").textContent = language === "tr" ? "Tedavi alanı" : "Treatment area";
-  document.getElementById("back-link").textContent = language === "tr" ? "TEDAVİ ALANLARI" : "TREATMENT AREAS";
-  document.getElementById("contact-link").textContent = language === "tr" ? "İletişim ve randevu" : "Contact and appointments";
+  navbar.setAttribute("aria-label", isEnglish ? "Main navigation" : "Ana menü");
+  menuToggle.setAttribute("aria-label", isEnglish ? "Open menu" : "Menüyü aç");
+  window.SiteLanguage.updateButtons(language);
+  document.querySelector("footer").textContent = isEnglish
+    ? "Assoc. Prof. Dr. Mesut Karıksız · Orthopedics and Traumatology"
+    : "Doç. Dr. Mesut Karıksız · Ortopedi ve Travmatoloji";
+  const navigationLabels = isEnglish
+    ? { about: "About me", treatments: "Treatment areas", expertise: "Areas of expertise", academic: "Academic background", faq: "Frequently asked questions", contact: "Contact", admin: "Admin login" }
+    : { about: "Hakkımda", treatments: "Tedavi alanları", expertise: "Çalışma alanları", academic: "Akademik", faq: "Sıkça sorulan sorular", contact: "İletişim", admin: "Yönetici girişi" };
+  document.querySelectorAll("[data-nav]").forEach(link => {
+    link.textContent = navigationLabels[link.dataset.nav];
+  });
+  document.getElementById("page-eyebrow").textContent = isEnglish ? "Treatment area" : "Tedavi alanı";
+  document.getElementById("contact-link").textContent = isEnglish ? "Contact and appointments" : "İletişim ve randevu";
   contentElement.replaceChildren();
   localizedValue("content").split(/\n{2,}/).filter(Boolean).forEach(text => {
     const paragraph = document.createElement("p");
@@ -36,12 +53,20 @@ function renderTreatment() {
     contentElement.append(paragraph);
   });
   renderReferences(localizedValue("references"));
+  const hasEnglishContent = ["title", "summary", "content"].every(field =>
+    typeof treatment[`${field}En`] === "string" && treatment[`${field}En`].trim());
+  if (isEnglish && !hasEnglishContent) {
+    window.SiteLanguage.translatePage("en").catch(error => {
+      languageStatus.textContent = "English translation could not be loaded.";
+      console.error("Could not load English translation:", error);
+    });
+  }
 }
 
 function renderReferences(value) {
   const container = document.getElementById("page-references");
   container.replaceChildren();
-  const lines = value.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+  const lines = (typeof value === "string" ? value : "").split(/\r?\n/).map(line => line.trim()).filter(Boolean);
   if (!lines.length) return;
 
   const section = document.createElement("section");
@@ -73,11 +98,46 @@ function renderReferences(value) {
   }
 }
 
-languageToggle.addEventListener("click", () => {
-  language = language === "tr" ? "en" : "tr";
+languageButtons.forEach(button => button.addEventListener("click", () => {
+  const nextLanguage = button.dataset.siteLanguage;
+  if (nextLanguage === language) return;
+  language = nextLanguage;
   localStorage.setItem(languageStorageKey, language);
+  languageStatus.textContent = "";
   renderTreatment();
+  if (language === "tr") {
+    window.SiteLanguage.translatePage("tr").catch(error => {
+      languageStatus.textContent = "Türkçe çeviri uygulanamadı.";
+      console.error("Could not restore Turkish content:", error);
+    });
+  }
+  closeMenu();
+}));
+
+function closeMenu() {
+  navbar.classList.remove("menu-open");
+  menuToggle.setAttribute("aria-expanded", "false");
+  menuToggle.setAttribute("aria-label", language === "en" ? "Open menu" : "Menüyü aç");
+}
+
+menuToggle.addEventListener("click", () => {
+  const isOpen = navbar.classList.toggle("menu-open");
+  menuToggle.setAttribute("aria-expanded", String(isOpen));
+  menuToggle.setAttribute("aria-label", language === "en"
+    ? (isOpen ? "Close menu" : "Open menu")
+    : (isOpen ? "Menüyü kapat" : "Menüyü aç"));
 });
+
+document.querySelectorAll(".nav-links a").forEach(link => link.addEventListener("click", closeMenu));
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && navbar.classList.contains("menu-open")) {
+    closeMenu();
+    menuToggle.focus();
+  }
+});
+const updateNavbar = () => navbar.classList.toggle("scrolled", window.scrollY > 20);
+updateNavbar();
+window.addEventListener("scroll", updateNavbar, { passive: true });
 
 async function loadTreatment() {
   try {

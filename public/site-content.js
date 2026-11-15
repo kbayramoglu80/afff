@@ -125,7 +125,7 @@
     }
     images.forEach(image => {
       const src = content.assets?.[image.key];
-      if (src) image.target.src = src;
+      if (src && image.target.getAttribute("src") !== src) image.target.src = src;
     });
   }
 

@@ -5,6 +5,8 @@ const contactSubmissionSchema = new mongoose.Schema({
   phone: { type: String, required: true, maxlength: 30, trim: true },
   email: { type: String, default: "", maxlength: 254, trim: true, lowercase: true },
   message: { type: String, required: true, maxlength: 2000, trim: true },
+  requestType: { type: String, enum: ["contact", "appointment"], default: "contact", index: true },
+  treatment: { type: String, default: "", maxlength: 160, trim: true },
   consentedAt: { type: Date, required: true },
   isRead: { type: Boolean, default: false, index: true },
 }, { timestamps: true });

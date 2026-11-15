@@ -32,6 +32,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SESSION_COOKIE = "doctor_site_session";
 const DEFAULT_SITE_URL = "https://mesutkariksiz.com.tr";
 const DEFAULT_GA4_ID = "G-48FC4N5Z6D";
+const HERO_IMAGE_ASSET_KEY = `c-${Buffer.from("image:main[1]/header#top/div[2]/img[1]").toString("base64url")}`;
 const DEFAULT_HOME_SEO = {
   titleTr: "Doç. Dr. Mesut Karıksız | Ortopedi ve Travmatoloji",
   titleEn: "Assoc. Prof. Mesut Karıksız | Orthopedics and Traumatology",
@@ -458,7 +459,7 @@ export function createApp() {
     const submissions = await ContactSubmission.find()
       .sort({ createdAt: -1 })
       .limit(100)
-      .select("fullName phone email message isRead createdAt")
+      .select("fullName phone email message requestType treatment isRead createdAt")
       .lean();
     res.set("Cache-Control", "no-store").json(submissions);
   }));
@@ -482,14 +483,17 @@ export function createApp() {
     res.status(204).end();
   }));
 
+  app.use("/tedavi", express.static(path.join(__dirname, "tedavi"), { dotfiles: "deny", index: false }));
   app.get("/tedavi/:slug", asyncRoute(async (req, res) => {
     const page = await TreatmentPage.findOne({ slug: req.params.slug }).lean();
     if (!page) return res.status(404).type("text").send("Tedavi sayfası bulunamadı.");
 
+    const requestedTitle = typeof req.query.title === "string" ? req.query.title.trim() : "";
+    const pageTitle = requestedTitle && requestedTitle.length <= 160 ? requestedTitle : page.titleTr;
     const origin = getPublicOrigin();
     const canonical = `${origin}/tedavi/${encodeURIComponent(page.slug)}`;
     const image = `${origin}/${encodeURIComponent(PROFILE_IMAGE)}`;
-    const title = page.seoTitleTr || `${page.titleTr} | Doç. Dr. Mesut Karıksız`;
+    const title = page.seoTitleTr || `${pageTitle} | Doç. Dr. Mesut Karıksız`;
     const description = page.seoDescriptionTr || page.summaryTr;
     const content = await readFile(path.join(__dirname, "public", "treatment.html"), "utf8");
     const citations = getCitationText(page.referencesTr);
@@ -505,12 +509,12 @@ export function createApp() {
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Ana sayfa", item: `${origin}/` },
-          { "@type": "ListItem", position: 2, name: page.titleTr, item: canonical },
+          { "@type": "ListItem", position: 2, name: pageTitle, item: canonical },
         ],
       },
     };
     const html = content
-      .replace("__TREATMENT_TITLE__", escapeHtml(page.titleTr))
+      .replace("__TREATMENT_TITLE__", escapeHtml(pageTitle))
       .replace("__TREATMENT_SUMMARY__", escapeHtml(page.summaryTr))
       .replace("__TREATMENT_CONTENT__", renderParagraphs(page.contentTr))
       .replace("__TREATMENT_REFERENCES__", renderReferences(page.referencesTr));
@@ -520,9 +524,17 @@ export function createApp() {
   app.get("/robots.txt", (req, res) => res.sendFile(path.join(__dirname, "robots.txt")));
   app.get("/", asyncRoute(async (req, res) => {
     const origin = getPublicOrigin();
-    const settings = await SeoSettings.findOne({ key: "home" }).lean() || DEFAULT_HOME_SEO;
+    const [storedSettings, heroAsset] = await Promise.all([
+      SeoSettings.findOne({ key: "home" }).lean(),
+      SiteAsset.findOne({ key: HERO_IMAGE_ASSET_KEY }).select("updatedAt").lean(),
+    ]);
+    const settings = storedSettings || DEFAULT_HOME_SEO;
     const image = `${origin}/${encodeURIComponent(PROFILE_IMAGE)}`;
-    const html = await readFile(path.join(__dirname, "index.html"), "utf8");
+    const heroImage = heroAsset
+      ? `/api/site-assets/${HERO_IMAGE_ASSET_KEY}?v=${heroAsset.updatedAt.getTime()}`
+      : `/${encodeURIComponent(PROFILE_IMAGE)}`;
+    const html = (await readFile(path.join(__dirname, "index.html"), "utf8"))
+      .replace("__HERO_IMAGE__", () => escapeHtml(heroImage));
     res.send(injectSeo(html, {
       title: settings.titleTr,
       description: settings.descriptionTr,
