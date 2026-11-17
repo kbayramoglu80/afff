@@ -18,9 +18,27 @@ test("validatePost accepts a complete draft and trims its text", () => {
     slug: "diz-sagligi",
     excerpt: "Kısa bilgi",
     content: "Yazı içeriği",
+    titleEn: "",
+    excerptEn: "",
+    contentEn: "",
     status: "draft",
     imageData: null,
   });
+});
+
+test("validatePost accepts optional English title, excerpt, and content", () => {
+  const result = validatePost({
+    title: "Başlık",
+    excerpt: "Özet",
+    content: "İçerik",
+    titleEn: "Title",
+    excerptEn: "Summary",
+    contentEn: "Article text",
+    status: "draft",
+  });
+  assert.equal(result.value.titleEn, "Title");
+  assert.equal(result.value.excerptEn, "Summary");
+  assert.equal(result.value.contentEn, "Article text");
 });
 
 test("validatePost rejects missing, oversized, and invalid-status content", () => {
@@ -37,6 +55,13 @@ test("validatePost rejects missing, oversized, and invalid-status content", () =
     content: "x".repeat(20001),
     status: "draft",
   }).error, /İçerik/);
+  assert.match(validatePost({
+    title: "Başlık",
+    excerpt: "Özet",
+    content: "İçerik",
+    contentEn: "x".repeat(20001),
+    status: "draft",
+  }).error, /İngilizce içerik/);
 });
 
 test("validatePost accepts a correctly encoded PNG image", () => {

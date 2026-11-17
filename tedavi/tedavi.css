@@ -203,17 +203,6 @@ footer {
   text-transform: uppercase;
 }
 
-.translation-widget {
-  position: fixed;
-  left: -10000px;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-}
-
-.goog-te-banner-frame.skiptranslate { display: none !important; }
-body { top: 0 !important; }
-
 article {
   width: min(920px, calc(100% - 40px));
   margin: clamp(120px, 15vw, 170px) auto 90px;

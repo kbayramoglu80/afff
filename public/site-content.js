@@ -26,7 +26,7 @@
   }
 
   function getPageNamespace() {
-    const match = global.location.pathname.match(/^\/tedavi\/([^/]+)\.html$/);
+    const match = global.location.pathname.match(/^\/(?:en\/)?tedavi\/([^/]+)\.html$/);
     return match ? `tedavi/${match[1]}` : "";
   }
 
@@ -47,7 +47,7 @@
   }
 
   function isIgnored(element) {
-    return Boolean(element.closest("script, style, noscript, svg, [data-cms-ignore], [aria-live], .faq-list"));
+    return Boolean(element.closest("script, style, noscript, svg, [data-cms-ignore], [aria-live], .faq-list, .language-switch"));
   }
 
   function collect(doc, namespace = getPageNamespace()) {
@@ -116,10 +116,11 @@
   function apply(doc, content, language) {
     const { fields, images } = pageCatalog;
     const entries = content.entries || {};
+    const hasEnglishSource = doc.body.dataset.staticLanguage === "en";
     for (const field of fields) {
       const entry = entries[field.key];
       let value = entry?.[language];
-      if (language === "en" && value === "" && entry.valueTr !== field.valueTr) value = entry.valueTr;
+      if (language === "en" && !hasEnglishSource && value === "" && entry.valueTr !== field.valueTr) value = entry.valueTr;
       if (value === undefined || value === null || (language === "en" && value === "")) continue;
       if (field.type === "text") {
         const parent = field.parent || field.target?.parentElement;
@@ -144,6 +145,16 @@
     apply(global.document, savedContent, savedLanguage);
   }
 
+  function hasMissingEnglishContent() {
+    if (!savedContent || !pageCatalog) return false;
+    if (global.document.body.dataset.staticLanguage === "en") return false;
+    return pageCatalog.fields.some(field => {
+      if (field.type !== "text") return false;
+      const english = savedContent.entries?.[field.key]?.en;
+      return typeof english !== "string" || !english.trim();
+    });
+  }
+
   function capture() {
     if (!pageCatalog) pageCatalog = collect(global.document);
   }
@@ -157,7 +168,7 @@
     refresh();
   }
 
-  global.SiteContent = { capture, collect, load, refresh };
+  global.SiteContent = { capture, collect, hasMissingEnglishContent, load, refresh };
   global.document.addEventListener("site-language-change", () => {
     savedLanguage = global.document.documentElement.lang === "en" ? "en" : "tr";
     refresh();

@@ -42,6 +42,15 @@ const DEFAULT_HOME_SEO = {
 const PROFILE_IMAGE = "WhatsApp Image 2026-09-15 at 16.21.43-Photoroom.png";
 const asyncRoute = handler => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 
+async function readOptionalFile(filePath) {
+  try {
+    return await readFile(filePath, "utf8");
+  } catch (error) {
+    if (error.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
 function getPublicOrigin() {
   const configuredUrl = process.env.PUBLIC_SITE_URL || DEFAULT_SITE_URL;
   const url = new URL(configuredUrl);
@@ -65,15 +74,29 @@ function createAnalyticsScript() {
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${measurementId}');</script>`;
 }
 
-function injectSeo(html, { title, description, canonical, image, structuredData }) {
+function injectSeo(html, {
+  title,
+  description,
+  canonical,
+  image,
+  structuredData,
+  language = "tr",
+  alternateTr,
+  alternateEn,
+}) {
   const safeJson = JSON.stringify(structuredData).replace(/</g, "\\u003c");
-  return html
+  let result = html
     .replaceAll("__SEO_TITLE__", () => escapeHtml(title))
     .replaceAll("__SEO_DESCRIPTION__", () => escapeHtml(description))
     .replaceAll("__SEO_CANONICAL__", () => escapeHtml(canonical))
     .replaceAll("__SEO_IMAGE__", () => escapeHtml(image))
     .replace("__SEO_JSONLD__", () => safeJson)
+    .replace('<meta property="og:locale" content="tr_TR">', `<meta property="og:locale" content="${language === "en" ? "en_US" : "tr_TR"}">`)
     .replace("__GA4_SCRIPT__", () => createAnalyticsScript());
+  if (alternateTr && alternateEn) {
+    result = result.replace("</head>", `<link rel="alternate" hreflang="tr" href="${escapeHtml(alternateTr)}"><link rel="alternate" hreflang="en" href="${escapeHtml(alternateEn)}"></head>`);
+  }
+  return result;
 }
 
 function createPhysicianSchema(origin, description, image) {
@@ -127,12 +150,12 @@ export function createApp() {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com", "https://translate.google.com", "https://translate.googleapis.com", "https://translate-pa.googleapis.com"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://www.gstatic.com"],
-        imgSrc: ["'self'", "data:", "https://www.gstatic.com", "https://fonts.gstatic.com", "https://translate.googleapis.com", "https://www.google.com", "https://i.ytimg.com", "https://www.google-analytics.com"],
+        imgSrc: ["'self'", "data:", "https://www.gstatic.com", "https://fonts.gstatic.com", "https://www.google.com", "https://i.ytimg.com", "https://www.google-analytics.com"],
         fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
-        connectSrc: ["'self'", "https://translate.googleapis.com", "https://translate-pa.googleapis.com", "https://www.google-analytics.com", "https://region1.google-analytics.com"],
-        frameSrc: ["'self'", "https://translate.google.com", "https://maps.google.com", "https://www.google.com"],
+        connectSrc: ["'self'", "https://www.google-analytics.com", "https://region1.google-analytics.com"],
+        frameSrc: ["'self'", "https://maps.google.com", "https://www.google.com"],
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],
@@ -159,6 +182,18 @@ export function createApp() {
     },
   }));
 
+  app.use((req, res, next) => {
+    const requestPath = req.path;
+    const isEnglish = requestPath === "/en" || requestPath.startsWith("/en/");
+    req.siteLanguage = isEnglish ? "en" : "tr";
+    if (!isEnglish) return next();
+
+    const localizedPath = requestPath.slice(3) || "/";
+    const query = req.url.slice(requestPath.length);
+    req.url = `${localizedPath === "/index.html" ? "/" : localizedPath}${query}`;
+    next();
+  });
+
   app.get("/health", (req, res) => {
     res.json({ status: mongoose.connection.readyState === 1 ? "ok" : "connecting" });
   });
@@ -166,7 +201,10 @@ export function createApp() {
   app.get("/sitemap.xml", asyncRoute(async (req, res) => {
     const origin = getPublicOrigin();
     const pages = await TreatmentPage.find().select("slug updatedAt").lean();
-    res.type("application/xml").send(buildSitemapXml(origin, pages));
+    const staticPages = (await readdir(path.join(__dirname, "tedavi")))
+      .filter(file => file.endsWith(".html"))
+      .map(file => file.slice(0, -5));
+    res.type("application/xml").send(buildSitemapXml(origin, pages, staticPages));
   }));
 
   app.get("/api/csrf", (req, res) => {
@@ -177,13 +215,13 @@ export function createApp() {
   app.get("/api/posts", asyncRoute(async (req, res) => {
     const posts = await BlogPost.find({ status: "published" })
       .sort({ publishedAt: -1 })
-      .select("title slug excerpt content imageData publishedAt")
+      .select("title titleEn slug excerpt excerptEn content contentEn imageData publishedAt")
       .lean();
     res.set("Cache-Control", "no-store").json(posts);
   }));
 
   app.get("/api/faqs", asyncRoute(async (req, res) => {
-    const faqs = await Faq.find().sort({ createdAt: 1 }).select("question answer").lean();
+    const faqs = await Faq.find().sort({ createdAt: 1 }).select("question answer questionEn answerEn").lean();
     res.set("Cache-Control", "no-store").json(faqs);
   }));
 
@@ -390,9 +428,12 @@ export function createApp() {
 
     const wasPublished = post.status === "published";
     post.title = parsed.value.title;
+    post.titleEn = parsed.value.titleEn;
     post.slug = parsed.value.slug;
     post.excerpt = parsed.value.excerpt;
+    post.excerptEn = parsed.value.excerptEn;
     post.content = parsed.value.content;
+    post.contentEn = parsed.value.contentEn;
     post.status = parsed.value.status;
     if (post.status === "draft") post.publishedAt = null;
     else if (!wasPublished || !post.publishedAt) post.publishedAt = new Date();
@@ -501,20 +542,47 @@ export function createApp() {
     res.status(204).end();
   }));
 
+  app.get("/tedavi/:slug.html", asyncRoute(async (req, res, next) => {
+    if (req.siteLanguage !== "en" || !/^[a-z0-9-]+$/.test(req.params.slug)) return next();
+    const filename = `${req.params.slug}.html`;
+    const englishPagePath = path.join(__dirname, "tedavi", "en", filename);
+    const sourcePagePath = path.join(__dirname, "tedavi", filename);
+    const html = await readOptionalFile(englishPagePath) ?? await readOptionalFile(sourcePagePath);
+    if (html === null) return next();
+
+    const origin = getPublicOrigin();
+    const canonical = `${origin}/en/tedavi/${encodeURIComponent(filename)}`;
+    const alternate = `${origin}/tedavi/${encodeURIComponent(filename)}`;
+    const sourceCanonical = html.match(/<link rel="canonical" href="([^"]*)">/)?.[1];
+    let localizedHtml = sourceCanonical ? html.replaceAll(sourceCanonical, canonical) : html;
+    localizedHtml = localizedHtml
+      .replace('<html lang="tr">', '<html lang="en">')
+      .replace('<meta property="og:locale" content="tr_TR">', '<meta property="og:locale" content="en_US">')
+      .replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${escapeHtml(canonical)}">`)
+      .replaceAll('"inLanguage": "tr-TR"', '"inLanguage": "en-US"')
+      .replace("</head>", `<link rel="alternate" hreflang="tr" href="${escapeHtml(alternate)}"><link rel="alternate" hreflang="en" href="${escapeHtml(canonical)}"></head>`);
+    res.type("html").send(localizedHtml);
+  }));
   app.use("/tedavi", express.static(path.join(__dirname, "tedavi"), { dotfiles: "deny", index: false }));
   app.get("/tedavi/:slug", asyncRoute(async (req, res) => {
     const page = await TreatmentPage.findOne({ slug: req.params.slug }).lean();
     if (!page) return res.status(404).type("text").send("Tedavi sayfası bulunamadı.");
 
-    const requestedTitle = typeof req.query.title === "string" ? req.query.title.trim() : "";
-    const pageTitle = requestedTitle && requestedTitle.length <= 160 ? requestedTitle : page.titleTr;
+    const isEnglish = req.siteLanguage === "en";
+    const pageTitle = (isEnglish && page.titleEn) || page.titleTr;
     const origin = getPublicOrigin();
-    const canonical = `${origin}/tedavi/${encodeURIComponent(page.slug)}`;
+    const canonical = `${origin}${isEnglish ? "/en" : ""}/tedavi/${encodeURIComponent(page.slug)}`;
     const image = `${origin}/${encodeURIComponent(PROFILE_IMAGE)}`;
-    const title = page.seoTitleTr || `${pageTitle} | Doç. Dr. Mesut Karıksız`;
-    const description = page.seoDescriptionTr || page.summaryTr;
+    const title = isEnglish
+      ? page.seoTitleEn || `${pageTitle} | Assoc. Prof. Mesut Karıksız`
+      : page.seoTitleTr || `${pageTitle} | Doç. Dr. Mesut Karıksız`;
+    const summary = (isEnglish && page.summaryEn) || page.summaryTr;
+    const pageContent = (isEnglish && page.contentEn) || page.contentTr;
+    const references = (isEnglish && page.referencesEn) || page.referencesTr;
+    const description = isEnglish ? page.seoDescriptionEn || summary : page.seoDescriptionTr || summary;
     const content = await readFile(path.join(__dirname, "public", "treatment.html"), "utf8");
-    const citations = getCitationText(page.referencesTr);
+    const citations = getCitationText(references);
+    const homeUrl = `${origin}${isEnglish ? "/en/" : "/"}`;
     const structuredData = {
       "@context": "https://schema.org",
       "@type": "MedicalWebPage",
@@ -526,20 +594,36 @@ export function createApp() {
       breadcrumb: {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Ana sayfa", item: `${origin}/` },
+          { "@type": "ListItem", position: 1, name: isEnglish ? "Home" : "Ana sayfa", item: homeUrl },
           { "@type": "ListItem", position: 2, name: pageTitle, item: canonical },
         ],
       },
     };
     const html = content
+      .replace('<html lang="tr">', `<html lang="${isEnglish ? "en" : "tr"}">`)
       .replace("__TREATMENT_TITLE__", escapeHtml(pageTitle))
-      .replace("__TREATMENT_SUMMARY__", escapeHtml(page.summaryTr))
-      .replace("__TREATMENT_CONTENT__", renderParagraphs(page.contentTr))
-      .replace("__TREATMENT_REFERENCES__", renderReferences(page.referencesTr));
-    res.send(injectSeo(html, { title, description, canonical, image, structuredData }));
+      .replace("__TREATMENT_SUMMARY__", escapeHtml(summary))
+      .replace("__TREATMENT_CONTENT__", renderParagraphs(pageContent))
+      .replace("__TREATMENT_REFERENCES__", renderReferences(references, isEnglish ? "Scientific references" : "Bilimsel kaynaklar"));
+    const renderedHtml = html.replace("__LANGUAGE_NOTICE__", isEnglish
+      && (!page.titleEn || !page.summaryEn || !page.contentEn || (page.referencesTr && !page.referencesEn))
+      ? "Some English content is not available yet; Turkish text is shown for those sections."
+      : "");
+    res.send(injectSeo(renderedHtml, {
+      title,
+      description,
+      canonical,
+      image,
+      structuredData,
+      language: isEnglish ? "en" : "tr",
+      alternateTr: `${origin}/tedavi/${encodeURIComponent(page.slug)}`,
+      alternateEn: `${origin}/en/tedavi/${encodeURIComponent(page.slug)}`,
+    }));
   }));
+  app.use("/tedavi/en", (req, res) => res.sendStatus(404));
   app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.html")));
   app.get("/robots.txt", (req, res) => res.sendFile(path.join(__dirname, "robots.txt")));
+  app.get("/index.html", (req, res) => res.redirect(301, "/"));
   app.get("/", asyncRoute(async (req, res) => {
     const origin = getPublicOrigin();
     const [storedSettings, heroAsset] = await Promise.all([
@@ -551,14 +635,22 @@ export function createApp() {
     const heroImage = heroAsset
       ? `/api/site-assets/${HERO_IMAGE_ASSET_KEY}?v=${heroAsset.updatedAt.getTime()}`
       : `/${encodeURIComponent(PROFILE_IMAGE)}`;
-    const html = (await readFile(path.join(__dirname, "index.html"), "utf8"))
+    const template = (await readFile(path.join(__dirname, "index.html"), "utf8"))
       .replaceAll("__HERO_IMAGE__", () => escapeHtml(heroImage));
+    const isEnglish = req.siteLanguage === "en";
+    const html = isEnglish ? template.replace('<html lang="tr">', '<html lang="en">') : template;
+    const title = (isEnglish && settings.titleEn) || settings.titleTr;
+    const description = (isEnglish && settings.descriptionEn) || settings.descriptionTr;
+    const canonical = `${origin}${isEnglish ? "/en/" : "/"}`;
     res.send(injectSeo(html, {
-      title: settings.titleTr,
-      description: settings.descriptionTr,
-      canonical: `${origin}/`,
+      title,
+      description,
+      canonical,
       image,
-      structuredData: createPhysicianSchema(origin, settings.descriptionTr, image),
+      language: isEnglish ? "en" : "tr",
+      alternateTr: `${origin}/`,
+      alternateEn: `${origin}/en/`,
+      structuredData: createPhysicianSchema(origin, description, image),
     }));
   }));
   app.get("/fonts.css", (req, res) => res.sendFile(path.join(__dirname, "fonts.css")));

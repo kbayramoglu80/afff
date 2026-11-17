@@ -78,7 +78,7 @@ function createSiteContentInput(field, value, locale) {
   control.maxLength = 10000;
   control.dataset.siteContentKey = field.key;
   control.dataset.siteContentLocale = locale;
-  if (locale === "en") control.placeholder = "Boş bırakılırsa mevcut çeviri kullanılır.";
+  if (locale === "en") control.placeholder = "Boşsa Türkçe içerik çeviri uyarısıyla gösterilir.";
   label.append(control);
   return { label, control };
 }
@@ -338,14 +338,14 @@ function renderTreatmentDetailContent() {
       const saved = storedEntries.get(field.key);
       const entry = document.createElement("article");
       entry.className = "site-content-entry";
-      entry.dataset.search = `${field.groupLabel} ${field.label} ${saved?.valueTr || field.valueTr} ${saved?.valueEn || ""}`.toLocaleLowerCase("tr");
+      entry.dataset.search = `${field.groupLabel} ${field.label} ${saved?.valueTr || field.valueTr} ${saved?.valueEn || field.valueEn || ""}`.toLocaleLowerCase("tr");
       const title = document.createElement("span");
       title.className = "site-content-entry-title";
       title.textContent = field.label;
       const locales = document.createElement("div");
       locales.className = "site-content-locales";
       const turkish = createSiteContentInput(field, saved?.valueTr ?? field.valueTr, "tr");
-      const english = createSiteContentInput(field, saved?.valueEn ?? "", "en");
+      const english = createSiteContentInput(field, saved?.valueEn || field.valueEn || "", "en");
       const markDirty = () => { treatmentDetailDirty = true; };
       turkish.control.addEventListener("input", markDirty);
       english.control.addEventListener("input", markDirty);
@@ -362,14 +362,30 @@ function renderTreatmentDetailContent() {
 
 async function loadTreatmentDetailPage(slug) {
   if (!slug) return;
-  const response = await fetch(`/tedavi/${encodeURIComponent(slug)}.html`, {
-    credentials: "same-origin",
-    cache: "no-store",
-  });
+  const [response, englishResponse] = await Promise.all([
+    fetch(`/tedavi/${encodeURIComponent(slug)}.html`, {
+      credentials: "same-origin",
+      cache: "no-store",
+    }),
+    fetch(`/en/tedavi/${encodeURIComponent(slug)}.html`, {
+      credentials: "same-origin",
+      cache: "no-store",
+    }),
+  ]);
   if (!response.ok) throw new Error("Tedavi detay sayfası yüklenemedi.");
-  const html = await response.text();
+  if (!englishResponse.ok) throw new Error("Tedavi detay sayfasının İngilizce içeriği yüklenemedi.");
+  const [html, englishHtml] = await Promise.all([response.text(), englishResponse.text()]);
   const pageDocument = new DOMParser().parseFromString(html, "text/html");
+  const englishDocument = new DOMParser().parseFromString(englishHtml, "text/html");
   treatmentDetailCatalog = window.SiteContent.collect(pageDocument, `tedavi/${slug}`);
+  if (englishDocument.body.dataset.staticLanguage === "en") {
+    const englishFields = new Map(
+      window.SiteContent.collect(englishDocument, `tedavi/${slug}`).fields.map(field => [field.key, field.valueTr]),
+    );
+    treatmentDetailCatalog.fields.forEach(field => {
+      field.valueEn = englishFields.get(field.key) || "";
+    });
+  }
   treatmentDetailSlug = slug;
   treatmentDetailDirty = false;
   document.getElementById("treatment-detail-preview-link").href = `/tedavi/${encodeURIComponent(slug)}.html`;
@@ -506,6 +522,8 @@ function renderFaqs() {
       faqForm.elements.id.value = faq._id;
       faqForm.elements.question.value = faq.question;
       faqForm.elements.answer.value = faq.answer;
+      faqForm.elements.questionEn.value = faq.questionEn || "";
+      faqForm.elements.answerEn.value = faq.answerEn || "";
       faqFormTitle.textContent = "Soruyu düzenle";
       faqForm.scrollIntoView({ behavior: "smooth", block: "start" });
     });
@@ -587,8 +605,11 @@ function renderPosts() {
     edit.addEventListener("click", () => {
       postForm.elements.id.value = post._id;
       postForm.elements.title.value = post.title;
+      postForm.elements.titleEn.value = post.titleEn || "";
       postForm.elements.excerpt.value = post.excerpt;
+      postForm.elements.excerptEn.value = post.excerptEn || "";
       postForm.elements.content.value = post.content;
+      postForm.elements.contentEn.value = post.contentEn || "";
       postForm.elements.status.value = post.status;
       postImageInput.value = "";
       showPostImage(post.imageData || null);
@@ -777,6 +798,8 @@ faqForm.addEventListener("submit", async event => {
   const payload = {
     question: faqForm.elements.question.value,
     answer: faqForm.elements.answer.value,
+    questionEn: faqForm.elements.questionEn.value,
+    answerEn: faqForm.elements.answerEn.value,
   };
   try {
     await apiRequest(id ? `/api/admin/faqs/${encodeURIComponent(id)}` : "/api/admin/faqs", {
@@ -877,8 +900,11 @@ postForm.addEventListener("submit", async event => {
   const id = postForm.elements.id.value;
   const payload = {
     title: postForm.elements.title.value,
+    titleEn: postForm.elements.titleEn.value,
     excerpt: postForm.elements.excerpt.value,
+    excerptEn: postForm.elements.excerptEn.value,
     content: postForm.elements.content.value,
+    contentEn: postForm.elements.contentEn.value,
     status: postForm.elements.status.value,
     imageData: postImageData,
   };

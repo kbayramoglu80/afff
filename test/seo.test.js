@@ -23,11 +23,14 @@ test("rendered medical content escapes HTML and only links HTTPS references", ()
   assert.doesNotMatch(renderReferences("Kötü bağlantı | javascript:alert(1)"), /javascript:/);
 });
 
-test("sitemap contains only the homepage and treatment URLs", () => {
+test("sitemap contains Turkish and English homepage and treatment URLs", () => {
   const xml = buildSitemapXml("https://www.example.test", [
     { slug: "diz-cerrahisi", updatedAt: new Date("2026-01-02T00:00:00Z") },
-  ]);
+  ], ["meniskus-yirtigi"]);
   assert.match(xml, /<loc>https:\/\/www\.example\.test\/<\/loc>/);
+  assert.match(xml, /<loc>https:\/\/www\.example\.test\/en\/<\/loc>/);
   assert.match(xml, /<loc>https:\/\/www\.example\.test\/tedavi\/diz-cerrahisi<\/loc>/);
+  assert.match(xml, /<loc>https:\/\/www\.example\.test\/en\/tedavi\/diz-cerrahisi<\/loc>/);
+  assert.match(xml, /<loc>https:\/\/www\.example\.test\/en\/tedavi\/meniskus-yirtigi\.html<\/loc>/);
   assert.match(xml, /<lastmod>2026-01-02<\/lastmod>/);
 });

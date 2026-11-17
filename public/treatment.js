@@ -1,3 +1,4 @@
+(() => {
 const titleElement = document.getElementById("page-title");
 const summaryElement = document.getElementById("page-summary");
 const contentElement = document.getElementById("page-content");
@@ -6,9 +7,10 @@ const languageStatus = document.getElementById("language-status");
 const navbar = document.querySelector(".navbar");
 const menuToggle = document.querySelector(".menu-toggle");
 const languageButtons = document.querySelectorAll("[data-site-language]");
-const languageStorageKey = "site-language";
 let treatment = null;
-let language = localStorage.getItem(languageStorageKey) === "en" ? "en" : "tr";
+let language = window.location.pathname === "/en" || window.location.pathname.startsWith("/en/")
+  ? "en"
+  : "tr";
 
 function localizedValue(field) {
   const translated = treatment[`${field}En`];
@@ -54,13 +56,11 @@ function renderTreatment() {
   });
   renderReferences(localizedValue("references"));
   const hasEnglishContent = ["title", "summary", "content"].every(field =>
-    typeof treatment[`${field}En`] === "string" && treatment[`${field}En`].trim());
-  if (isEnglish && !hasEnglishContent) {
-    window.SiteLanguage.translatePage("en").catch(error => {
-      languageStatus.textContent = "English translation could not be loaded.";
-      console.error("Could not load English translation:", error);
-    });
-  }
+    typeof treatment[`${field}En`] === "string" && treatment[`${field}En`].trim())
+    && (!treatment.referencesTr || Boolean(treatment.referencesEn?.trim()));
+  document.getElementById("page-language-notice").textContent = isEnglish && !hasEnglishContent
+    ? "Some English content is not available yet; Turkish text is shown for those sections."
+    : "";
 }
 
 function renderReferences(value) {
@@ -101,17 +101,7 @@ function renderReferences(value) {
 languageButtons.forEach(button => button.addEventListener("click", () => {
   const nextLanguage = button.dataset.siteLanguage;
   if (nextLanguage === language) return;
-  language = nextLanguage;
-  localStorage.setItem(languageStorageKey, language);
-  languageStatus.textContent = "";
-  renderTreatment();
-  if (language === "tr") {
-    window.SiteLanguage.translatePage("tr").catch(error => {
-      languageStatus.textContent = "Türkçe çeviri uygulanamadı.";
-      console.error("Could not restore Turkish content:", error);
-    });
-  }
-  closeMenu();
+  window.SiteLanguage.navigate(nextLanguage);
 }));
 
 function closeMenu() {
@@ -154,3 +144,4 @@ async function loadTreatment() {
 }
 
 loadTreatment();
+})();

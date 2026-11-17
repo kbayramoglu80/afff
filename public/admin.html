@@ -153,7 +153,7 @@
             <button type="button" id="site-content-save">Değişiklikleri kaydet</button>
           </div>
         </div>
-        <p class="site-content-note">Bir bölümü açıp istediğiniz metni düzenleyin. Kaydettikten sonra ana sayfayı yenileyerek değişiklikleri görün. Türkçe metni değiştirirken İngilizce alanını da güncelleyin. Görsel değişiklikleri yükleme tamamlandığında kaydedilir.</p>
+        <p class="site-content-note">Bir bölümü açıp istediğiniz metni düzenleyin. Kaydettikten sonra ana sayfayı yenileyerek değişiklikleri görün. Türkçe ve İngilizce alanları ayrı ayrı düzenlenir; İngilizce alan boşsa Türkçe metin çeviri uyarısıyla gösterilir. Görsel değişiklikleri yükleme tamamlandığında kaydedilir.</p>
         <label class="site-content-search">İçeriklerde ara<input id="site-content-search" type="search" placeholder="Başlık, metin veya bölüm adı"></label>
         <p class="message" id="site-content-message" role="status"></p>
         <div class="site-content-groups" id="site-content-groups"></div>
@@ -164,7 +164,7 @@
           <div><span class="eyebrow">Tedavi sayfaları</span><h2>Tedavi alanları ve tüm alt sayfaları</h2></div>
           <a class="preview-link" id="treatment-preview-link" href="/tedavi/spor-cerrahisi" target="_blank" rel="noopener noreferrer">Sayfayı önizle ↗</a>
         </div>
-        <p class="treatment-admin-note">Ana sayfadaki 9 tedavi alanının alt sayfalarını buradan düzenleyin. İngilizce alanları boş bırakılırsa Türkçe içerik gösterilir.</p>
+        <p class="treatment-admin-note">Ana sayfadaki 9 tedavi alanının alt sayfalarını buradan düzenleyin. İngilizce alanları boş bırakılırsa Türkçe içerik çeviri uyarısıyla gösterilir.</p>
         <p class="message" id="treatment-message" role="status"></p>
         <div class="dashboard-grid">
           <div>
@@ -198,7 +198,7 @@
             <div><span class="eyebrow">Detay içerikleri</span><h2>Tüm tedavi alt sayfaları</h2></div>
             <a class="preview-link" id="treatment-detail-preview-link" href="/tedavi/" target="_blank" rel="noopener noreferrer">Seçili sayfayı önizle ↗</a>
           </div>
-          <p class="treatment-admin-note">Aşağıdaki listede yer alan tedavi alt sayfalarının başlıklarını, metinlerini, tablolarını, listelerini ve görsellerini düzenleyin.</p>
+          <p class="treatment-admin-note">Aşağıdaki listede yer alan tedavi alt sayfalarının Türkçe ve İngilizce başlıklarını, metinlerini, tablolarını, listelerini ve görsellerini düzenleyin. İngilizce alanlar hazır çeviriyle doldurulur; değişiklikler kaydedildiğinde iki dilde de uygulanır.</p>
           <label class="site-content-search">Alt sayfalarda ara<input id="treatment-detail-page-search" type="search" placeholder="Sayfa adı veya slug"></label>
           <p class="message" id="treatment-detail-message" role="status"></p>
           <div class="dashboard-grid">
@@ -222,7 +222,7 @@
           <div><span class="eyebrow">Ana sayfada yayımlanır</span><h2>Yazı yönetimi</h2></div>
           <button class="secondary" type="button" id="new-post-button">Yeni yazı</button>
         </div>
-        <p class="site-content-note">Yayımlanan yazılar ana sayfada görünür. Taslaklar ziyaretçilere gösterilmez. Başlık, kısa özet ve yazı içeriğini girip durumunu seçin.</p>
+        <p class="site-content-note">Yayımlanan yazılar ana sayfada görünür. Taslaklar ziyaretçilere gösterilmez. Türkçe ve İngilizce başlık, özet ve içerik alanlarını ayrı ayrı doldurun. İngilizce alanlar boşsa Türkçe içerik uyarıyla gösterilir.</p>
         <p class="message" id="post-message" role="status"></p>
         <div class="dashboard-grid">
           <div>
@@ -235,8 +235,11 @@
             <form id="post-form" class="form-grid">
               <input type="hidden" name="id">
               <label>Başlık<input name="title" required maxlength="160"></label>
+              <label>English title<input name="titleEn" maxlength="160"></label>
               <label>Kısa özet<textarea name="excerpt" required maxlength="300"></textarea></label>
+              <label>English excerpt<textarea name="excerptEn" maxlength="300"></textarea></label>
               <label>Yazı içeriği<textarea name="content" required maxlength="20000"></textarea></label>
+              <label>English article content<textarea name="contentEn" maxlength="20000"></textarea></label>
               <label>Kapak görseli (isteğe bağlı)
                 <input id="post-image" type="file" accept="image/jpeg,image/png,image/webp">
               </label>
@@ -267,10 +270,13 @@
         <section class="panel">
           <span class="eyebrow">SSS formu</span>
           <h2 id="faq-form-title">Yeni soru</h2>
+          <p class="site-content-note">İngilizce soru ve yanıtı ayrı alanlara girin. İngilizce alanlar boşsa Türkçe metin çeviri uyarısıyla gösterilir.</p>
           <form id="faq-form" class="form-grid">
             <input type="hidden" name="id">
             <label>Soru<input name="question" required maxlength="200"></label>
+            <label>English question<input name="questionEn" maxlength="200"></label>
             <label>Yanıt<textarea id="answer" name="answer" required maxlength="10000"></textarea></label>
+            <label>English answer<textarea name="answerEn" maxlength="10000"></textarea></label>
             <div class="actions">
               <button type="submit">Kaydet</button>
               <button class="secondary" type="button" id="new-faq-button">Yeni soru</button>

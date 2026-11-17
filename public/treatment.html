@@ -56,6 +56,7 @@
     .rule { width: 52px; height: 1px; margin: 38px 0; background: var(--gold); }
     .content { color: var(--dim); }
     .content p { margin: 0 0 22px; white-space: pre-line; }
+    .language-notice { margin: 12px 0 0; color: #8b332c; font: 600 13px/1.6 var(--sans); }
     .references { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--dim); font-size: 15px; }
     .references h2 { color: var(--ink); font: 700 18px/1.5 var(--sans); }
     .references li { margin: 8px 0; overflow-wrap: anywhere; }
@@ -63,9 +64,6 @@
     .contact-link { display: inline-block; margin-top: 20px; padding: 14px 20px; background: var(--deep); color: white; font: 700 10px/1.5 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
     .error { color: #8b332c; font-family: var(--sans); font-size: 15px; }
     footer { padding: 22px clamp(22px, 6vw, 92px); background: var(--deep); color: rgba(242, 238, 228, .92); text-align: center; font: 700 9px/1.7 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
-    .translation-widget { position: fixed; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
-    .goog-te-banner-frame.skiptranslate { display: none !important; }
-    body { top: 0 !important; }
     [hidden] { display: none !important; }
   </style>
 </head>
@@ -92,11 +90,11 @@
       <a class="admin-link" href="/admin" data-nav="admin">Yönetici girişi</a>
     </div>
   </nav>
-  <div id="google_translate_element" class="translation-widget notranslate" aria-hidden="true"></div>
   <main>
     <span class="eyebrow" id="page-eyebrow">Tedavi alanı</span>
     <h1 id="page-title">__TREATMENT_TITLE__</h1>
     <p class="summary" id="page-summary">__TREATMENT_SUMMARY__</p>
+    <p class="language-notice" id="page-language-notice">__LANGUAGE_NOTICE__</p>
     <div class="rule"></div>
     <article class="content" id="page-content">__TREATMENT_CONTENT__</article>
     <div id="page-references">__TREATMENT_REFERENCES__</div>
