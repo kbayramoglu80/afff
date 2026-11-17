@@ -77,13 +77,14 @@
     }
     .navbar.scrolled { border-color: var(--line); box-shadow: 0 8px 26px rgba(46, 42, 36, .04); }
     .brand { font: 700 20px/1 var(--serif); letter-spacing: .12em; white-space: nowrap; }
-    .brand strong { color: var(--gold); font-weight: 700; }
+    .brand-home { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
+    .brand-home svg { display: block; width: 25px; height: 25px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .brand-group { display: flex; align-items: center; gap: clamp(12px, 2vw, 22px); min-width: 0; }
     .language-switch { display: flex; align-items: center; gap: 3px; padding: 3px; border: 1px solid var(--line); }
     .language-button { display: inline-flex; align-items: center; gap: 5px; padding: 7px 8px; border: 0; background: transparent; color: var(--dim); cursor: pointer; font: 700 10px/1.2 var(--sans); }
     .language-button[aria-pressed="true"] { background: var(--deep); color: var(--cream); }
     .language-button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
-    .language-flag { font: 15px/1 var(--sans); }
+    .language-flag { display: block; width: 20px; height: 14px; flex: none; border-radius: 1px; }
     .menu-toggle {
       display: grid;
       gap: 5px;
@@ -587,10 +588,10 @@
 <body>
   <nav class="navbar" aria-label="Ana menü">
     <div class="brand-group">
-      <a class="brand" href="#top">MESUT <strong>K.</strong></a>
+      <a class="brand brand-home" href="#top" aria-label="Ana sayfa / Home" title="Ana sayfa / Home"><svg viewBox="0 0 24 24" width="25" height="25" aria-hidden="true" focusable="false"><path d="M3 10.5 12 3l9 7.5M5 9v11h14V9M9 20v-6h6v6"/></svg></a>
       <div class="language-switch notranslate" role="group" aria-label="Dil seçimi">
-        <button class="language-button" type="button" data-site-language="tr" aria-label="Türkçe" aria-pressed="true"><span class="language-flag" aria-hidden="true">&#x1F1F9;&#x1F1F7;</span><span>TR</span></button>
-        <button class="language-button" type="button" data-site-language="en" aria-label="English" aria-pressed="false"><span class="language-flag" aria-hidden="true">&#x1F1EC;&#x1F1E7;</span><span>ENG</span></button>
+        <button class="language-button" type="button" data-site-language="tr" aria-label="Türkçe" aria-pressed="true"><svg class="language-flag" viewBox="0 0 24 16" width="20" height="14" aria-hidden="true" focusable="false"><rect width="24" height="16" fill="#E30A17"/><circle cx="9" cy="8" r="4.25" fill="#fff"/><circle cx="10.2" cy="8" r="3.35" fill="#E30A17"/><path d="m15.2 4.55.82 2.4 2.5.12-1.95 1.57.62 2.4-2.1-1.32-2.1 1.32.62-2.4-1.95-1.57 2.5-.12z" fill="#fff"/></svg><span>TR</span></button>
+        <button class="language-button" type="button" data-site-language="en" aria-label="English" aria-pressed="false"><svg class="language-flag" viewBox="0 0 60 30" width="20" height="14" aria-hidden="true" focusable="false"><rect width="60" height="30" fill="#012169"/><path d="M0 0h8l52 24v6h-8L0 6zM60 0h-8L0 24v6h8L60 6z" fill="#fff"/><path d="M0 0h3l57 26v4h-3L0 4zM60 0h-3L0 26v4h3L60 4z" fill="#C8102E"/><path d="M24 0h12v30H24zM0 9h60v12H0z" fill="#fff"/><path d="M27 0h6v30h-6zM0 12h60v6H0z" fill="#C8102E"/></svg><span>ENG</span></button>
       </div>
     </div>
     <button class="menu-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="site-menu">
@@ -747,25 +748,17 @@
               <p>Mevcut eklem protezinde gevşeme, aşınma veya başka bir sorun olduğunda nedenin belirlenmesi önemlidir. Revizyon cerrahisinin gerekliliği ve kapsamı kişiye özel değerlendirilir.</p>
             <a class="treatment-page-link" href="/tedavi/revizyon-protez-cerrahisi.html">Detaya git</a></article>
             <article class="treatment-card has-image">
-              <img class="treatment-card-image prosthesis-image" src="knee-osteoarthritis.jpg" alt="Diz kireçlenmesini gösteren röntgen" loading="lazy">
-              <span>02</span><h4><a href="/tedavi/diz-protezi.html">Diz kireçlenmesi</a></h4>
-              <p>Diz eklemindeki kıkırdak aşınması ağrıya ve hareket kısıtlılığına neden olabilir. Tedavi seçenekleri bulguların düzeyine ve kişinin günlük yaşamına etkisine göre ele alınır.</p>
-            <a class="treatment-page-link" href="/tedavi/diz-protezi.html">Detaya git</a></article>
-            <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="knee-replacement.jpg" alt="Diz protezi ameliyatı öncesi ve sonrası röntgen görüntüleri" loading="lazy">
-              <span>03</span><h4><a href="/tedavi/diz-protezi.html">Diz Protezi Ameliyatı</a></h4>
+              <span>02</span><h4><a href="/tedavi/diz-protezi.html">Diz Protezi Ameliyatı</a></h4>
               <p>Diz protezi, ileri eklem hasarında ağrı ve işlev kaybı için değerlendirilebilen cerrahi seçeneklerden biridir. Uygunluk, muayene ve görüntüleme bulgularıyla belirlenir.</p>
             <a class="treatment-page-link" href="/tedavi/diz-protezi.html">Detaya git</a></article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="hip-replacement.jpg" alt="Kalça protezini gösteren pelvis röntgeni" loading="lazy">
-              <span>04</span><h4><a href="/tedavi/kalca-protezi.html">Kalça Protezi Ameliyatı</a></h4>
+              <span>03</span><h4><a href="/tedavi/kalca-protezi.html">Kalça Protezi Ameliyatı</a></h4>
               <p>Kalça protezi, eklem hasarının belirgin ağrı ve hareket kısıtlılığına yol açtığı durumlarda gündeme gelebilir. Cerrahi kararı kişinin sağlık durumu ve değerlendirme sonuçlarına göre verilir.</p>
             <a class="treatment-page-link" href="/tedavi/kalca-protezi.html">Detaya git</a></article>
-            <article class="treatment-card has-image">
-              <img class="treatment-card-image prosthesis-image" src="hip-osteoarthritis.jpg" alt="Kalça kireçlenmesine ait röntgen, BT ve MR görüntüleri" loading="lazy">
-              <span>05</span><h4><a href="/tedavi/kalca-protezi.html">Kalça Protezi Ameliyatı</a></h4>
-              <p>Kalça eklemindeki kıkırdak yapının zamanla bozulması ağrıya ve hareketlerde zorlanmaya neden olabilir. Tanı ve tedavi planı klinik değerlendirmeyle oluşturulur.</p>
-            <a class="treatment-page-link" href="/tedavi/kalca-protezi.html">Detaya git</a></article>
+            <article class="treatment-card"><span>04</span><h4><a href="/tedavi/omuz-protezi.html">Omuz Protezi Ameliyatı</a></h4><p>Omuz eklemindeki hasar ağrı ve hareket kısıtlılığına yol açıyorsa omuz protezi cerrahisi değerlendirilebilir. Protez türü ve cerrahi plan eklem yapısı ile hastanın durumuna göre belirlenir.</p><a class="treatment-page-link" href="/tedavi/omuz-protezi.html">Detaya git</a></article>
+            <article class="treatment-card"><span>05</span><h4><a href="/tedavi/unikondiler-diz-protezi.html">Unikondiler (Kısmi) Diz Protezi</a></h4><p>Diz hasarının yalnızca bir bölümünde olduğu ve diğer eklem yapılarının uygun olduğu seçilmiş hastalarda kısmi protez düşünülebilir.</p><a class="treatment-page-link" href="/tedavi/unikondiler-diz-protezi.html">Detaya git</a></article>
             <article class="treatment-card has-image">
               <img class="treatment-card-image prosthesis-image" src="ganz-pao.jpg" alt="Ganz ameliyatı sonrası pelvis röntgeni" loading="lazy">
               <span>06</span><h4><a href="/tedavi/ganz-ameliyati-pao.html">Ganz ameliyatı</a></h4>
@@ -783,7 +776,7 @@
               <p>Kök hücre uygulamalarının içeriği ve kullanım alanları yönteme göre değişebilir. Bilimsel kanıtlar, olası yarar ve riskler ile kişiye uygunluk hekim tarafından değerlendirilmelidir.</p>
             <a class="treatment-page-link" href="/tedavi/kok-hucre-tedavisi.html">Detaya git</a></article>
             <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4><a href="/tedavi/prp-tedavisi.html">PRP Tedavisi</a></h4><p>PRP, kişiden alınan kan örneğinin hazırlanmasıyla trombosit yönünden zengin bir ürün elde edilmesini amaçlar. Kullanım alanı ve beklenen sonuçlar tanı ve mevcut kanıtlar çerçevesinde değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/prp-tedavisi.html">Detaya git</a></article>
-            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4>PLF</h4><p>PLF adıyla belirtilen uygulamanın içeriği ve yöntemi kullanılan protokole göre açıklanmalıdır. Uygunluk, uygulama ayrıntıları ve mevcut kanıtlar hekim görüşmesinde ele alınır.</p><a class="treatment-page-link" href="/tedavi/ortobiyolojik-tedaviler">Detaya git</a></article>
+            <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4><a href="/tedavi/prf-tedavisi.html">PRF Tedavisi</a></h4><p>PRF (trombosit zengin fibrin), kişinin kendi kanından hazırlanan otolog bir üründür. Ortopedide kullanım alanı, olası yararları ve sınırlı kanıtlar kişiye göre değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/prf-tedavisi.html">Detaya git</a></article>
             <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4><a href="/tedavi/eksozom-tedavisi.html">Eksozom Tedavisi</a></h4><p>Eksozom adıyla sunulan uygulamaların içeriği ve klinik kanıt düzeyi farklılık gösterebilir. Kullanım kararı verilmeden önce yöntemin niteliği, belirsizlikleri ve kişiye uygunluğu değerlendirilmelidir.</p><a class="treatment-page-link" href="/tedavi/eksozom-tedavisi.html">Detaya git</a></article>
             <article class="treatment-card"><span>ORTOBİYOLOJİK TEDAVİ</span><h4><a href="/tedavi/sanakin-tedavisi.html">Sanakin Tedavisi</a></h4><p>Sanakin, kişiden alınan kanın belirli koşullarda işlenmesiyle hazırlanan serumun kullanıldığı bir uygulamadır. Uygunluğu tanı, klinik durum ve mevcut bilimsel kanıtlar doğrultusunda değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/sanakin-tedavisi.html">Detaya git</a></article>
           </div>
@@ -798,6 +791,7 @@
             <article class="treatment-card"><span>ENJEKSİYON UYGULAMALARI</span><h4><a href="/tedavi/transforaminal-enjeksiyon.html">Transforaminal Enjeksiyon</a></h4><p>İlaç, görüntüleme eşliğinde sinir kökünün omurgadan çıktığı bölgeye uygulanır. Hangi durumlarda kullanılacağı ve olası riskleri hekim tarafından değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/transforaminal-enjeksiyon.html">Detaya git</a></article>
             <article class="treatment-card"><span>ENJEKSİYON UYGULAMALARI</span><h4><a href="/tedavi/kaudal-enjeksiyon.html">Kaudal Enjeksiyon</a></h4><p>İlaç, kuyruk sokumu bölgesindeki doğal açıklıktan epidural alana ulaştırılır. İşlem kararı, yakınmalar ve muayene bulguları birlikte değerlendirilerek verilir.</p><a class="treatment-page-link" href="/tedavi/kaudal-enjeksiyon.html">Detaya git</a></article>
             <article class="treatment-card"><span>GİRİŞİMSEL TEDAVİLER</span><h4><a href="/tedavi/radyofrekans-faset-ablasyonu.html">Radyofrekans Faset Ablasyonu</a></h4><p>Faset eklemlerden kaynaklandığı düşünülen ağrılarda, ilgili sinir dallarına radyofrekans enerjisi uygulanabilir. İşlem öncesi ağrının kaynağı ve yöntemin uygunluğu değerlendirilir.</p><a class="treatment-page-link" href="/tedavi/radyofrekans-faset-ablasyonu.html">Detaya git</a></article>
+            <article class="treatment-card"><span>MİNİMAL İNVAZİV OMURGA CERRAHİSİ</span><h4><a href="/tedavi/kifoplasti.html">Kifoplasti</a></h4><p>Osteoporoza bağlı omurga kompresyon kırıklarında, uygun hastalarda balon ve kemik çimentosuyla kırığı stabilize etmeyi amaçlayan bir tedavi seçeneğidir.</p><a class="treatment-page-link" href="/tedavi/kifoplasti.html">Detaya git</a></article>
           </div>
         <div class="treatment-subpages"><p>Bu alandaki diğer tedavi sayfaları</p><ul><li><a href="/tedavi/endoskopik-bel-fitigi-ameliyati.html">Endoskopik Bel Fıtığı Ameliyatı</a></li><li><a href="/tedavi/endoskopik-dar-kanal-ameliyati.html">Endoskopik Dar Kanal Ameliyatı</a></li><li><a href="/tedavi/endoskopik-bel-kaymasi-ameliyati.html">Bel Kayması Endoskopik Ameliyat</a></li><li><a href="/tedavi/kifoplasti.html">Kifoplasti</a></li></ul></div></section>
         <section class="treatment-panel" id="panel-boy-uzatma" role="tabpanel" aria-labelledby="tab-boy-uzatma" hidden>
@@ -809,6 +803,7 @@
             <article class="treatment-card"><span>KEMİK ENFEKSİYONLARI</span><h4><a href="/tedavi/osteomiyelit.html">Osteomiyelit (Kemik Enfeksiyonu)</a></h4><p>Osteomiyelit kemik dokusunun enfeksiyonudur ve zamanında tıbbi değerlendirme gerektirir. Tedavi; enfeksiyonun etkeni, yaygınlığı ve kişinin genel durumuna göre planlanır.</p><a class="treatment-page-link" href="/tedavi/osteomiyelit.html">Detaya git</a></article>
             <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4><a href="/tedavi/akondroplazi.html">Akondroplazi (Cücelik)</a></h4><p>Akondroplazi, kemik büyümesini etkileyen genetik bir iskelet gelişim durumudur. Ortopedik takipte uzuv dizilimi, eklem sağlığı ve kişinin işlevsel gereksinimleri ele alınır.</p><a class="treatment-page-link" href="/tedavi/akondroplazi.html">Detaya git</a></article>
             <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4><a href="/tedavi/bacak-egrilikleri.html">Bacak Eğrilikleri (O ve X Bacak)</a></h4><p>Bacak eksenindeki içe veya dışa yönelim büyüme döneminde görülebilir ya da farklı nedenlerle gelişebilir. Yaş, eğriliğin derecesi ve ilerleyişi değerlendirilerek izlem veya tedavi seçenekleri belirlenir.</p><a class="treatment-page-link" href="/tedavi/bacak-egrilikleri.html">Detaya git</a></article>
+            <article class="treatment-card"><span>DEFORMİTE CERRAHİSİ</span><h4><a href="/tedavi/yuksek-tibial-osteotomi.html">Yüksek Tibial Osteotomi (HTO)</a></h4><p>O bacak ve dizin iç tarafındaki kireçlenmede, bacak eksenini düzelterek diz eklemini korumayı amaçlayan cerrahi bir seçenektir.</p><a class="treatment-page-link" href="/tedavi/yuksek-tibial-osteotomi.html">Detaya git</a></article>
           </div>
         <div class="treatment-subpages"><p>Bu alandaki diğer tedavi sayfaları</p><ul><li><a href="/tedavi/boy-uzatma-ve-deformite.html">Boy Uzatma ve Deformite Cerrahisi</a></li></ul></div></section>
         <section class="treatment-panel" id="panel-ultrason-enjeksiyon" role="tabpanel" aria-labelledby="tab-ultrason-enjeksiyon" hidden>
@@ -836,6 +831,8 @@
               <span>ORTOPEDİ</span><h4><a href="/tedavi/pediatrik-kalca-artroskopisi.html">Pediatrik Kalça Artroskopisi</a></h4>
               <p>Kalça artroskopisi, küçük kesilerden kamera yardımıyla eklemin değerlendirilmesini sağlar. Çocuk ve ergenlerde kullanım kararı, tanı ve eklem gelişimi dikkate alınarak verilir.</p>
             <a class="treatment-page-link" href="/tedavi/pediatrik-kalca-artroskopisi.html">Detaya git</a></article>
+            <article class="treatment-card"><span>ÇOCUK ORTOPEDİSİ</span><h4><a href="/tedavi/femur-basi-epifiz-kaymasi.html">Femur Başı Epifiz Kayması</a></h4><p>Ergenlik döneminde femur başı büyüme plağında kayma gelişebilir; kalça veya diz ağrısı ve topallama görülebilir. Değerlendirme ve tedavi planı muayene ve görüntüleme bulgularına göre yapılır.</p><a class="treatment-page-link" href="/tedavi/femur-basi-epifiz-kaymasi.html">Detaya git</a></article>
+            <article class="treatment-card"><span>ÇOCUK ORTOPEDİSİ</span><h4><a href="/tedavi/legg-calve-perthes.html">Legg-Calvé-Perthes Hastalığı</a></h4><p>Çocuklarda femur başının kan akımının etkilenmesiyle ortaya çıkan bu hastalıkta takip ve tedavi; yaşa, hastalığın evresine ve kalça ekleminin durumuna göre planlanır.</p><a class="treatment-page-link" href="/tedavi/legg-calve-perthes.html">Detaya git</a></article>
           </div>
         <div class="treatment-subpages"><p>Bu alandaki diğer tedavi sayfaları</p><ul><li><a href="/tedavi/kalca-cikigi-gelisimsel-kalca-displazisi.html">Bebeklerde Kalça Çıkığı (DDH)</a></li><li><a href="/tedavi/carpik-ayak-pev.html">Çarpık Ayak (PEV)</a></li><li><a href="/tedavi/femur-basi-epifiz-kaymasi.html">Femur Başı Epifiz Kayması</a></li><li><a href="/tedavi/legg-calve-perthes.html">Legg-Calvé-Perthes Hastalığı</a></li></ul></div></section>
         <p class="treatment-note">Bu başlıklar genel bilgilendirme amaçlıdır. Tanı ve tedavi seçenekleri hekim muayenesiyle kişiye özel belirlenir.</p>
@@ -1127,7 +1124,7 @@
     </svg>
   </a>
 
-  <script src="/public/site-content.js"></script>
+  <script src="public/site-content.js"></script>
   <script>
     const navbar = document.querySelector('.navbar');
     const menuToggle = document.querySelector('.menu-toggle');
@@ -1216,20 +1213,20 @@
       'İnce damar ve sinirlerin büyütme altında onarılması, seçilmiş yaralanmalarda doku dolaşımı ve sinir devamlılığının yeniden sağlanmasına yardımcı olabilir.': 'Repairing small blood vessels and nerves under magnification may help restore circulation and nerve continuity in selected injuries.',
       'Revizyon cerrahisi': 'Revision surgery',
       'Mevcut eklem protezinde gevşeme, aşınma veya başka bir sorun olduğunda nedenin belirlenmesi önemlidir. Revizyon cerrahisinin gerekliliği ve kapsamı kişiye özel değerlendirilir.': 'When an existing joint replacement loosens, wears, or develops another problem, identifying the cause is important. The need for and scope of revision surgery are assessed individually.',
-      'Diz kireçlenmesi': 'Knee osteoarthritis',
-      'Diz eklemindeki kıkırdak aşınması ağrıya ve hareket kısıtlılığına neden olabilir. Tedavi seçenekleri bulguların düzeyine ve kişinin günlük yaşamına etkisine göre ele alınır.': 'Cartilage wear in the knee may cause pain and restricted movement. Treatment options are considered based on the severity of findings and their impact on daily life.',
       'Diz protezi': 'Knee replacement',
       'Diz protezi, ileri eklem hasarında ağrı ve işlev kaybı için değerlendirilebilen cerrahi seçeneklerden biridir. Uygunluk, muayene ve görüntüleme bulgularıyla belirlenir.': 'Knee replacement is one surgical option that may be considered for pain and loss of function caused by advanced joint damage. Suitability is determined through examination and imaging.',
       'Kalça protezi': 'Hip replacement',
       'Kalça protezi, eklem hasarının belirgin ağrı ve hareket kısıtlılığına yol açtığı durumlarda gündeme gelebilir. Cerrahi kararı kişinin sağlık durumu ve değerlendirme sonuçlarına göre verilir.': 'Hip replacement may be considered when joint damage causes significant pain and restricted movement. The decision to operate is based on the person’s health and assessment results.',
-      'Kalça kireçlenmesi': 'Hip osteoarthritis',
-      'Kalça eklemindeki kıkırdak yapının zamanla bozulması ağrıya ve hareketlerde zorlanmaya neden olabilir. Tanı ve tedavi planı klinik değerlendirmeyle oluşturulur.': 'Gradual deterioration of cartilage in the hip may cause pain and difficulty moving. Diagnosis and treatment planning are based on clinical assessment.',
+      'OMUZ PROTEZİ': 'SHOULDER REPLACEMENT',
+      'Omuz Protezi Ameliyatı': 'Shoulder replacement surgery',
+      'Omuz eklemindeki hasar ağrı ve hareket kısıtlılığına yol açıyorsa omuz protezi cerrahisi değerlendirilebilir. Protez türü ve cerrahi plan eklem yapısı ile hastanın durumuna göre belirlenir.': 'Shoulder replacement may be considered when joint damage causes pain and restricted movement. The type of implant and surgical plan depend on the joint structure and the patient’s condition.',
+      'KISMİ DİZ PROTEZİ': 'PARTIAL KNEE REPLACEMENT',
+      'Unikondiler (Kısmi) Diz Protezi': 'Unicompartmental (partial) knee replacement',
+      'Diz hasarının yalnızca bir bölümünde olduğu ve diğer eklem yapılarının uygun olduğu seçilmiş hastalarda kısmi protez düşünülebilir.': 'Partial knee replacement may be considered for selected patients whose damage is limited to one part of the knee and whose remaining joint structures are suitable.',
       'Ganz ameliyatı': 'Ganz osteotomy',
       'Revizyon öncesi gevşemiş kalça protezi röntgeni': 'X-ray of a loosened hip replacement before revision surgery',
-      'Diz kireçlenmesini gösteren röntgen': 'X-ray showing knee osteoarthritis',
       'Diz protezi ameliyatı öncesi ve sonrası röntgen görüntüleri': 'X-rays before and after knee replacement surgery',
       'Kalça protezini gösteren pelvis röntgeni': 'Pelvic X-ray showing a hip replacement',
-      'Kalça kireçlenmesine ait röntgen, BT ve MR görüntüleri': 'X-ray, CT, and MRI images of hip osteoarthritis',
       'Ganz ameliyatı sonrası pelvis röntgeni': 'Pelvic X-ray after Ganz osteotomy',
       'Ganz (periasetabular) osteotomi, uygun hastalarda kalça yuvasının konumunu düzeltmeyi amaçlayan eklem koruyucu bir cerrahidir. Uygunluk, kalça yapısı ve eklem durumu incelenerek değerlendirilir.': 'Ganz (periacetabular) osteotomy is a joint-preserving surgery that aims to correct the position of the hip socket in suitable patients. Suitability depends on hip anatomy and joint condition.',
       'Ortobiyolojik Tedaviler': 'Orthobiologic treatments',
@@ -1240,8 +1237,8 @@
       'Kök hücre uygulamalarının içeriği ve kullanım alanları yönteme göre değişebilir. Bilimsel kanıtlar, olası yarar ve riskler ile kişiye uygunluk hekim tarafından değerlendirilmelidir.': 'The components and uses of stem cell procedures vary by method. A physician should assess the evidence, potential benefits and risks, and whether a procedure is appropriate for the individual.',
       'PRP (Trombositten Zengin Plazma)': 'PRP (platelet-rich plasma)',
       'PRP, kişiden alınan kan örneğinin hazırlanmasıyla trombosit yönünden zengin bir ürün elde edilmesini amaçlar. Kullanım alanı ve beklenen sonuçlar tanı ve mevcut kanıtlar çerçevesinde değerlendirilir.': 'PRP is prepared from a person’s blood to produce a platelet-rich preparation. Its potential use and expected outcomes are considered in light of the diagnosis and available evidence.',
-      'PLF': 'PLF',
-      'PLF adıyla belirtilen uygulamanın içeriği ve yöntemi kullanılan protokole göre açıklanmalıdır. Uygunluk, uygulama ayrıntıları ve mevcut kanıtlar hekim görüşmesinde ele alınır.': 'The contents and method of a procedure described as PLF should be clarified according to the protocol used. Suitability, procedural details, and available evidence should be discussed with a physician.',
+      'PRF Tedavisi': 'PRF therapy',
+      'PRF (trombosit zengin fibrin), kişinin kendi kanından hazırlanan otolog bir üründür. Ortopedide kullanım alanı, olası yararları ve sınırlı kanıtlar kişiye göre değerlendirilir.': 'PRF (platelet-rich fibrin) is an autologous product prepared from a person’s own blood. Its uses in orthopedics, potential benefits, and limited evidence are assessed individually.',
       'Eksozom Tedavisi': 'Exosome therapy',
       'Eksozom adıyla sunulan uygulamaların içeriği ve klinik kanıt düzeyi farklılık gösterebilir. Kullanım kararı verilmeden önce yöntemin niteliği, belirsizlikleri ve kişiye uygunluğu değerlendirilmelidir.': 'Procedures offered as exosome therapy may vary in content and level of clinical evidence. The method, uncertainties, and individual suitability should be assessed before considering treatment.',
       'Sanakin Tedavisi': 'Sanakin therapy',
@@ -1411,21 +1408,21 @@
         card.setAttribute('aria-label', `${label}${isEnglish ? ' open' : '’i aç'}`);
         card.querySelector('img').alt = `${label}${isEnglish ? ' thumbnail' : ' kapağı'}`;
       });
-      window.SiteContent.refresh();
+      window.SiteContent?.refresh();
     };
     updateLanguageLabels('tr');
-    window.SiteContent.capture();
+    window.SiteContent?.capture();
     if (savedLanguage === 'en') {
       applyEnglishTranslations();
       updateLanguageLabels('en');
       document.dispatchEvent(new Event('site-language-change'));
     }
-    window.SiteContent.load().catch(error => console.error('Site content could not be loaded:', error));
+    window.SiteContent?.load()?.catch(error => console.error('Site content could not be loaded:', error));
     const closeMenu = () => {
       navbar.classList.remove('menu-open');
       menuToggle.setAttribute('aria-expanded', 'false');
       menuToggle.setAttribute('aria-label', document.documentElement.lang === 'en' ? 'Open menu' : 'Menüyü aç');
-      window.SiteContent.refresh();
+      window.SiteContent?.refresh();
     };
     languageButtons.forEach(button => button.addEventListener('click', () => {
       const nextLanguage = button.dataset.siteLanguage;
@@ -1450,7 +1447,7 @@
       menuToggle.setAttribute('aria-label', english
         ? (isOpen ? 'Close menu' : 'Open menu')
         : (isOpen ? 'Menüyü kapat' : 'Menüyü aç'));
-      window.SiteContent.refresh();
+      window.SiteContent?.refresh();
     });
     document.querySelectorAll('.nav-links a').forEach(link => link.addEventListener('click', closeMenu));
     document.addEventListener('keydown', event => {

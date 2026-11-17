@@ -19,6 +19,36 @@ function waitForGoogleSelect(attempt = 0) {
     .then(() => waitForGoogleSelect(attempt + 1));
 }
 
+function waitForPageTranslation(content, previousText) {
+  return new Promise((resolve, reject) => {
+    let settleTimer;
+    let changed = content.innerText.trim() !== previousText;
+    const finish = () => {
+      clearTimeout(timeout);
+      clearTimeout(settleTimer);
+      observer.disconnect();
+      resolve();
+    };
+    const scheduleFinish = () => {
+      if (changed) settleTimer = setTimeout(finish, 2000);
+    };
+    const observer = new MutationObserver(() => {
+      if (content.innerText.trim() !== previousText) {
+        changed = true;
+        clearTimeout(settleTimer);
+        scheduleFinish();
+      }
+    });
+    const timeout = setTimeout(() => {
+      observer.disconnect();
+      clearTimeout(settleTimer);
+      reject(new Error("Sayfa çevirisi zamanında tamamlanmadı."));
+    }, 15000);
+    observer.observe(content, { childList: true, characterData: true, subtree: true });
+    scheduleFinish();
+  });
+}
+
 function loadGoogleTranslate() {
   if (googleTranslatePromise) return googleTranslatePromise;
   googleTranslatePromise = new Promise((resolve, reject) => {
@@ -43,6 +73,9 @@ function loadGoogleTranslate() {
 }
 
 async function translatePage(language) {
+  const content = document.querySelector("article") || document.body;
+  const previousText = content.innerText.trim();
+  const previousLanguage = document.documentElement.lang;
   window.SiteContent?.refresh(language === "en" ? "en" : "tr");
   if (language === "tr" && !googleTranslatePromise) {
     updateLanguageButtons("tr");
@@ -51,6 +84,13 @@ async function translatePage(language) {
   const select = await loadGoogleTranslate();
   select.value = language === "en" ? "en" : "";
   select.dispatchEvent(new Event("change", { bubbles: true }));
+  try {
+    await waitForPageTranslation(content, previousText);
+  } catch (error) {
+    select.value = previousLanguage === "en" ? "en" : "";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+    throw error;
+  }
   updateLanguageButtons(language);
 }
 
@@ -62,7 +102,7 @@ window.SiteLanguage = {
 function loadPageContent() {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.src = "/public/site-content.js";
+    script.src = "../public/site-content.js";
     script.addEventListener("load", async () => {
       try {
         window.SiteContent.capture();
@@ -105,13 +145,16 @@ if (document.body.dataset.languageMode !== "database") {
 
 if (document.body.dataset.languageMode === "google") {
   const savedLanguage = localStorage.getItem("site-language") === "en" ? "en" : "tr";
-  updateLanguageButtons(savedLanguage);
+  updateLanguageButtons("tr");
   const pageContentPromise = loadPageContent().catch(error => {
     languageStatus.textContent = "Sayfa içerikleri yüklenemedi.";
     console.error("Could not load treatment page content:", error);
   });
   if (savedLanguage === "en") {
-    pageContentPromise.then(() => translatePage("en")).catch(error => {
+    pageContentPromise.then(() => translatePage("en")).then(() => {
+      languageStatus.textContent = "";
+    }).catch(error => {
+      updateLanguageButtons("tr");
       languageStatus.textContent = "English translation could not be loaded.";
       console.error("Could not load English translation:", error);
     });
@@ -119,13 +162,14 @@ if (document.body.dataset.languageMode === "google") {
   languageButtons.forEach(button => button.addEventListener("click", async () => {
     const language = button.dataset.siteLanguage;
     if (language === document.documentElement.lang) return;
-    localStorage.setItem("site-language", language);
     languageStatus.textContent = "";
-    updateLanguageButtons(language);
     try {
       await pageContentPromise;
       await translatePage(language);
+      localStorage.setItem("site-language", language);
+      languageStatus.textContent = "";
     } catch (error) {
+      updateLanguageButtons(document.documentElement.lang);
       languageStatus.textContent = language === "en"
         ? "English translation could not be loaded."
         : "Türkçe çeviri uygulanamadı.";
