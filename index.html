@@ -85,6 +85,9 @@
     .language-button[aria-pressed="true"] { background: var(--deep); color: var(--cream); }
     .language-button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
     .language-flag { display: block; width: 20px; height: 14px; flex: none; border-radius: 1px; }
+    .translation-widget { position: fixed; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+    .goog-te-banner-frame.skiptranslate { display: none !important; }
+    body { top: 0 !important; }
     .menu-toggle {
       display: grid;
       gap: 5px;
@@ -1124,6 +1127,7 @@
     </svg>
   </a>
 
+  <div id="google_translate_element" class="translation-widget notranslate" aria-hidden="true"></div>
   <script src="public/site-content.js"></script>
   <script>
     const navbar = document.querySelector('.navbar');
@@ -1545,6 +1549,9 @@
 
       const isEnglish = document.documentElement.lang === 'en';
       postLanguageNote.hidden = !isEnglish;
+      postLanguageNote.textContent = isEnglish
+        ? 'Articles are automatically translated from Turkish.'
+        : 'Yazılar Türkçe olarak yayımlanır.';
       postGrid.replaceChildren(...publishedPosts.map(post => {
         const card = document.createElement('article');
         card.className = 'post-card';
@@ -1588,6 +1595,7 @@
         card.append(body);
         return card;
       }));
+      scheduleDynamicTranslation();
     };
     document.addEventListener('site-language-change', renderPosts);
     fetch('/api/posts')
@@ -1603,6 +1611,72 @@
       .catch(error => console.error('Published posts could not be loaded:', error));
 
     const faqList = document.getElementById('faq-list');
+    const dynamicTranslationTargets = [
+      document.getElementById('post-list'),
+      faqList,
+    ];
+    let dynamicTranslationPromise = null;
+    let dynamicTranslationTimer = null;
+    let dynamicTranslationVersion = 0;
+    const protectStaticContent = () => {
+      const visit = element => {
+        if (dynamicTranslationTargets.some(target => target === element || target.contains(element))) return;
+        if (!dynamicTranslationTargets.some(target => element.contains(target))) {
+          element.classList.add('notranslate');
+          return;
+        }
+        [...element.children].forEach(visit);
+      };
+      visit(document.body);
+    };
+    const waitForTranslationSelect = (attempt = 0) => {
+      const select = document.querySelector('.goog-te-combo');
+      if (select) return Promise.resolve(select);
+      if (attempt >= 50) return Promise.reject(new Error('Google Translate language selector did not load.'));
+      return new Promise(resolve => setTimeout(resolve, 100))
+        .then(() => waitForTranslationSelect(attempt + 1));
+    };
+    const loadDynamicTranslation = () => {
+      if (dynamicTranslationPromise) return dynamicTranslationPromise;
+      dynamicTranslationPromise = new Promise((resolve, reject) => {
+        window.homeDynamicTranslateInit = () => {
+          try {
+            new window.google.translate.TranslateElement(
+              { pageLanguage: 'tr', includedLanguages: 'en', autoDisplay: false },
+              'google_translate_element',
+            );
+            waitForTranslationSelect().then(resolve, reject);
+          } catch (error) {
+            reject(error);
+          }
+        };
+        const script = document.createElement('script');
+        script.src = 'https://translate.google.com/translate_a/element.js?cb=homeDynamicTranslateInit';
+        script.onerror = () => reject(new Error('Google Translate could not be loaded.'));
+        document.head.append(script);
+      }).catch(error => {
+        dynamicTranslationPromise = null;
+        throw error;
+      });
+      return dynamicTranslationPromise;
+    };
+    const scheduleDynamicTranslation = () => {
+      if (document.documentElement.lang !== 'en') return;
+      const version = ++dynamicTranslationVersion;
+      clearTimeout(dynamicTranslationTimer);
+      dynamicTranslationTimer = setTimeout(() => {
+        protectStaticContent();
+        loadDynamicTranslation().then(select => {
+          if (version !== dynamicTranslationVersion || document.documentElement.lang !== 'en') return;
+          select.value = 'en';
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+          languageStatus.textContent = '';
+        }).catch(error => {
+          languageStatus.textContent = 'New articles and FAQ entries could not be translated.';
+          console.error('Could not translate dynamic article and FAQ content:', error);
+        });
+      }, 100);
+    };
     const faqMessageTranslations = new Map([
       ['Henüz sıkça sorulan soru eklenmemiş.', 'No frequently asked questions have been added yet.'],
       ['Sorular şu anda yüklenemiyor.', 'Questions are currently unavailable.'],
@@ -1610,9 +1684,10 @@
     let faqEntries = [];
     let faqLoaded = false;
     let faqRenderVersion = 0;
-    const renderFaq = faq => {
+    const renderFaq = (faq, notranslate = false) => {
       const item = document.createElement('details');
       item.className = 'faq-item';
+      if (notranslate) item.classList.add('notranslate');
       const question = document.createElement('summary');
       question.textContent = faq.question;
       const answer = document.createElement('p');
@@ -1630,28 +1705,27 @@
         empty.className = 'faq-empty';
         empty.textContent = isEnglish ? faqMessageTranslations.get('Henüz sıkça sorulan soru eklenmemiş.') : 'Henüz sıkça sorulan soru eklenmemiş.';
         faqList.replaceChildren(empty);
+        scheduleDynamicTranslation();
         return;
       }
 
-      if (isEnglish) {
-        const hasEnglishCopy = faqEntries.every(faq =>
-          englishTranslations.has(String(faq.question)) && englishTranslations.has(String(faq.answer)));
-        if (!hasEnglishCopy) {
-          const message = document.createElement('p');
-          message.className = 'faq-empty';
-          message.textContent = 'FAQ content is available in Turkish only.';
-          faqList.replaceChildren(message);
-          return;
-        }
+      const renderedFaqs = faqEntries.map(faq => {
+        const question = String(faq.question);
+        const answer = String(faq.answer);
+        const hasEnglishCopy = isEnglish
+          && englishTranslations.has(question)
+          && englishTranslations.has(answer);
+        return renderFaq(isEnglish && hasEnglishCopy
+          ? {
+            question: translateStaticText(question),
+            answer: translateStaticText(answer),
+          }
+          : { question, answer }, hasEnglishCopy);
+      });
+      if (version === faqRenderVersion) {
+        faqList.replaceChildren(...renderedFaqs);
+        scheduleDynamicTranslation();
       }
-
-      const renderedFaqs = faqEntries.map(faq => renderFaq(isEnglish
-        ? {
-          question: translateStaticText(String(faq.question)),
-          answer: translateStaticText(String(faq.answer)),
-        }
-        : faq));
-      if (version === faqRenderVersion) faqList.replaceChildren(...renderedFaqs);
     };
     document.addEventListener('site-language-change', renderFaqs);
     fetch('/api/faqs')
